@@ -11,6 +11,7 @@ import {
   X,
   Menu,
 } from "lucide-react";
+import { useDriver } from "@/lib/drivers";
 
 interface NavItem {
   href: string;
@@ -27,6 +28,7 @@ const navItems: NavItem[] = [
 export function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(true);
   const pathname = usePathname();
+  const { selectedDriver, clearSelectedDriver } = useDriver();
 
   return (
     <aside
@@ -90,8 +92,25 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* Toggle Button */}
+        {/* Selected Driver & Toggle Button */}
         <div className="mt-auto space-y-4">
+          {selectedDriver && isExpanded && (
+            <div className="bg-primary/5 p-4 rounded-xl border border-primary/20">
+              <p className="text-[9px] font-black uppercase tracking-widest text-primary mb-1">
+                Active Identity
+              </p>
+              <p className="text-sm font-bold truncate text-gray-900 dark:text-gray-100">
+                {selectedDriver.user.username ||
+                  selectedDriver.user.email.split("@")[0]}
+              </p>
+              <button
+                onClick={clearSelectedDriver}
+                className="text-[10px] text-primary font-bold mt-2 hover:underline"
+              >
+                Switch Driver
+              </button>
+            </div>
+          )}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="w-full flex items-center justify-center p-3.5 bg-surface-variant rounded-xl text-text-muted hover:text-primary transition-colors"

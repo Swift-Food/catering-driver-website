@@ -1,20 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { User, Loader2, AlertCircle, Star, Truck } from "lucide-react";
-import { driversApi, type DriverUser, CateringDeliveryMethod } from "@/lib/drivers";
-
-const DELIVERY_METHOD_LABELS: Record<CateringDeliveryMethod, string> = {
-  [CateringDeliveryMethod.E_BIKE]: "E-Bike",
-  [CateringDeliveryMethod.E_BIKE_TRAILER]: "E-Bike + Trailer",
-  [CateringDeliveryMethod.UBER]: "Uber",
-  [CateringDeliveryMethod.MINI_VAN]: "Mini Van",
-  [CateringDeliveryMethod.TRUCK]: "Truck",
-};
+import { User, Loader2, AlertCircle, Map as MapIcon } from "lucide-react";
+import { driversApi, useDriver, type DriverUser } from "@/lib/drivers";
 
 export default function DeliveryPage() {
-  const router = useRouter();
+  const {
+    selectedDriver,
+    setSelectedDriver,
+    clearSelectedDriver,
+    isLoading: driverLoading,
+  } = useDriver();
   const [drivers, setDrivers] = useState<DriverUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,13 +30,64 @@ export default function DeliveryPage() {
       }
     };
 
-    fetchDrivers();
-  }, []);
+    // Only fetch drivers if no driver is selected
+    if (!selectedDriver) {
+      fetchDrivers();
+    } else {
+      setIsLoading(false);
+    }
+  }, [selectedDriver]);
 
-  const handleDriverSelect = (driverId: string) => {
-    router.push(`/delivery/routes?driverId=${driverId}`);
+  const handleDriverSelect = (driver: DriverUser) => {
+    setSelectedDriver(driver);
   };
 
+  // Show loading while checking for persisted driver
+  if (driverLoading) {
+    return (
+      <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
+        <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
+          <Loader2 size={40} className="animate-spin" />
+        </div>
+        <h2 className="text-2xl font-black mb-2 text-gray-900 dark:text-gray-100">
+          Loading
+        </h2>
+        <p className="text-sm text-text-muted max-w-sm">
+          Please wait...
+        </p>
+      </div>
+    );
+  }
+
+  // Show routes view when driver is selected
+  if (selectedDriver) {
+    return (
+      <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
+        <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
+          <MapIcon size={40} />
+        </div>
+        <h2 className="text-2xl font-black mb-2 text-gray-900 dark:text-gray-100">
+          Routes
+        </h2>
+        <p className="text-sm text-text-muted mb-8 max-w-sm">
+          Route details for{" "}
+          <span className="font-bold text-gray-900 dark:text-gray-100">
+            {selectedDriver.user.username ||
+              selectedDriver.user.email.split("@")[0]}
+          </span>{" "}
+          will appear here.
+        </p>
+        <button
+          onClick={clearSelectedDriver}
+          className="text-[10px] text-primary font-bold hover:underline"
+        >
+          Switch Driver
+        </button>
+      </div>
+    );
+  }
+
+  // Loading drivers
   if (isLoading) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
@@ -57,6 +104,7 @@ export default function DeliveryPage() {
     );
   }
 
+  // Error loading drivers
   if (error) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
@@ -77,6 +125,7 @@ export default function DeliveryPage() {
     );
   }
 
+  // No drivers available
   if (drivers.length === 0) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
@@ -93,60 +142,27 @@ export default function DeliveryPage() {
     );
   }
 
+  // Driver selection view
   return (
-    <div className="flex flex-col items-center justify-center text-center p-8">
+    <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
       <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
         <User size={40} />
       </div>
       <h2 className="text-2xl font-black mb-2 text-gray-900 dark:text-gray-100">
-        Select Driver
+        Identify Driver
       </h2>
       <p className="text-sm text-text-muted mb-8 max-w-sm">
-        Please select a driver profile to view their active route task lists and
+        Please select your driver profile to access active route task lists and
         verification tools.
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 w-full max-w-4xl">
         {drivers.map((driver) => (
           <button
             key={driver.id}
-            onClick={() => handleDriverSelect(driver.id)}
-            className="p-4 bg-surface border border-border-subtle rounded-xl font-bold text-sm hover:border-primary hover:text-primary transition-all shadow-sm text-left group"
+            onClick={() => handleDriverSelect(driver)}
+            className="p-4 bg-surface border border-border-subtle rounded-xl font-bold text-sm hover:border-primary hover:text-primary transition-all shadow-sm truncate"
           >
-            <div className="flex items-center gap-3 mb-3">
-              {driver.user.profilePicture ? (
-                <img
-                  src={driver.user.profilePicture}
-                  alt={driver.user.username || driver.user.email}
-                  className="w-10 h-10 rounded-lg object-cover"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-primary">
-                  <User size={20} />
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm truncate text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors">
-                  {driver.user.username || driver.user.email.split("@")[0]}
-                </p>
-                <div className="flex items-center gap-1 text-amber-500">
-                  <Star size={12} fill="currentColor" />
-                  <span className="text-xs">
-                    {Number(driver.cateringRating).toFixed(1)}
-                  </span>
-                </div>
-              </div>
-            </div>
-            {driver.cateringDeliveryMethods &&
-              driver.cateringDeliveryMethods.length > 0 && (
-                <div className="flex items-center gap-1 text-text-muted text-xs">
-                  <Truck size={12} />
-                  <span className="truncate">
-                    {driver.cateringDeliveryMethods
-                      .map((m) => DELIVERY_METHOD_LABELS[m])
-                      .join(", ")}
-                  </span>
-                </div>
-              )}
+            {driver.user.username || driver.user.email.split("@")[0]}
           </button>
         ))}
       </div>
