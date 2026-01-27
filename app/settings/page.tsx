@@ -72,7 +72,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="space-y-4">
+    <div className="space-y-4 mt-8">
         <h3 className="text-sm font-black uppercase tracking-widest opacity-40 px-2 text-gray-900 dark:text-gray-100">
           Appearance
         </h3>
