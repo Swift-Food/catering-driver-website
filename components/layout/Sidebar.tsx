@@ -19,7 +19,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { href: "/", label: "Dashboard", icon: <Home size={20} /> },
-  { href: "/routes", label: "Active Route", icon: <MapIcon size={20} /> },
+  { href: "/delivery", label: "Delivery", icon: <MapIcon size={20} /> },
   { href: "/settings", label: "Settings", icon: <Settings size={20} /> },
 ];
 
