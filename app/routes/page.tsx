@@ -8,7 +8,7 @@ export default function RoutesPage() {
       <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
         <MapIcon size={40} />
       </div>
-      <h2 className="text-2xl font-black mb-2">No Active Routes</h2>
+      <h2 className="text-2xl font-black mb-2 text-gray-900 dark:text-gray-100">No Active Routes</h2>
       <p className="text-sm text-text-muted mb-8 max-w-sm">
         You don&apos;t have any active routes at the moment. New routes will appear here when assigned.
       </p>
@@ -17,8 +17,8 @@ export default function RoutesPage() {
           <User size={20} />
         </div>
         <div className="text-left">
-          <p className="text-[9px] font-black uppercase tracking-widest opacity-40">Status</p>
-          <p className="font-bold text-sm">Ready for Assignment</p>
+          <p className="text-[9px] font-black uppercase tracking-widest opacity-40 text-gray-900 dark:text-gray-100">Status</p>
+          <p className="font-bold text-sm text-gray-900 dark:text-gray-100">Ready for Assignment</p>
         </div>
       </div>
     </div>

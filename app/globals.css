@@ -1,11 +1,15 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --app-bg: #F9FAFB;
   --surface: #FFFFFF;
   --surface-variant: #F3F4F6;
   --border-subtle: #E5E7EB;
   --text-muted: #6B7280;
+  --text-primary: #111827;
 }
 
 .dark {
@@ -14,11 +18,12 @@
   --surface-variant: rgba(255, 255, 255, 0.05);
   --border-subtle: rgba(255, 255, 255, 0.05);
   --text-muted: #9CA3AF;
+  --text-primary: #F9FAFB;
 }
 
 @theme inline {
   --color-background: var(--app-bg);
-  --color-foreground: #171717;
+  --color-foreground: var(--text-primary);
   --font-sans: 'Inter', sans-serif;
   --font-mono: var(--font-geist-mono);
 
@@ -31,6 +36,7 @@
   --color-border-subtle: var(--border-subtle);
   --color-text-muted: var(--text-muted);
   --color-app-bg: var(--app-bg);
+  --color-text-primary: var(--text-primary);
 
   /* Status colors */
   --color-status-blue: #3B82F6;
@@ -46,17 +52,12 @@
   --radius-4xl: 32px;
 }
 
-/* Theme is controlled by .dark class via localStorage, not prefers-color-scheme */
-
 body {
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   background-color: var(--app-bg);
-  color: theme('colors.gray.900');
-}
-
-.dark body {
-  color: theme('colors.gray.100');
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .font-mont {

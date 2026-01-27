@@ -48,7 +48,7 @@ export function Sidebar() {
             <MapIcon size={24} />
           </div>
           {isExpanded && (
-            <h1 className="text-xl font-black tracking-tight whitespace-nowrap">
+            <h1 className="text-xl font-black tracking-tight whitespace-nowrap text-gray-900 dark:text-gray-100">
               SwiftFoods
             </h1>
           )}

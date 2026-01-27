@@ -30,8 +30,8 @@ function OptionItem({
           {icon}
         </div>
         <div className="text-left">
-          <p className="font-black text-sm">{label}</p>
-          <p className="text-[9px] font-bold uppercase opacity-30 tracking-widest">
+          <p className="font-black text-sm text-gray-900 dark:text-gray-100">{label}</p>
+          <p className="text-[9px] font-bold uppercase opacity-30 tracking-widest text-gray-900 dark:text-gray-100">
             {value}
           </p>
         </div>
@@ -49,7 +49,7 @@ function OptionItem({
           ></div>
         </div>
       ) : (
-        <ChevronRight size={18} className="opacity-20" />
+        <ChevronRight size={18} className="opacity-20 text-gray-900 dark:text-gray-100" />
       )}
     </button>
   );
@@ -65,15 +65,15 @@ export default function SettingsPage() {
           <Settings size={24} />
         </div>
         <div>
-          <h2 className="text-2xl font-black">System Settings</h2>
-          <p className="text-xs opacity-40 font-bold uppercase tracking-widest">
+          <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100">System Settings</h2>
+          <p className="text-xs opacity-40 font-bold uppercase tracking-widest text-gray-900 dark:text-gray-100">
             Configuration & Preferences
           </p>
         </div>
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-sm font-black uppercase tracking-widest opacity-40 px-2">
+        <h3 className="text-sm font-black uppercase tracking-widest opacity-40 px-2 text-gray-900 dark:text-gray-100">
           Appearance
         </h3>
         <div className="space-y-3">
@@ -89,7 +89,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="pt-8 border-t border-border-subtle">
-        <p className="text-[10px] text-center opacity-20 font-bold uppercase tracking-[0.2em]">
+        <p className="text-[10px] text-center opacity-20 font-bold uppercase tracking-[0.2em] text-gray-900 dark:text-gray-100">
           SwiftFoods Driver Console v2.4.0
         </p>
       </div>

@@ -14,10 +14,10 @@ export default function HomePage() {
           <Home size={24} />
         </div>
         <div>
-          <h2 className="text-2xl font-black">
+          <h2 className="text-2xl font-black text-gray-900 dark:text-gray-100">
             Welcome, {user?.firstName || user?.email || "Driver"}
           </h2>
-          <p className="text-xs opacity-40 font-bold uppercase tracking-widest">
+          <p className="text-xs opacity-40 font-bold uppercase tracking-widest text-gray-900 dark:text-gray-100">
             Driver Dashboard
           </p>
         </div>
@@ -29,7 +29,7 @@ export default function HomePage() {
           <div className="w-12 h-12 bg-status-blue/10 rounded-xl flex items-center justify-center mb-4">
             <Truck className="w-6 h-6 text-status-blue" />
           </div>
-          <h3 className="font-bold text-sm mb-1">Active Routes</h3>
+          <h3 className="font-bold text-sm mb-1 text-gray-900 dark:text-gray-100">Active Routes</h3>
           <p className="text-3xl font-black text-status-blue">0</p>
         </div>
 
@@ -37,7 +37,7 @@ export default function HomePage() {
           <div className="w-12 h-12 bg-status-green/10 rounded-xl flex items-center justify-center mb-4">
             <CheckCircle className="w-6 h-6 text-status-green" />
           </div>
-          <h3 className="font-bold text-sm mb-1">Completed Today</h3>
+          <h3 className="font-bold text-sm mb-1 text-gray-900 dark:text-gray-100">Completed Today</h3>
           <p className="text-3xl font-black text-status-green">0</p>
         </div>
 
@@ -45,7 +45,7 @@ export default function HomePage() {
           <div className="w-12 h-12 bg-status-amber/10 rounded-xl flex items-center justify-center mb-4">
             <Clock className="w-6 h-6 text-status-amber" />
           </div>
-          <h3 className="font-bold text-sm mb-1">Pending</h3>
+          <h3 className="font-bold text-sm mb-1 text-gray-900 dark:text-gray-100">Pending</h3>
           <p className="text-3xl font-black text-status-amber">0</p>
         </div>
       </div>
