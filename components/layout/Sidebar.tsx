@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Home,
@@ -14,7 +15,7 @@ import {
 interface NavItem {
   href: string;
   label: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
 }
 
 const navItems: NavItem[] = [
@@ -44,8 +45,14 @@ export function Sidebar() {
             isExpanded ? "gap-4 overflow-hidden" : "justify-center"
           }`}
         >
-          <div className="flex-shrink-0 w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
-            <MapIcon size={24} />
+          <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden">
+            <Image
+              src="/logo.png"
+              alt="SwiftFoods Logo"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
           </div>
           {isExpanded && (
             <h1 className="text-xl font-black tracking-tight whitespace-nowrap text-gray-900 dark:text-gray-100">

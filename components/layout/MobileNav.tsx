@@ -1,5 +1,6 @@
 "use client";
 
+import { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Map as MapIcon, Settings } from "lucide-react";
@@ -7,7 +8,7 @@ import { Home, Map as MapIcon, Settings } from "lucide-react";
 interface NavItem {
   href: string;
   label: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
 }
 
 const navItems: NavItem[] = [

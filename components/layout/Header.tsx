@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { useRouter } from "next/navigation";
-import { Map as MapIcon, Info, Users, Sun, Moon, LogOut } from "lucide-react";
+import { Users, Sun, Moon, LogOut } from "lucide-react";
 
 export function Header() {
   const { logout } = useAuth();
@@ -19,8 +20,14 @@ export function Header() {
     <header className="bg-surface/80 backdrop-blur-md border-b border-border-subtle px-6 md:px-8 py-4 flex items-center justify-between z-40">
       <div className="flex items-center gap-4">
         {/* Logo for mobile only */}
-        <div className="md:hidden w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white shadow-lg">
-          <MapIcon size={18} />
+        <div className="md:hidden w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+          <Image
+            src="/logo.png"
+            alt="SwiftFoods Logo"
+            width={32}
+            height={32}
+            className="object-contain"
+          />
         </div>
       </div>
 

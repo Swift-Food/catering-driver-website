@@ -1,10 +1,11 @@
 "use client";
 
+import { ReactNode } from "react";
 import { useTheme } from "@/lib/theme";
 import { Settings, Sun, Moon, ChevronRight } from "lucide-react";
 
 interface OptionItemProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   value: string;
   onClick: () => void;
