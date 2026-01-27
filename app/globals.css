@@ -46,15 +46,7 @@
   --radius-4xl: 32px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --app-bg: #0F0F10;
-    --surface: #1A1C1E;
-    --surface-variant: rgba(255, 255, 255, 0.05);
-    --border-subtle: rgba(255, 255, 255, 0.05);
-    --text-muted: #9CA3AF;
-  }
-}
+/* Theme is controlled by .dark class via localStorage, not prefers-color-scheme */
 
 body {
   font-family: 'Inter', sans-serif;

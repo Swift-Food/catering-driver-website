@@ -3,6 +3,7 @@
 import { useAuth } from "@/lib/auth";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { AppLayout } from "@/components/layout";
 
 const PUBLIC_PATHS = ["/login"];
 
@@ -35,5 +36,11 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  // For public paths (login), render without the app layout
+  if (isPublicPath) {
+    return <>{children}</>;
+  }
+
+  // For authenticated pages, wrap with AppLayout
+  return <AppLayout>{children}</AppLayout>;
 }
