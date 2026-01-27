@@ -7,7 +7,7 @@
 // =============================================================================
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
@@ -22,17 +22,18 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Redirect if already authenticated
-  if (authLoading) {
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.push("/");
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  if (authLoading || isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-app-bg">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
-  }
-
-  if (isAuthenticated) {
-    router.push("/");
-    return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
