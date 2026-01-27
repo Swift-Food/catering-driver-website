@@ -1,5 +1,11 @@
 "use client";
 
+// =============================================================================
+// WARNING: Form validation is disabled for development!
+// TO REVERT: Uncomment 'required' on email and password inputs below.
+// Also see lib/auth/authContext.tsx for auth bypass revert instructions.
+// =============================================================================
+
 import Image from "next/image";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
@@ -111,7 +117,7 @@ export default function LoginPage() {
                   className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:outline-none focus:border-primary bg-surface text-gray-900 dark:text-gray-100 transition-colors"
                   placeholder="you@example.com"
                   disabled={isLoading}
-                  required
+                  // required  // DEV BYPASS: uncomment when reverting to real auth
                 />
               </div>
 
@@ -135,7 +141,7 @@ export default function LoginPage() {
                     className="w-full px-4 py-3 pr-12 border-2 border-border-subtle rounded-xl focus:outline-none focus:border-primary bg-surface text-gray-900 dark:text-gray-100 transition-colors"
                     placeholder="Enter your password"
                     disabled={isLoading}
-                    required
+                    // required  // DEV BYPASS: uncomment when reverting to real auth
                   />
                   <button
                     type="button"
