@@ -183,7 +183,7 @@ export default function SessionDetailModal({
                 {accepting ? (
                   <Loader2 size={16} className="animate-spin" />
                 ) : (
-                  "Accept Mission"
+                  "Accept Delivery"
                 )}
               </button>
             </div>

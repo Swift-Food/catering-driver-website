@@ -201,7 +201,7 @@ export default function HomePage() {
           <h2 className="text-xl font-black">Upcoming Logistics</h2>
           {!loadingAssigned && (
             <span className="text-xs font-bold opacity-40 uppercase tracking-widest">
-              {assignedSessions.length} Dispatched
+              {assignedSessions.length} Upcoming
             </span>
           )}
         </div>
