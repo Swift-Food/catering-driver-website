@@ -55,10 +55,6 @@ export default function SessionCard({
   const dropoffAddress = session.cateringOrder?.deliveryAddress || "";
   const deliveryStatus = session.deliveryStatus || "";
 
-  const isDirty = isAssigned
-    ? inputValue.trim() !== existingDriver
-    : inputValue.trim().length > 0;
-
   const handleSubmit = async () => {
     if (!inputValue.trim() || !onDriverSubmit) return;
     if (isAssigned && inputValue.trim() === existingDriver) {
@@ -194,55 +190,59 @@ export default function SessionCard({
               )}
             </div>
 
-            <div className="flex items-center gap-2">
-              {isAssigned && (
-                <UserCheck
-                  size={14}
-                  className="shrink-0 text-status-green"
+            <div className="relative">
+              <div className="flex items-center gap-2">
+                {isAssigned && (
+                  <UserCheck
+                    size={14}
+                    className="shrink-0 text-status-green"
+                  />
+                )}
+                <input
+                  type="text"
+                  placeholder="Assign Driver..."
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSubmit();
+                    if (e.key === "Escape") handleCancel();
+                  }}
+                  className={`w-full bg-surface-variant border p-2.5 text-[10px] font-black uppercase tracking-widest outline-none transition-all ${
+                    isFocused
+                      ? "border-primary ring-2 ring-primary/10 rounded-t-xl rounded-b-none"
+                      : "border-border-subtle rounded-xl"
+                  }`}
                 />
-              )}
-              <input
-                type="text"
-                placeholder="Assign Driver..."
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSubmit();
-                  if (e.key === "Escape") handleCancel();
-                }}
-                className={`w-full bg-surface-variant border p-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none transition-all ${
-                  isFocused
-                    ? "border-primary ring-2 ring-primary/10"
-                    : "border-border-subtle hover:border-primary/30"
-                }`}
-              />
-            </div>
-
-            {isFocused && isDirty && (
-              <div className="flex gap-2 animate-in slide-in-from-top-1 duration-150">
-                <button
-                  onClick={handleCancel}
-                  className="flex-1 py-2 rounded-lg bg-surface-variant border border-border-subtle text-[9px] font-black uppercase tracking-widest hover:text-status-red transition-all"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  disabled={saving || !inputValue.trim()}
-                  className="flex-1 py-2 rounded-lg bg-primary text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/30 disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5"
-                >
-                  {saving ? (
-                    <Loader2 size={12} className="animate-spin" />
-                  ) : (
-                    <>
-                      <Check size={12} strokeWidth={3} />
-                      {isAssigned ? "Save" : "Accept"}
-                    </>
-                  )}
-                </button>
               </div>
-            )}
+
+              {isFocused && (
+                <div className="absolute top-full left-0 right-0 bg-surface border border-border-subtle border-t-0 rounded-b-xl shadow-2xl z-[100] animate-in slide-in-from-top-2 duration-200 overflow-hidden p-3">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleCancel}
+                      className="flex-1 py-2.5 rounded-lg bg-surface-variant border border-border-subtle text-[9px] font-black uppercase tracking-widest hover:text-status-red transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSubmit}
+                      disabled={saving || !inputValue.trim()}
+                      className="flex-1 py-2.5 rounded-lg bg-primary text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/30 disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5"
+                    >
+                      {saving ? (
+                        <Loader2 size={12} className="animate-spin" />
+                      ) : (
+                        <>
+                          <Check size={12} strokeWidth={3} />
+                          {isAssigned ? "Save" : "Accept"}
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
