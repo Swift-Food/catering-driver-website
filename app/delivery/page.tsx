@@ -5,6 +5,7 @@ import { User, Loader2, AlertCircle, Map as MapIcon } from "lucide-react";
 import { cateringDriverApi, useDriver } from "@/lib/drivers";
 import type { MealSession } from "@/lib/drivers/types";
 import ActiveDeliveryView from "@/components/delivery/ActiveDeliveryView";
+import { getSessionDateLabel, getSessionTimeRange } from "@/components/delivery/sessionUtils";
 
 export default function DeliveryPage() {
   const {
@@ -179,26 +180,39 @@ export default function DeliveryPage() {
               Your Delivery Sessions ({assignments.length})
             </p>
             <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
-              {assignments.map((s, i) => (
-                <button
-                  key={s.id}
-                  onClick={() => setSelectedSessionId(s.id)}
-                  className={`flex-shrink-0 flex items-center gap-3 px-4 py-3 rounded-xl border text-xs font-bold transition-all ${
-                    selectedSessionId === s.id
-                      ? "bg-primary/10 border-primary/20 text-primary"
-                      : "bg-surface border-border-subtle hover:border-primary/20"
-                  }`}
-                >
-                  <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black ${
-                    selectedSessionId === s.id
-                      ? "bg-primary text-white"
-                      : "bg-surface-variant"
-                  }`}>
-                    {i + 1}
-                  </span>
-                  {s.sessionName || `Session ${s.sessionOrder}`}
-                </button>
-              ))}
+              {assignments.map((s, i) => {
+                const dateLabel = getSessionDateLabel(s);
+                const timeRange = getSessionTimeRange(s);
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setSelectedSessionId(s.id)}
+                    className={`flex-shrink-0 flex items-center gap-3 px-4 py-3 rounded-xl border text-xs font-bold transition-all ${
+                      selectedSessionId === s.id
+                        ? "bg-primary/10 border-primary/20 text-primary"
+                        : "bg-surface border-border-subtle hover:border-primary/20"
+                    }`}
+                  >
+                    <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black ${
+                      selectedSessionId === s.id
+                        ? "bg-primary text-white"
+                        : "bg-surface-variant"
+                    }`}>
+                      {i + 1}
+                    </span>
+                    <div className="text-left">
+                      <p className="leading-tight">
+                        {s.sessionName || `Session ${s.sessionOrder}`}
+                      </p>
+                      {(dateLabel || timeRange) && (
+                        <p className="text-[9px] font-medium opacity-50 leading-tight mt-0.5">
+                          {dateLabel}{dateLabel && timeRange ? " · " : ""}{timeRange}
+                        </p>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
