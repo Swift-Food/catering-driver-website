@@ -103,7 +103,7 @@ export default function StopTimelineItem({
 
         {/* Expanded Content */}
         {isExpanded && !isCompleted && (
-          <div className="mt-5 grid md:grid-cols-2 gap-4 animate-in slide-in-from-top-1 duration-300">
+          <div className="mt-5 -ml-14 md:ml-0 grid md:grid-cols-2 gap-4 animate-in slide-in-from-top-1 duration-300">
             {/* Contact Panel */}
             <div className="bg-surface-variant p-5 rounded-xl border border-border-subtle shadow-sm">
               {stop.type === "PICKUP" ? (
