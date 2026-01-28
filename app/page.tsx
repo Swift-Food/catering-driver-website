@@ -10,19 +10,19 @@ import {
   Loader2,
 } from "lucide-react";
 import { cateringDriverApi } from "@/lib/drivers";
-import type { MealSession } from "@/lib/drivers/types";
+import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import MetricBox from "@/components/dashboard/MetricBox";
 import SessionCard from "@/components/dashboard/SessionCard";
 import SessionDetailModal from "@/components/dashboard/SessionDetailModal";
 
 export default function HomePage() {
-  const [availableSessions, setAvailableSessions] = useState<MealSession[]>([]);
-  const [assignedSessions, setAssignedSessions] = useState<MealSession[]>([]);
+  const [availableSessions, setAvailableSessions] = useState<DriverMealSessionDto[]>([]);
+  const [assignedSessions, setAssignedSessions] = useState<DriverMealSessionDto[]>([]);
   const [loadingAvailable, setLoadingAvailable] = useState(true);
   const [loadingAssigned, setLoadingAssigned] = useState(true);
   const [errorAvailable, setErrorAvailable] = useState<string | null>(null);
   const [errorAssigned, setErrorAssigned] = useState<string | null>(null);
-  const [selectedSession, setSelectedSession] = useState<MealSession | null>(
+  const [selectedSession, setSelectedSession] = useState<DriverMealSessionDto | null>(
     null
   );
 
@@ -76,7 +76,7 @@ export default function HomePage() {
   };
 
   const handleAcceptFromModal = async (
-    session: MealSession,
+    session: DriverMealSessionDto,
     driverName: string
   ) => {
     await cateringDriverApi.acceptMealSession(session.id, { driverName });
@@ -86,7 +86,7 @@ export default function HomePage() {
   };
 
   const handleUpdateDriverNameFromModal = async (
-    session: MealSession,
+    session: DriverMealSessionDto,
     driverName: string
   ) => {
     await cateringDriverApi.updateDriverName(session.id, { driverName });

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Package, Clock, Play, Loader2, Calendar, Store } from "lucide-react";
-import type { MealSession } from "@/lib/drivers/types";
+import type { DriverMealSessionDto } from "@/lib/drivers/types";
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "Pending",
@@ -15,7 +15,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 interface DeliveryHeaderPanelProps {
-  session: MealSession;
+  session: DriverMealSessionDto;
   pickupCount: number;
   onStartDelivery: () => Promise<void>;
 }
@@ -145,29 +145,15 @@ function parseCollectionTime(
   return null;
 }
 
-function getEarliestPickupTime(session: MealSession): string {
+function getEarliestPickupTime(session: DriverMealSessionDto): string {
   const times: Date[] = [];
 
   // Check per-restaurant collection times
-  if (session.restaurantCollectionTimes) {
-    for (const t of Object.values(session.restaurantCollectionTimes)) {
-      const d = parseCollectionTime(t, session.sessionDate);
+  for (const restaurant of session.restaurants) {
+    if (restaurant.collectionTime) {
+      const d = parseCollectionTime(restaurant.collectionTime, session.sessionDate);
       if (d) times.push(d);
     }
-  }
-
-  // Check per-order-item collection times
-  for (const item of session.orderItems) {
-    if (item.collectionTime) {
-      const d = parseCollectionTime(item.collectionTime, session.sessionDate);
-      if (d) times.push(d);
-    }
-  }
-
-  // Fallback to session-level collection time
-  if (times.length === 0 && session.collectionTime) {
-    const d = parseCollectionTime(session.collectionTime, session.sessionDate);
-    if (d) times.push(d);
   }
 
   if (times.length === 0) return "N/A";

@@ -1,10 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import type {
-  MealSession,
-  PricingOrderItemDto,
-} from "@/lib/drivers/types";
+import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import { cateringDriverApi } from "@/lib/drivers";
 import type { DeliveryStop } from "./types";
 import type { ViewMode } from "./TabSwitcher";
@@ -16,8 +13,8 @@ import DeliverySidebar from "./DeliverySidebar";
 import GoogleMap from "@/components/dashboard/GoogleMap";
 
 interface ActiveDeliveryViewProps {
-  session: MealSession;
-  onSessionUpdate: (session: MealSession) => void;
+  session: DriverMealSessionDto;
+  onSessionUpdate: (session: DriverMealSessionDto) => void;
 }
 
 const PICKUP_DONE_STATUSES = [
@@ -100,7 +97,7 @@ export default function ActiveDeliveryView({
           if (allDone) {
             // All pickups done, call API
             const updated = await cateringDriverApi.pickupComplete(session.id, {
-              driverId: session.driverId || "",
+              driverId: "",
               pickupProofImageUrl: photoUrl,
             });
             onSessionUpdate(updated);
@@ -113,7 +110,7 @@ export default function ActiveDeliveryView({
             // May already be at destination
           }
           const updated = await cateringDriverApi.deliveryComplete(session.id, {
-            driverId: session.driverId || "",
+            driverId: "",
             deliveryProofImageUrl: photoUrl,
           });
           onSessionUpdate(updated);
@@ -129,7 +126,6 @@ export default function ActiveDeliveryView({
       locallyCompleted,
       pickupStops,
       session.id,
-      session.driverId,
       onSessionUpdate,
     ]
   );
@@ -220,81 +216,63 @@ export default function ActiveDeliveryView({
 // ---- Helpers ----
 
 function deriveStops(
-  session: MealSession,
+  session: DriverMealSessionDto,
   locallyCompleted: Set<string>
 ): DeliveryStop[] {
   const pickupsDone = PICKUP_DONE_STATUSES.includes(session.deliveryStatus);
   const deliveryDone = session.deliveryStatus === "delivered";
 
-  // Deduplicate restaurants by ID
-  const restaurantMap = new Map<string, PricingOrderItemDto>();
-  for (const item of session.orderItems) {
-    if (!restaurantMap.has(item.restaurantId)) {
-      restaurantMap.set(item.restaurantId, item);
-    }
-  }
-
-  const pickupStops: DeliveryStop[] = Array.from(
-    restaurantMap.entries()
-  ).map(([restaurantId, item]) => {
-    const addr = session.restaurantPickupAddresses?.[restaurantId];
-    const collectionTime =
-      session.restaurantCollectionTimes?.[restaurantId] ||
-      item.collectionTime ||
-      session.collectionTime;
+  const pickupStops: DeliveryStop[] = session.restaurants.map((restaurant) => {
+    const addr = restaurant.address;
 
     return {
-      id: restaurantId,
+      id: restaurant.restaurantId,
       type: "PICKUP",
-      locationName: item.restaurantName,
-      address: addr
-        ? `${addr.addressLine1}${addr.addressLine2 ? `, ${addr.addressLine2}` : ""}, ${addr.city} ${addr.zipcode}`
-        : "",
-      time: formatTime(collectionTime),
-      contactName: session.cateringOrder?.pickupContactName,
-      contactPhone: session.cateringOrder?.pickupContactPhone,
-      completed: pickupsDone || locallyCompleted.has(restaurantId),
-      prepStatus: item.reminderConfirmed ? "READY" : "PREPARING",
+      locationName: restaurant.restaurantName,
+      address: `${addr.addressLine1}${addr.addressLine2 ? `, ${addr.addressLine2}` : ""}, ${addr.city} ${addr.postcode}`,
+      time: formatTime(restaurant.collectionTime),
+      contactName: restaurant.contact.phone ? undefined : session.delivery.contactName,
+      contactPhone: restaurant.contact.phone || session.delivery.contactPhone,
+      completed: pickupsDone || locallyCompleted.has(restaurant.restaurantId),
     };
   });
 
   const dropoffStop: DeliveryStop = {
     id: "dropoff",
     type: "DROPOFF",
-    locationName: session.cateringOrder?.deliveryAddress || "Delivery Destination",
-    address: session.cateringOrder?.deliveryAddress || "",
+    locationName: session.delivery.address || "Delivery Destination",
+    address: session.delivery.address || "",
     time: formatTime(session.eventTime),
-    contactName: session.cateringOrder?.customerName,
-    contactPhone: session.cateringOrder?.customerPhone,
+    contactName: session.delivery.contactName,
+    contactPhone: session.delivery.contactPhone,
     completed: deliveryDone,
   };
 
   return [...pickupStops, dropoffStop];
 }
 
-function deriveMapPins(session: MealSession): MapPin[] {
+function deriveMapPins(session: DriverMealSessionDto): MapPin[] {
   const pins: MapPin[] = [];
 
-  const pickupAddresses = session.restaurantPickupAddresses;
-  if (pickupAddresses) {
-    for (const [, addr] of Object.entries(pickupAddresses)) {
+  for (const restaurant of session.restaurants) {
+    if (restaurant.address.location) {
       pins.push({
-        latitude: addr.location.latitude,
-        longitude: addr.location.longitude,
-        label: addr.name,
-        address: `${addr.addressLine1}, ${addr.city}`,
+        latitude: restaurant.address.location.latitude,
+        longitude: restaurant.address.location.longitude,
+        label: restaurant.restaurantName,
+        address: `${restaurant.address.addressLine1}, ${restaurant.address.city}`,
         color: "pink",
       });
     }
   }
 
-  const dropoffLocation = session.cateringOrder?.deliveryLocation;
+  const dropoffLocation = session.delivery.location;
   if (dropoffLocation) {
     pins.push({
       latitude: dropoffLocation.latitude,
       longitude: dropoffLocation.longitude,
       label: "Delivery",
-      address: session.cateringOrder?.deliveryAddress || "",
+      address: session.delivery.address || "",
       color: "green",
     });
   }

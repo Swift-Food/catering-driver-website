@@ -1,4 +1,4 @@
-import type { MealSession } from "@/lib/drivers/types";
+import type { DriverMealSessionDto } from "@/lib/drivers/types";
 
 function parseCollectionTime(
   timeStr: string,
@@ -24,7 +24,7 @@ function formatTime(date: Date): string {
   });
 }
 
-export function getSessionDateLabel(session: MealSession): string {
+export function getSessionDateLabel(session: DriverMealSessionDto): string {
   const dateStr = session.sessionDate;
   if (!dateStr) return "";
   try {
@@ -40,27 +40,15 @@ export function getSessionDateLabel(session: MealSession): string {
   }
 }
 
-export function getSessionTimeRange(session: MealSession): string {
-  // Earliest pickup time
+export function getSessionTimeRange(session: DriverMealSessionDto): string {
+  // Earliest pickup time from restaurants
   const times: Date[] = [];
 
-  if (session.restaurantCollectionTimes) {
-    for (const t of Object.values(session.restaurantCollectionTimes)) {
-      const d = parseCollectionTime(t, session.sessionDate);
+  for (const restaurant of session.restaurants) {
+    if (restaurant.collectionTime) {
+      const d = parseCollectionTime(restaurant.collectionTime, session.sessionDate);
       if (d) times.push(d);
     }
-  }
-
-  for (const item of session.orderItems) {
-    if (item.collectionTime) {
-      const d = parseCollectionTime(item.collectionTime, session.sessionDate);
-      if (d) times.push(d);
-    }
-  }
-
-  if (times.length === 0 && session.collectionTime) {
-    const d = parseCollectionTime(session.collectionTime, session.sessionDate);
-    if (d) times.push(d);
   }
 
   // Delivery / event time

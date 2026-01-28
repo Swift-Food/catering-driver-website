@@ -6,10 +6,10 @@ import {
   MapPin,
   ListChecks,
 } from "lucide-react";
-import type { MealSession } from "@/lib/drivers/types";
+import type { DriverMealSessionDto } from "@/lib/drivers/types";
 
 interface DeliverySidebarProps {
-  session: MealSession;
+  session: DriverMealSessionDto;
   totalStops: number;
   remainingStops: number;
 }
@@ -19,11 +19,9 @@ export default function DeliverySidebar({
   totalStops,
   remainingStops,
 }: DeliverySidebarProps) {
-  const customerName =
-    session.cateringOrder?.customerName || "Customer";
-  const customerPhone = session.cateringOrder?.customerPhone || "";
-  const deliveryAddress =
-    session.cateringOrder?.deliveryAddress || "Delivery Destination";
+  const customerName = session.delivery.contactName || "Customer";
+  const customerPhone = session.delivery.contactPhone || "";
+  const deliveryAddress = session.delivery.address || "Delivery Destination";
   const eventTime = formatTime(session.eventTime);
 
   return (

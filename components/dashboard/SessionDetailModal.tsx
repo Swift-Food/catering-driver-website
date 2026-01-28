@@ -12,15 +12,15 @@ import {
   UserPlus,
   Check,
 } from "lucide-react";
-import type { MealSession, MealSessionDeliveryStatus } from "@/lib/drivers/types";
+import type { DriverMealSessionDto, MealSessionDeliveryStatus } from "@/lib/drivers/types";
 import GoogleMap, { type MapPin as GoogleMapPin } from "@/components/dashboard/GoogleMap";
 
 interface SessionDetailModalProps {
-  session: MealSession | null;
+  session: DriverMealSessionDto | null;
   onClose: () => void;
-  onAccept: (session: MealSession, driverName: string) => Promise<void>;
+  onAccept: (session: DriverMealSessionDto, driverName: string) => Promise<void>;
   onUpdateDriverName?: (
-    session: MealSession,
+    session: DriverMealSessionDto,
     driverName: string
   ) => Promise<void>;
 }
@@ -50,16 +50,14 @@ export default function SessionDetailModal({
   if (!session) return null;
 
   const restaurantName = session.sessionName || "Meal Session";
-  const portionCount = session.totalDeliveryPortions;
+  const portionCount = session.totalPortions;
   const date = session.sessionDate || "";
   const time = session.eventTime || "N/A";
 
-  const pickupAddresses = session.restaurantPickupAddresses;
-  const pickupEntries = pickupAddresses ? Object.entries(pickupAddresses) : [];
-  const pickupCount = pickupEntries.length;
+  const pickupCount = session.restaurants.length;
 
-  const dropoffAddress = session.cateringOrder?.deliveryAddress || "";
-  const dropoffLocation = session.cateringOrder?.deliveryLocation;
+  const dropoffAddress = session.delivery.address || "";
+  const dropoffLocation = session.delivery.location;
 
   const isPending =
     (session.deliveryStatus as MealSessionDeliveryStatus) === "finding_driver";
@@ -69,13 +67,15 @@ export default function SessionDetailModal({
   const deliveryStatus = session.deliveryStatus || "";
 
   const mapPins: GoogleMapPin[] = [
-    ...pickupEntries.map(([, addr]) => ({
-      latitude: addr.location.latitude,
-      longitude: addr.location.longitude,
-      label: addr.name,
-      address: `${addr.addressLine1}, ${addr.city}`,
-      color: "pink" as const,
-    })),
+    ...session.restaurants
+      .filter((r) => r.address.location)
+      .map((r) => ({
+        latitude: r.address.location!.latitude,
+        longitude: r.address.location!.longitude,
+        label: r.restaurantName,
+        address: `${r.address.addressLine1}, ${r.address.city}`,
+        color: "pink" as const,
+      })),
     ...(dropoffLocation
       ? [
           {
@@ -252,15 +252,15 @@ export default function SessionDetailModal({
           </div>
 
           {/* Pickup Addresses */}
-          {pickupEntries.length > 0 && (
+          {session.restaurants.length > 0 && (
             <div>
               <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-3 px-1">
-                Pickup Locations ({pickupEntries.length})
+                Pickup Locations ({session.restaurants.length})
               </p>
               <div className="space-y-2">
-                {pickupEntries.map(([id, addr]) => (
+                {session.restaurants.map((restaurant) => (
                   <div
-                    key={id}
+                    key={restaurant.restaurantId}
                     className="flex items-start gap-2.5 bg-surface-variant p-3 rounded-xl border border-border-subtle"
                   >
                     <div className="w-7 h-7 shrink-0 rounded-lg bg-surface flex items-center justify-center text-primary border border-border-subtle mt-0.5">
@@ -268,14 +268,14 @@ export default function SessionDetailModal({
                     </div>
                     <div className="min-w-0">
                       <p className="text-[10px] font-black uppercase tracking-widest truncate">
-                        {addr.name}
+                        {restaurant.restaurantName}
                       </p>
                       <p className="text-[9px] font-bold opacity-50 uppercase tracking-wider">
-                        {addr.addressLine1}
-                        {addr.addressLine2 ? `, ${addr.addressLine2}` : ""}
+                        {restaurant.address.addressLine1}
+                        {restaurant.address.addressLine2 ? `, ${restaurant.address.addressLine2}` : ""}
                       </p>
                       <p className="text-[9px] font-bold opacity-50 uppercase tracking-wider">
-                        {addr.city}, {addr.zipcode}
+                        {restaurant.address.city}, {restaurant.address.postcode}
                       </p>
                     </div>
                   </div>

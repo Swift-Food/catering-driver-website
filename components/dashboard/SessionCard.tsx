@@ -12,10 +12,10 @@ import {
   Check,
   Loader2,
 } from "lucide-react";
-import type { MealSession, MealSessionDeliveryStatus } from "@/lib/drivers/types";
+import type { DriverMealSessionDto, MealSessionDeliveryStatus } from "@/lib/drivers/types";
 
 interface SessionCardProps {
-  session: MealSession;
+  session: DriverMealSessionDto;
   onClick?: () => void;
   onDriverSubmit?: (mealSessionId: string, driverName: string) => Promise<void>;
 }
@@ -46,25 +46,21 @@ export default function SessionCard({
   }, [isFocused]);
 
   const restaurantName = session.sessionName || "Meal Session";
-  const portionCount = session.totalDeliveryPortions;
+  const portionCount = session.totalPortions;
   const date = session.sessionDate || "";
   const time = session.eventTime || "";
 
-  const pickupAddresses = session.restaurantPickupAddresses;
-  const pickupCount = pickupAddresses
-    ? Object.keys(pickupAddresses).length
-    : 0;
+  const pickupCount = session.restaurants.length;
 
-  const collectionTimes = session.restaurantCollectionTimes;
-  const timeValues = collectionTimes ? Object.values(collectionTimes) : [];
+  const collectionTimes = session.restaurants.map((r) => r.collectionTime).filter(Boolean);
   const pickupTimeRange =
-    timeValues.length > 1
-      ? `${timeValues[0]} – ${timeValues[timeValues.length - 1]}`
-      : timeValues.length === 1
-        ? timeValues[0]
+    collectionTimes.length > 1
+      ? `${collectionTimes[0]} – ${collectionTimes[collectionTimes.length - 1]}`
+      : collectionTimes.length === 1
+        ? collectionTimes[0]
         : "";
 
-  const dropoffAddress = session.cateringOrder?.deliveryAddress || "";
+  const dropoffAddress = session.delivery.address || "";
   const deliveryStatus = session.deliveryStatus || "";
 
   const handleSubmit = async () => {

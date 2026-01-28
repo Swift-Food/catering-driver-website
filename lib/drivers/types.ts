@@ -128,6 +128,9 @@ export interface DriverUser {
   availableBalance: number;
   lastPayoutDate: string | null;
 
+  // Driver names for catering assignments
+  driverNames: string[] | null;
+
   // Catering fields
   cateringDeliveryMethods: CateringDeliveryMethod[] | null;
   cateringEnabled: boolean;
@@ -361,6 +364,10 @@ export interface RestaurantRouteStop {
   restaurantName: string;
   location: Location;
   address: string;
+  contact: {
+    phone?: string;
+    email?: string;
+  };
   estimatedCollectionTime: string;
   travelTimeFromPrevious: number;
   order: number;
@@ -396,7 +403,70 @@ export interface DeliveryTrackingDto {
 }
 
 // ============================================================
-// CATERING DRIVER DTOs
+// DRIVER MEAL SESSION DTO (returned by driver-facing endpoints)
+// ============================================================
+
+export interface DriverRestaurantAddress {
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  postcode: string;
+  location?: Location;
+}
+
+export interface DriverRestaurantContact {
+  phone?: string;
+  email?: string;
+}
+
+export interface DriverRestaurantPickup {
+  restaurantId: string;
+  restaurantName: string;
+  address: DriverRestaurantAddress;
+  contact: DriverRestaurantContact;
+  collectionTime: string;
+  itemCount: number;
+  portionCount: number;
+}
+
+export interface DriverDeliveryInfo {
+  address: string;
+  location?: Location;
+  contactName?: string;
+  contactPhone?: string;
+}
+
+export interface DriverMealSessionDto {
+  id: string;
+  sessionName: string;
+  sessionDate: string;
+  eventTime: string;
+
+  deliveryStatus: MealSessionDeliveryStatus;
+  driverName?: string;
+  driverAssignedAt?: string;
+
+  restaurants: DriverRestaurantPickup[];
+  totalPortions: number;
+  totalItems: number;
+
+  delivery: DriverDeliveryInfo;
+
+  specialRequirements?: string;
+  estimatedDeliveryTime?: string;
+
+  pickupStartedAt?: string;
+  outForDeliveryAt?: string;
+  arrivedAtDestinationAt?: string;
+  deliveredAt?: string;
+
+  pickupProofImageUrl?: string;
+  deliveryProofImageUrl?: string;
+  driverNotes?: string;
+}
+
+// ============================================================
+// CATERING DRIVER REQUEST DTOs
 // ============================================================
 
 export interface AcceptMealSessionDto {

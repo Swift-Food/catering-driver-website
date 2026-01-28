@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { User, Loader2, AlertCircle, Map as MapIcon } from "lucide-react";
 import { cateringDriverApi, useDriver } from "@/lib/drivers";
-import type { MealSession } from "@/lib/drivers/types";
+import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import ActiveDeliveryView from "@/components/delivery/ActiveDeliveryView";
 import { getSessionDateLabel, getSessionTimeRange } from "@/components/delivery/sessionUtils";
 
@@ -17,7 +17,7 @@ export default function DeliveryPage() {
   const [driverNames, setDriverNames] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [assignments, setAssignments] = useState<MealSession[]>([]);
+  const [assignments, setAssignments] = useState<DriverMealSessionDto[]>([]);
   const [assignmentsLoading, setAssignmentsLoading] = useState(false);
   const [assignmentsError, setAssignmentsError] = useState<string | null>(null);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
@@ -82,7 +82,7 @@ export default function DeliveryPage() {
   };
 
   const handleSessionUpdate = useCallback(
-    (updated: MealSession) => {
+    (updated: DriverMealSessionDto) => {
       setAssignments((prev) =>
         prev.map((s) => (s.id === updated.id ? updated : s))
       );
@@ -202,7 +202,7 @@ export default function DeliveryPage() {
                     </span>
                     <div className="text-left">
                       <p className="leading-tight">
-                        {s.sessionName || `Session ${s.sessionOrder}`}
+                        {s.sessionName || `Session ${i + 1}`}
                       </p>
                       {(dateLabel || timeRange) && (
                         <p className="text-[9px] font-medium opacity-50 leading-tight mt-0.5">
