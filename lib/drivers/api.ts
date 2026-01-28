@@ -4,6 +4,7 @@ import type {
   AcceptMealSessionDto,
   PickupCompleteDto,
   DeliveryCompleteDto,
+  UpdateDriverNameDto,
 } from "./types";
 
 export const driversApi = {
@@ -100,6 +101,26 @@ export const cateringDriverApi = {
   trackDelivery: async (mealSessionId: string) => {
     const response = await apiClient.get(
       `/catering-driver/track/${mealSessionId}`
+    );
+    return response.data;
+  },
+
+  /** Update the driver name on an assigned meal session */
+  updateDriverName: async (
+    mealSessionId: string,
+    dto: UpdateDriverNameDto
+  ) => {
+    const response = await apiClient.post(
+      `/catering-driver/${mealSessionId}/update-driver-name`,
+      dto
+    );
+    return response.data;
+  },
+
+  /** Get all meal sessions currently assigned to drivers */
+  getAssignedSessions: async () => {
+    const response = await apiClient.get(
+      "/catering-driver/assigned-sessions"
     );
     return response.data;
   },

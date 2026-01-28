@@ -135,3 +135,8 @@ export interface DeliveryCompleteDto {
   deliveryProofImageUrl: string;
   notes?: string;
 }
+
+export interface UpdateDriverNameDto {
+  driverId?: string;
+  driverName: string;
+}
