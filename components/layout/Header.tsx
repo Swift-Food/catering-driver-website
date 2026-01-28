@@ -32,7 +32,7 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-2 md:gap-4">
-        <div className="hidden lg:flex items-center gap-6 mr-2">
+        {/* <div className="hidden lg:flex items-center gap-6 mr-2">
           <div className="text-right">
             <p className="text-[9px] font-black opacity-30 uppercase tracking-widest text-gray-900 dark:text-gray-100">
               Admin Node
@@ -44,7 +44,7 @@ export function Header() {
           <div className="w-10 h-10 rounded-xl bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
             <Users size={20} />
           </div>
-        </div>
+        </div> */}
 
         {/* Theme Toggle */}
         <button

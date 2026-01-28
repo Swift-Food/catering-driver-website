@@ -29,7 +29,7 @@ export default function DeliverySidebar({
   return (
     <div className="space-y-6">
       {/* Mission Communications */}
-      <div className="bg-surface p-6 rounded-2xl shadow-md border border-border-subtle space-y-6">
+      <div className="bg-surface p-6 rounded-2xl border border-border-subtle space-y-6">
         <h3 className="text-xs font-black uppercase tracking-widest opacity-40">
           Customer Details
         </h3>

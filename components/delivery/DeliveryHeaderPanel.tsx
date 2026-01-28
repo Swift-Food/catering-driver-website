@@ -32,7 +32,7 @@ export default function DeliveryHeaderPanel({
   const earliestPickupTime = getEarliestPickupTime(session);
 
   return (
-    <div className="bg-surface p-6 rounded-2xl shadow-lg border border-border-subtle flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div className="bg-surface p-6 rounded-2xl border border-border-subtle flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
       <div className="flex items-center gap-5">
         <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
           <Package size={24} />
