@@ -2,6 +2,22 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { loadGoogleMapsScript } from "@/lib/google-maps-loader";
+import { useTheme } from "@/lib/theme";
+
+const DARK_STYLES: google.maps.MapTypeStyle[] = [
+  { featureType: "all", elementType: "geometry", stylers: [{ color: "#242f3e" }] },
+  { featureType: "all", elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
+  { featureType: "all", elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#17263c" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#38414e" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#212a37" }] },
+  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#9ca5b3" }] },
+  { featureType: "poi", elementType: "geometry", stylers: [{ color: "#283d6a" }] },
+  { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#263c3f" }] },
+  { featureType: "transit", elementType: "geometry", stylers: [{ color: "#2f3948" }] },
+];
+
+const LIGHT_STYLES: google.maps.MapTypeStyle[] = [];
 
 interface GoogleMapProps {
   latitude: number;
@@ -14,6 +30,7 @@ export default function GoogleMap({
   longitude,
   className = "",
 }: GoogleMapProps) {
+  const { isDarkMode } = useTheme();
   const mapRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
@@ -44,18 +61,7 @@ export default function GoogleMap({
           streetViewControl: false,
           fullscreenControl: false,
           zoomControl: true,
-          styles: [
-            { featureType: "all", elementType: "geometry", stylers: [{ color: "#242f3e" }] },
-            { featureType: "all", elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
-            { featureType: "all", elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
-            { featureType: "water", elementType: "geometry", stylers: [{ color: "#17263c" }] },
-            { featureType: "road", elementType: "geometry", stylers: [{ color: "#38414e" }] },
-            { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#212a37" }] },
-            { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#9ca5b3" }] },
-            { featureType: "poi", elementType: "geometry", stylers: [{ color: "#283d6a" }] },
-            { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#263c3f" }] },
-            { featureType: "transit", elementType: "geometry", stylers: [{ color: "#2f3948" }] },
-          ],
+          styles: isDarkMode ? DARK_STYLES : LIGHT_STYLES,
         });
         mapInstanceRef.current = map;
 
@@ -77,7 +83,7 @@ export default function GoogleMap({
     return () => {
       if (markerRef.current) markerRef.current.setMap(null);
     };
-  }, [latitude, longitude, hasValidCoordinates]);
+  }, [latitude, longitude, hasValidCoordinates, isDarkMode]);
 
   const handleClick = () => {
     window.open(
