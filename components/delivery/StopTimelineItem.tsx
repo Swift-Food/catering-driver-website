@@ -94,7 +94,7 @@ export default function StopTimelineItem({
             <p className="text-[10px] opacity-40 font-medium">{stop.address}</p>
           </div>
           <div className="text-left md:text-right flex flex-col items-start md:items-end">
-            <div className="flex items-center gap-1.5 text-primary opacity-60">
+            <div className="flex items-center gap-1.5 text-primary">
               <Timer size={14} />
               <p className="text-sm font-black uppercase tracking-tighter">
                 {stop.time}
