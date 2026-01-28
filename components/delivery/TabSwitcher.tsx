@@ -16,7 +16,7 @@ export default function TabSwitcher({
       <div className="bg-surface-variant p-1 rounded-xl flex w-fit border border-border-subtle">
         <TabButton
           active={viewMode === "TIMELINE"}
-          label="Mission Path"
+          label="Details"
           onClick={() => onChangeViewMode("TIMELINE")}
         />
         <TabButton

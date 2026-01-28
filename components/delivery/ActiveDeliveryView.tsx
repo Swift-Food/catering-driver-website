@@ -138,6 +138,15 @@ export default function ActiveDeliveryView({
         onStartDelivery={handleStartDelivery}
       />
 
+      {/* Customer details - mobile only, right after header */}
+      <div className="lg:hidden">
+        <DeliverySidebar
+          session={session}
+          totalStops={stops.length}
+          remainingStops={stops.filter((s) => !s.completed).length}
+        />
+      </div>
+
       <div className="grid lg:grid-cols-12 gap-6 items-start">
         <div className="lg:col-span-8 space-y-6">
           <TabSwitcher viewMode={viewMode} onChangeViewMode={setViewMode} />
@@ -203,11 +212,14 @@ export default function ActiveDeliveryView({
           )}
         </div>
 
-        <DeliverySidebar
-          session={session}
-          totalStops={stops.length}
-          remainingStops={stops.filter((s) => !s.completed).length}
-        />
+        {/* Customer details - desktop only, in sidebar */}
+        <div className="hidden lg:block lg:col-span-4">
+          <DeliverySidebar
+            session={session}
+            totalStops={stops.length}
+            remainingStops={stops.filter((s) => !s.completed).length}
+          />
+        </div>
       </div>
     </div>
   );
