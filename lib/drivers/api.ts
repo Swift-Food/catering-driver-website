@@ -139,4 +139,14 @@ export const cateringDriverApi = {
     );
     return response.data;
   },
+
+  /** Upload an image and return the URL */
+  uploadImage: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("upload", file);
+    const response = await apiClient.post<string>("/image-upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  },
 };

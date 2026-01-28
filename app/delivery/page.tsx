@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { User, Loader2, AlertCircle, Map as MapIcon } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { User, Loader2, AlertCircle, Map as MapIcon, Package } from "lucide-react";
 import { cateringDriverApi, useDriver } from "@/lib/drivers";
 import type { MealSession } from "@/lib/drivers/types";
+import ActiveDeliveryView from "@/components/delivery/ActiveDeliveryView";
 
 export default function DeliveryPage() {
   const {
@@ -16,25 +17,43 @@ export default function DeliveryPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [assignments, setAssignments] = useState<MealSession[]>([]);
+  const [assignmentsLoading, setAssignmentsLoading] = useState(false);
+  const [assignmentsError, setAssignmentsError] = useState<string | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
+    null
+  );
 
+  // Fetch assignments when driver is selected
   useEffect(() => {
     if (!selectedDriverName) {
       setAssignments([]);
+      setSelectedSessionId(null);
       return;
     }
 
     const fetchAssignments = async () => {
       try {
-        const data = await cateringDriverApi.getMyAssignments(selectedDriverName);
-        setAssignments(data);
+        setAssignmentsLoading(true);
+        setAssignmentsError(null);
+        const data =
+          await cateringDriverApi.getMyAssignments(selectedDriverName);
+        const sessions = data ?? [];
+        setAssignments(sessions);
+        if (sessions.length > 0) {
+          setSelectedSessionId(sessions[0].id);
+        }
       } catch (err) {
+        setAssignmentsError("Failed to load assignments. Please try again.");
         console.error("Error fetching assignments:", err);
+      } finally {
+        setAssignmentsLoading(false);
       }
     };
 
     fetchAssignments();
   }, [selectedDriverName]);
 
+  // Fetch driver names on mount
   useEffect(() => {
     const fetchDriverNames = async () => {
       try {
@@ -61,6 +80,17 @@ export default function DeliveryPage() {
     setSelectedDriverName(name);
   };
 
+  const handleSessionUpdate = useCallback(
+    (updated: MealSession) => {
+      setAssignments((prev) =>
+        prev.map((s) => (s.id === updated.id ? updated : s))
+      );
+    },
+    []
+  );
+
+  const selectedSession = assignments.find((s) => s.id === selectedSessionId);
+
   // Show loading while checking for persisted driver
   if (driverLoading) {
     return (
@@ -71,36 +101,104 @@ export default function DeliveryPage() {
         <h2 className="text-2xl font-black mb-2 text-gray-900 dark:text-gray-100">
           Loading
         </h2>
-        <p className="text-sm text-text-muted max-w-sm">
-          Please wait...
-        </p>
+        <p className="text-sm text-text-muted max-w-sm">Please wait...</p>
       </div>
     );
   }
 
-  // Show routes view when driver is selected
+  // Show delivery view when driver is selected
   if (selectedDriverName) {
-    return (
-      <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
-        <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
-          <MapIcon size={40} />
+    // Loading assignments
+    if (assignmentsLoading) {
+      return (
+        <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
+          <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
+            <Loader2 size={40} className="animate-spin" />
+          </div>
+          <h2 className="text-2xl font-black mb-2 text-gray-900 dark:text-gray-100">
+            Loading Assignments
+          </h2>
+          <p className="text-sm text-text-muted max-w-sm">
+            Fetching routes for {selectedDriverName}...
+          </p>
         </div>
-        <h2 className="text-2xl font-black mb-2 text-gray-900 dark:text-gray-100">
-          Routes
-        </h2>
-        <p className="text-sm text-text-muted mb-8 max-w-sm">
-          Route details for{" "}
-          <span className="font-bold text-gray-900 dark:text-gray-100">
-            {selectedDriverName}
-          </span>{" "}
-          will appear here.
-        </p>
-        <button
-          onClick={clearSelectedDriver}
-          className="text-[10px] text-primary font-bold hover:underline"
-        >
-          Switch Driver
-        </button>
+      );
+    }
+
+    // Error loading assignments
+    if (assignmentsError) {
+      return (
+        <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
+          <div className="w-20 h-20 bg-status-red/10 rounded-2xl flex items-center justify-center text-status-red mb-6">
+            <AlertCircle size={40} />
+          </div>
+          <h2 className="text-2xl font-black mb-2 text-gray-900 dark:text-gray-100">
+            Error Loading Assignments
+          </h2>
+          <p className="text-sm text-text-muted mb-8 max-w-sm">
+            {assignmentsError}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      );
+    }
+
+    // No assignments
+    if (assignments.length === 0) {
+      return (
+        <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
+          <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
+            <MapIcon size={40} />
+          </div>
+          <h2 className="text-2xl font-black mb-2 text-gray-900 dark:text-gray-100">
+            No Active Routes
+          </h2>
+          <p className="text-sm text-text-muted max-w-sm">
+            No assignments found for{" "}
+            <span className="font-bold text-gray-900 dark:text-gray-100">
+              {selectedDriverName}
+            </span>
+            . Check back when routes are assigned.
+          </p>
+        </div>
+      );
+    }
+
+    // Show delivery view
+    return (
+      <div className="space-y-6">
+        {/* Session selector for multiple assignments */}
+        {assignments.length > 1 && (
+          <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
+            {assignments.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setSelectedSessionId(s.id)}
+                className={`flex-shrink-0 flex items-center gap-2 px-4 py-3 rounded-xl border text-xs font-bold transition-all ${
+                  selectedSessionId === s.id
+                    ? "bg-primary/10 border-primary/20 text-primary"
+                    : "bg-surface border-border-subtle hover:border-primary/20"
+                }`}
+              >
+                <Package size={14} />
+                {s.sessionName || `Session ${s.sessionOrder}`}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {selectedSession && (
+          <ActiveDeliveryView
+            key={selectedSession.id}
+            session={selectedSession}
+            onSessionUpdate={handleSessionUpdate}
+          />
+        )}
       </div>
     );
   }

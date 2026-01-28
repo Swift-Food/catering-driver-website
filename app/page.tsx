@@ -150,9 +150,6 @@ export default function HomePage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-black">Pending Assignment</h2>
-            <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-500 text-[8px] font-black uppercase tracking-widest border border-amber-500/20">
-              Requires Driver
-            </span>
           </div>
           {!loadingAvailable && (
             <span className="text-xs font-bold opacity-40 uppercase tracking-widest">
@@ -196,7 +193,7 @@ export default function HomePage() {
               <div className="col-span-full py-12 text-center opacity-30 bg-surface rounded-3xl border border-border-subtle">
                 <AlertCircle size={48} className="mx-auto mb-4" />
                 <p className="font-bold text-sm uppercase tracking-widest">
-                  Clear Queue: All tasks assigned
+                  No Assignments Available: All tasks assigned
                 </p>
               </div>
             )}
@@ -204,10 +201,10 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Upcoming Logistics (Assigned) Section */}
+      {/* Upcoming Deliveries (Assigned) Section */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-black">Upcoming Logistics</h2>
+          <h2 className="text-xl font-black">Upcoming Deliveries</h2>
           {!loadingAssigned && (
             <span className="text-xs font-bold opacity-40 uppercase tracking-widest">
               {assignedSessions.length} Upcoming
