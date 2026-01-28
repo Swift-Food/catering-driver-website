@@ -266,10 +266,20 @@ export default function SessionDetailModal({
                     <div className="w-7 h-7 shrink-0 rounded-lg bg-surface flex items-center justify-center text-primary border border-border-subtle mt-0.5">
                       <Store size={14} />
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-black uppercase tracking-widest truncate">
-                        {restaurant.restaurantName}
-                      </p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-[10px] font-black uppercase tracking-widest truncate">
+                          {restaurant.restaurantName}
+                        </p>
+                        {restaurant.collectionTime && (
+                          <div className="flex items-center gap-1 shrink-0 text-status-blue">
+                            <Clock size={10} />
+                            <span className="text-[9px] font-black uppercase tracking-wider">
+                              {formatCollectionTime(restaurant.collectionTime)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                       <p className="text-[9px] font-bold opacity-50 uppercase tracking-wider">
                         {restaurant.address.addressLine1}
                         {restaurant.address.addressLine2 ? `, ${restaurant.address.addressLine2}` : ""}
@@ -338,6 +348,20 @@ export default function SessionDetailModal({
       </div>
     </div>
   );
+}
+
+function formatCollectionTime(dateStr: string): string {
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } catch {
+    return dateStr;
+  }
 }
 
 function CompactInfo({
