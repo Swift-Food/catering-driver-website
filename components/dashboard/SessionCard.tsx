@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Clock,
   Package,
@@ -32,6 +32,18 @@ export default function SessionCard({
   const [inputValue, setInputValue] = useState(existingDriver);
   const [isFocused, setIsFocused] = useState(false);
   const [saving, setSaving] = useState(false);
+  const driverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isFocused) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (driverRef.current && !driverRef.current.contains(e.target as Node)) {
+        handleCancel();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isFocused]);
 
   const restaurantName = session.sessionName || "Meal Session";
   const portionCount = session.totalDeliveryPortions;
@@ -190,7 +202,7 @@ export default function SessionCard({
               )}
             </div>
 
-            <div className="relative">
+            <div ref={driverRef} className="relative">
               <div className="flex items-center gap-2">
                 {isAssigned && (
                   <UserCheck
