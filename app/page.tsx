@@ -10,7 +10,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { cateringDriverApi } from "@/lib/drivers";
-import type { DriverMealSessionDto } from "@/lib/drivers/types";
+import type { DriverMealSessionDto, DeliveryAnalyticsDto } from "@/lib/drivers/types";
 import MetricBox from "@/components/dashboard/MetricBox";
 import SessionCard from "@/components/dashboard/SessionCard";
 import SessionDetailModal from "@/components/dashboard/SessionDetailModal";
@@ -18,6 +18,7 @@ import SessionDetailModal from "@/components/dashboard/SessionDetailModal";
 export default function HomePage() {
   const [availableSessions, setAvailableSessions] = useState<DriverMealSessionDto[]>([]);
   const [assignedSessions, setAssignedSessions] = useState<DriverMealSessionDto[]>([]);
+  const [analytics, setAnalytics] = useState<DeliveryAnalyticsDto | null>(null);
   const [loadingAvailable, setLoadingAvailable] = useState(true);
   const [loadingAssigned, setLoadingAssigned] = useState(true);
   const [errorAvailable, setErrorAvailable] = useState<string | null>(null);
@@ -25,6 +26,15 @@ export default function HomePage() {
   const [selectedSession, setSelectedSession] = useState<DriverMealSessionDto | null>(
     null
   );
+
+  const fetchAnalytics = useCallback(async () => {
+    try {
+      const data = await cateringDriverApi.getAnalytics();
+      setAnalytics(data);
+    } catch (err) {
+      console.error("Failed to fetch analytics:", err);
+    }
+  }, []);
 
   const fetchAvailable = useCallback(async () => {
     try {
@@ -57,12 +67,14 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    fetchAnalytics();
     fetchAvailable();
     fetchAssigned();
-  }, [fetchAvailable, fetchAssigned]);
+  }, [fetchAnalytics, fetchAvailable, fetchAssigned]);
 
   const handleAccept = async (mealSessionId: string, driverName: string) => {
     await cateringDriverApi.acceptMealSession(mealSessionId, { driverName });
+    fetchAnalytics();
     fetchAvailable();
     fetchAssigned();
   };
@@ -81,6 +93,7 @@ export default function HomePage() {
   ) => {
     await cateringDriverApi.acceptMealSession(session.id, { driverName });
     setSelectedSession(null);
+    fetchAnalytics();
     fetchAvailable();
     fetchAssigned();
   };
@@ -94,9 +107,9 @@ export default function HomePage() {
     fetchAssigned();
   };
 
-  const pendingCount = 3;
-  const activeCount = 1;
-  const completedCount = 12;
+  const pendingCount = analytics?.pending ?? 0;
+  const activeCount = analytics?.active ?? 0;
+  const completedCount = analytics?.completed ?? 0;
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">

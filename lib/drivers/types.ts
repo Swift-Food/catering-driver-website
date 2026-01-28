@@ -403,6 +403,16 @@ export interface DeliveryTrackingDto {
 }
 
 // ============================================================
+// ANALYTICS DTO
+// ============================================================
+
+export interface DeliveryAnalyticsDto {
+  pending: number;
+  active: number;
+  completed: number;
+}
+
+// ============================================================
 // DRIVER MEAL SESSION DTO (returned by driver-facing endpoints)
 // ============================================================
 

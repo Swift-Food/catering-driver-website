@@ -113,14 +113,14 @@ export default function SessionDetailModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-6">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-2">
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-lg bg-surface rounded-3xl shadow-2xl animate-in zoom-in-95 duration-200 border border-white/10 max-h-[90vh] flex flex-col">
+      <div className="relative w-[95vw] max-w-lg bg-surface rounded-3xl shadow-2xl animate-in zoom-in-95 duration-200 border border-white/10 max-h-[80vh] flex flex-col p-4 md:p-8">
         {/* Fixed Header */}
-        <div className="flex justify-between items-start p-8 pb-0 shrink-0">
+        <div className="flex justify-between items-start pb-4 shrink-0">
           <div>
             <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">
               {isPending ? "Incoming Session Invitation" : "Session Details"}
@@ -136,7 +136,7 @@ export default function SessionDetailModal({
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto hide-scrollbar p-8 pt-6 space-y-6">
+        <div className="overflow-y-auto hide-scrollbar space-y-6">
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
             <CompactInfo

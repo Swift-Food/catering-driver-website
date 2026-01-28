@@ -2,6 +2,7 @@ import { apiClient } from "@/lib/auth";
 import type {
   DriverUser,
   DriverMealSessionDto,
+  DeliveryAnalyticsDto,
   CollectionRouteDto,
   DeliveryTrackingDto,
   AcceptMealSessionDto,
@@ -98,6 +99,14 @@ export const cateringDriverApi = {
   ): Promise<CollectionRouteDto> => {
     const response = await apiClient.get<CollectionRouteDto>(
       `/catering-driver/${mealSessionId}/route`
+    );
+    return response.data;
+  },
+
+  /** Get delivery analytics (pending, active, completed counts) */
+  getAnalytics: async (): Promise<DeliveryAnalyticsDto> => {
+    const response = await apiClient.get<DeliveryAnalyticsDto>(
+      "/catering-driver/analytics"
     );
     return response.data;
   },
