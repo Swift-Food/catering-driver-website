@@ -119,9 +119,8 @@ export interface DriverUser {
 // ============================================================
 
 export interface AcceptMealSessionDto {
-  driverId: string;
+  driverId?: string;
   driverName: string;
-  deliveryMethod: CateringDeliveryMethod;
 }
 
 export interface PickupCompleteDto {

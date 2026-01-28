@@ -11,9 +11,10 @@ type MealSession = any;
 
 interface SessionCardProps {
   session: MealSession;
+  onClick?: () => void;
 }
 
-export default function SessionCard({ session }: SessionCardProps) {
+export default function SessionCard({ session, onClick }: SessionCardProps) {
   const restaurantName =
     session.restaurantName ||
     session.restaurant?.name ||
@@ -50,7 +51,10 @@ export default function SessionCard({ session }: SessionCardProps) {
   const fee = session.fee || session.deliveryFee || session.driverFee || 0;
 
   return (
-    <div className="w-full text-left bg-surface p-6 rounded-2xl shadow-sm border border-border-subtle transition-all duration-300 relative flex flex-col h-full group hover:border-primary/40">
+    <div
+      onClick={onClick}
+      className={`w-full text-left bg-surface p-6 rounded-2xl shadow-sm border border-border-subtle transition-all duration-300 relative flex flex-col h-full group hover:border-primary/40${onClick ? " cursor-pointer" : ""}`}
+    >
       <div className="flex-1">
         <div className="flex justify-between items-start mb-6">
           <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">

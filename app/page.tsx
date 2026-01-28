@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   Activity,
   Clock,
@@ -12,29 +12,71 @@ import {
 import { cateringDriverApi } from "@/lib/drivers";
 import MetricBox from "@/components/dashboard/MetricBox";
 import SessionCard from "@/components/dashboard/SessionCard";
+import AssignedSessionCard from "@/components/dashboard/AssignedSessionCard";
+import AcceptSessionModal from "@/components/dashboard/AcceptSessionModal";
 
 export default function HomePage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [sessions, setSessions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [availableSessions, setAvailableSessions] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [assignedSessions, setAssignedSessions] = useState<any[]>([]);
+  const [loadingAvailable, setLoadingAvailable] = useState(true);
+  const [loadingAssigned, setLoadingAssigned] = useState(true);
+  const [errorAvailable, setErrorAvailable] = useState<string | null>(null);
+  const [errorAssigned, setErrorAssigned] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [selectedSession, setSelectedSession] = useState<any | null>(null);
+
+  const fetchAvailable = useCallback(async () => {
+    try {
+      setLoadingAvailable(true);
+      setErrorAvailable(null);
+      const data = await cateringDriverApi.getAvailableSessions();
+      setAvailableSessions(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to fetch available sessions:", err);
+      setErrorAvailable("Failed to load sessions");
+    } finally {
+      setLoadingAvailable(false);
+    }
+  }, []);
+
+  const fetchAssigned = useCallback(async () => {
+    try {
+      setLoadingAssigned(true);
+      setErrorAssigned(null);
+      const data = await cateringDriverApi.getAssignedSessions();
+      setAssignedSessions(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to fetch assigned sessions:", err);
+      setErrorAssigned("Failed to load assigned sessions");
+    } finally {
+      setLoadingAssigned(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchSessions = async () => {
-      try {
-        setLoading(true);
-        const data = await cateringDriverApi.getAvailableSessions();
-        setSessions(Array.isArray(data) ? data : []);
-      } catch (err) {
-        console.error("Failed to fetch available sessions:", err);
-        setError("Failed to load sessions");
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchAvailable();
+    fetchAssigned();
+  }, [fetchAvailable, fetchAssigned]);
 
-    fetchSessions();
-  }, []);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleAccept = async (session: any, driverName: string) => {
+    const sessionId = session.id || session._id;
+    await cateringDriverApi.acceptMealSession(sessionId, { driverName });
+    setSelectedSession(null);
+    // Refresh both lists
+    fetchAvailable();
+    fetchAssigned();
+  };
+
+  const handleUpdateDriverName = async (
+    mealSessionId: string,
+    driverName: string
+  ) => {
+    await cateringDriverApi.updateDriverName(mealSessionId, { driverName });
+    fetchAssigned();
+  };
 
   const pendingCount = 3;
   const activeCount = 1;
@@ -87,24 +129,24 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Available Sessions Section */}
+      {/* Available Sessions (Pending) Section */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-black">Available Sessions</h2>
+            <h2 className="text-xl font-black">Pending Assignment</h2>
             <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-500 text-[8px] font-black uppercase tracking-widest border border-amber-500/20">
-              Awaiting Driver
+              Requires Driver
             </span>
           </div>
-          {!loading && (
+          {!loadingAvailable && (
             <span className="text-xs font-bold opacity-40 uppercase tracking-widest">
-              {sessions.length} Available
+              {availableSessions.length} Available
             </span>
           )}
         </div>
 
-        {loading ? (
-          <div className="col-span-full py-16 text-center bg-surface rounded-3xl border border-border-subtle">
+        {loadingAvailable ? (
+          <div className="py-16 text-center bg-surface rounded-3xl border border-border-subtle">
             <Loader2
               size={32}
               className="mx-auto mb-4 animate-spin text-primary"
@@ -113,33 +155,96 @@ export default function HomePage() {
               Loading sessions...
             </p>
           </div>
-        ) : error ? (
-          <div className="col-span-full py-12 text-center bg-surface rounded-3xl border border-border-subtle">
+        ) : errorAvailable ? (
+          <div className="py-12 text-center bg-surface rounded-3xl border border-border-subtle">
             <AlertCircle
               size={48}
               className="mx-auto mb-4 text-status-red opacity-60"
             />
             <p className="font-bold text-sm uppercase tracking-widest opacity-40">
-              {error}
+              {errorAvailable}
             </p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sessions.length > 0 ? (
-              sessions.map((session) => (
-                <SessionCard key={session.id || session._id} session={session} />
+            {availableSessions.length > 0 ? (
+              availableSessions.map((session) => (
+                <SessionCard
+                  key={session.id || session._id}
+                  session={session}
+                  onClick={() => setSelectedSession(session)}
+                />
               ))
             ) : (
               <div className="col-span-full py-12 text-center opacity-30 bg-surface rounded-3xl border border-border-subtle">
                 <AlertCircle size={48} className="mx-auto mb-4" />
                 <p className="font-bold text-sm uppercase tracking-widest">
-                  No sessions available at this time
+                  Clear Queue: All tasks assigned
                 </p>
               </div>
             )}
           </div>
         )}
       </div>
+
+      {/* Upcoming Logistics (Assigned) Section */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-black">Upcoming Logistics</h2>
+          {!loadingAssigned && (
+            <span className="text-xs font-bold opacity-40 uppercase tracking-widest">
+              {assignedSessions.length} Dispatched
+            </span>
+          )}
+        </div>
+
+        {loadingAssigned ? (
+          <div className="py-16 text-center bg-surface rounded-3xl border border-border-subtle">
+            <Loader2
+              size={32}
+              className="mx-auto mb-4 animate-spin text-primary"
+            />
+            <p className="font-bold text-sm uppercase tracking-widest opacity-40">
+              Loading assignments...
+            </p>
+          </div>
+        ) : errorAssigned ? (
+          <div className="py-12 text-center bg-surface rounded-3xl border border-border-subtle">
+            <AlertCircle
+              size={48}
+              className="mx-auto mb-4 text-status-red opacity-60"
+            />
+            <p className="font-bold text-sm uppercase tracking-widest opacity-40">
+              {errorAssigned}
+            </p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {assignedSessions.length > 0 ? (
+              assignedSessions.map((session) => (
+                <AssignedSessionCard
+                  key={session.id || session._id}
+                  session={session}
+                  onUpdateDriverName={handleUpdateDriverName}
+                />
+              ))
+            ) : (
+              <div className="col-span-full py-12 text-center opacity-30 border-2 border-dashed border-border-subtle rounded-3xl">
+                <p className="font-bold text-sm uppercase tracking-widest">
+                  No scheduled departures
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Accept Session Modal */}
+      <AcceptSessionModal
+        session={selectedSession}
+        onClose={() => setSelectedSession(null)}
+        onAccept={handleAccept}
+      />
     </div>
   );
 }
