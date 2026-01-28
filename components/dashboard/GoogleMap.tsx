@@ -79,7 +79,6 @@ export default function GoogleMap({ pins, className = "" }: GoogleMapProps) {
 
         const bounds = new google.maps.LatLngBounds();
         const infoWindow = new google.maps.InfoWindow();
-        let pinnedMarker: google.maps.Marker | null = null;
 
         const newMarkers = validPins.map((pin) => {
           const position = { lat: pin.latitude, lng: pin.longitude };
@@ -94,13 +93,7 @@ export default function GoogleMap({ pins, className = "" }: GoogleMapProps) {
 
           if (pin.label || pin.address) {
             const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${pin.latitude},${pin.longitude}`;
-            const hoverContent = `
-              <div style="padding:4px 2px;min-width:140px;">
-                ${pin.label ? `<div style="font-weight:700;font-size:12px;color:#111;margin-bottom:2px;">${pin.label}</div>` : ""}
-                ${pin.address ? `<div style="font-size:11px;color:#666;">${pin.address}</div>` : ""}
-              </div>
-            `;
-            const clickContent = `
+            const content = `
               <div style="padding:4px 2px;min-width:140px;">
                 ${pin.label ? `<div style="font-weight:700;font-size:12px;color:#111;margin-bottom:2px;">${pin.label}</div>` : ""}
                 ${pin.address ? `<div style="font-size:11px;color:#666;margin-bottom:6px;">${pin.address}</div>` : ""}
@@ -109,31 +102,14 @@ export default function GoogleMap({ pins, className = "" }: GoogleMapProps) {
             `;
 
             marker.addListener("click", () => {
-              pinnedMarker = marker;
-              infoWindow.setContent(clickContent);
+              infoWindow.setContent(content);
               infoWindow.open(map, marker);
-            });
-
-            marker.addListener("mouseover", () => {
-              if (pinnedMarker !== marker) {
-                infoWindow.setContent(hoverContent);
-                infoWindow.open(map, marker);
-              }
-            });
-
-            marker.addListener("mouseout", () => {
-              if (pinnedMarker !== marker) {
-                infoWindow.close();
-              }
             });
           }
 
           return marker;
         });
 
-        infoWindow.addListener("closeclick", () => {
-          pinnedMarker = null;
-        });
 
         markersRef.current = newMarkers;
 
