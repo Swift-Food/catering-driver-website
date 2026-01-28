@@ -85,17 +85,6 @@ export default function StopTimelineItem({
               >
                 {stop.type === "PICKUP" ? "Collection" : "Final Delivery"}
               </h3>
-              {stop.prepStatus && !isCompleted && (
-                <span
-                  className={`text-[8px] font-black px-1.5 py-0.5 rounded border uppercase tracking-widest ${
-                    stop.prepStatus === "READY"
-                      ? "bg-status-green/10 text-status-green border-status-green/20"
-                      : "bg-status-amber/10 text-status-amber border-status-amber/20"
-                  }`}
-                >
-                  {stop.prepStatus}
-                </span>
-              )}
             </div>
             <p className="text-primary font-bold text-sm">
               {stop.locationName}
@@ -104,8 +93,8 @@ export default function StopTimelineItem({
           </div>
           <div className="text-left md:text-right flex flex-col items-start md:items-end">
             <div className="flex items-center gap-1.5 text-primary opacity-60">
-              <Timer size={12} />
-              <p className="text-[10px] font-black uppercase tracking-tighter">
+              <Timer size={14} />
+              <p className="text-sm font-black uppercase tracking-tighter">
                 {stop.time}
               </p>
             </div>

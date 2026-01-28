@@ -36,12 +36,12 @@ export default function DeliverySidebar({
         <div className="space-y-4">
           <SidebarItem
             name={customerName}
-            role="Customer Contact"
+            role="Customer Name"
             icon={<User size={14} />}
           />
           <SidebarItem
             name={eventTime}
-            role="Target Delivery"
+            role="Target Delivery Time"
             icon={<Clock size={14} />}
           />
           <SidebarItem

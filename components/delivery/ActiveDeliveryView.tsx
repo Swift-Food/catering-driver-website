@@ -175,14 +175,32 @@ export default function ActiveDeliveryView({
               </div>
             </div>
           ) : (
-            <div className="h-[500px] w-full rounded-2xl overflow-hidden border border-border-subtle shadow-inner">
-              {mapPins.length > 0 ? (
-                <GoogleMap pins={mapPins} className="h-full" />
-              ) : (
-                <div className="h-full w-full bg-surface-variant flex items-center justify-center">
-                  <p className="text-text-muted text-sm font-bold">
-                    No location data available
-                  </p>
+            <div>
+              <div className="h-[500px] w-full rounded-2xl overflow-hidden border border-border-subtle shadow-inner">
+                {mapPins.length > 0 ? (
+                  <GoogleMap pins={mapPins} className="h-full" />
+                ) : (
+                  <div className="h-full w-full bg-surface-variant flex items-center justify-center">
+                    <p className="text-text-muted text-sm font-bold">
+                      No location data available
+                    </p>
+                  </div>
+                )}
+              </div>
+              {mapPins.length > 0 && (
+                <div className="flex items-center gap-4 mt-2 px-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-pink-500" />
+                    <span className="text-[9px] font-bold uppercase tracking-widest opacity-50">
+                      Pickup
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                    <span className="text-[9px] font-bold uppercase tracking-widest opacity-50">
+                      Dropoff
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
