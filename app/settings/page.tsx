@@ -24,7 +24,7 @@ function OptionItem({
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center justify-between p-6 bg-surface rounded-3xl border border-border-subtle shadow-sm hover:shadow-md transition-all group"
+      className="w-full flex items-center justify-between p-6 bg-surface rounded-3xl border border-border-subtle shadow-sm transition-all group"
     >
       <div className="flex items-center gap-5">
         <div className="w-12 h-12 rounded-xl bg-surface-variant flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
