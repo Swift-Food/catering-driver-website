@@ -18,6 +18,7 @@ interface StopTimelineItemProps {
   index: number;
   isExpanded: boolean;
   isSelectable: boolean;
+  isLocked?: boolean;
   photoUrl?: string;
   isUploading: boolean;
   onSelect: () => void;
@@ -31,6 +32,7 @@ export default function StopTimelineItem({
   index,
   isExpanded,
   isSelectable,
+  isLocked,
   photoUrl,
   isUploading,
   onSelect,
@@ -54,7 +56,7 @@ export default function StopTimelineItem({
         isExpanded
           ? "bg-primary/5 border-primary/20 shadow-sm"
           : "border-transparent hover:bg-surface-variant"
-      } ${!isSelectable && !isCompleted ? "opacity-30" : "cursor-pointer"}`}
+      } ${isLocked && !isCompleted ? "opacity-30" : "cursor-pointer"}`}
     >
       {/* Step Number / Check */}
       <div
@@ -167,7 +169,7 @@ export default function StopTimelineItem({
               ) : (
                 <div className="space-y-4 text-center py-4">
                   <p className="text-[9px] font-black uppercase tracking-widest opacity-30">
-                    Recipient Node
+                    Recipient
                   </p>
                   <p className="font-black text-sm">{stop.contactName}</p>
                   <div className="flex gap-2">

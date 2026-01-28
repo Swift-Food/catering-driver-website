@@ -45,12 +45,18 @@ export default function ActiveDeliveryView({
   const pickupStops = stops.filter((s) => s.type === "PICKUP");
   const allPickupsCompleted = pickupStops.every((s) => s.completed);
 
+  const deliveryStarted =
+    session.deliveryStatus !== "pending" &&
+    session.deliveryStatus !== "finding_driver" &&
+    session.deliveryStatus !== "driver_assigned";
+
   // Determine active stop
-  const activeId =
-    expandedStopId ||
-    (allPickupsCompleted
-      ? stops.find((s) => s.type === "DROPOFF" && !s.completed)?.id
-      : pickupStops.find((s) => !s.completed)?.id);
+  const activeId = deliveryStarted
+    ? expandedStopId ||
+      (allPickupsCompleted
+        ? stops.find((s) => s.type === "DROPOFF" && !s.completed)?.id
+        : pickupStops.find((s) => !s.completed)?.id)
+    : null;
 
   // Map pins
   const mapPins = useMemo(() => deriveMapPins(session), [session]);
@@ -159,6 +165,7 @@ export default function ActiveDeliveryView({
               <div className="space-y-4">
                 {stops.map((stop, index) => {
                   const isSelectable =
+                    deliveryStarted &&
                     !stop.completed &&
                     (stop.type === "PICKUP" || allPickupsCompleted);
 
@@ -169,6 +176,7 @@ export default function ActiveDeliveryView({
                       index={index}
                       isExpanded={activeId === stop.id}
                       isSelectable={isSelectable}
+                      isLocked={deliveryStarted && stop.type === "DROPOFF" && !allPickupsCompleted}
                       photoUrl={stopPhotos[stop.id]}
                       isUploading={uploadingStopId === stop.id}
                       onSelect={() => setExpandedStopId(stop.id)}
