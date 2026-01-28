@@ -88,6 +88,14 @@ export const cateringDriverApi = {
     return response.data;
   },
 
+  /** Get all driver names with active (non-delivered) orders */
+  getActiveDriverNames: async (): Promise<string[]> => {
+    const response = await apiClient.get<string[]>(
+      "/catering-driver/active-driver-names"
+    );
+    return response.data;
+  },
+
   /** Track delivery status (public endpoint for customers) */
   trackDelivery: async (mealSessionId: string) => {
     const response = await apiClient.get(
