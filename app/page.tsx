@@ -85,6 +85,15 @@ export default function HomePage() {
     fetchAssigned();
   };
 
+  const handleUpdateDriverNameFromModal = async (
+    session: MealSession,
+    driverName: string
+  ) => {
+    await cateringDriverApi.updateDriverName(session.id, { driverName });
+    setSelectedSession(null);
+    fetchAssigned();
+  };
+
   const pendingCount = 3;
   const activeCount = 1;
   const completedCount = 12;
@@ -253,6 +262,7 @@ export default function HomePage() {
         session={selectedSession}
         onClose={() => setSelectedSession(null)}
         onAccept={handleAcceptFromModal}
+        onUpdateDriverName={handleUpdateDriverNameFromModal}
       />
     </div>
   );

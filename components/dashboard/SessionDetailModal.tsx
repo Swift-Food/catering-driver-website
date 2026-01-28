@@ -3,17 +3,20 @@
 import { useState } from "react";
 import { X, MapPin, Package, Clock, Store, Loader2, UserCheck } from "lucide-react";
 import type { MealSession, MealSessionDeliveryStatus } from "@/lib/drivers/types";
+import GoogleMap from "@/components/dashboard/GoogleMap";
 
 interface SessionDetailModalProps {
   session: MealSession | null;
   onClose: () => void;
   onAccept: (session: MealSession, driverName: string) => Promise<void>;
+  onUpdateDriverName?: (session: MealSession, driverName: string) => Promise<void>;
 }
 
 export default function SessionDetailModal({
   session,
   onClose,
   onAccept,
+  onUpdateDriverName,
 }: SessionDetailModalProps) {
   const [driverName, setDriverName] = useState("");
   const [accepting, setAccepting] = useState(false);
@@ -142,14 +145,15 @@ export default function SessionDetailModal({
                 <p className="text-[10px] font-black uppercase tracking-widest truncate">
                   {dropoffAddress}
                 </p>
-                {dropoffLocation && (
-                  <p className="text-[9px] font-bold opacity-40 tracking-wider">
-                    {dropoffLocation.latitude.toFixed(4)},{" "}
-                    {dropoffLocation.longitude.toFixed(4)}
-                  </p>
-                )}
               </div>
             </div>
+            {dropoffLocation && (
+              <GoogleMap
+                latitude={dropoffLocation.latitude}
+                longitude={dropoffLocation.longitude}
+                className="mt-3 h-[180px] border border-border-subtle"
+              />
+            )}
           </div>
         )}
 
@@ -190,26 +194,59 @@ export default function SessionDetailModal({
           </>
         ) : (
           <>
-            {session.driverName && (
-              <div className="mb-6">
-                <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-3 px-1">
-                  Assigned Driver
-                </p>
-                <div className="flex items-center gap-2 bg-surface-variant p-3 rounded-xl border border-border-subtle text-status-green">
-                  <UserCheck size={14} />
-                  <span className="text-[10px] font-black uppercase tracking-widest">
-                    {session.driverName}
-                  </span>
-                </div>
+            <div className="mb-6">
+              <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-2 px-1">
+                Assigned Driver
+              </p>
+              <div className="relative flex items-center">
+                <input
+                  type="text"
+                  placeholder="Enter driver name..."
+                  value={driverName || session.driverName || ""}
+                  onChange={(e) => setDriverName(e.target.value)}
+                  className="w-full bg-surface-variant border border-border-subtle focus:border-primary/50 focus:ring-4 focus:ring-primary/5 rounded-xl py-3 px-4 pr-10 text-[11px] font-bold outline-none transition-all placeholder:text-gray-400"
+                />
+                <UserCheck
+                  size={14}
+                  className="absolute right-4 text-status-green pointer-events-none"
+                />
               </div>
-            )}
+            </div>
 
-            <button
-              onClick={onClose}
-              className="w-full py-4 rounded-xl bg-surface-variant border border-border-subtle font-bold text-xs uppercase tracking-widest hover:border-primary/30 transition-all"
-            >
-              Close
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={onClose}
+                className="flex-1 py-4 rounded-xl bg-surface-variant border border-border-subtle font-bold text-xs uppercase tracking-widest hover:border-primary/30 transition-all"
+              >
+                Close
+              </button>
+              {onUpdateDriverName && (
+                <button
+                  onClick={async () => {
+                    const name = driverName.trim() || session.driverName || "";
+                    if (!name || name === session.driverName) return;
+                    setAccepting(true);
+                    try {
+                      await onUpdateDriverName(session, name);
+                    } finally {
+                      setAccepting(false);
+                    }
+                  }}
+                  disabled={
+                    accepting ||
+                    !(driverName.trim()) ||
+                    driverName.trim() === (session.driverName || "")
+                  }
+                  className="flex-[2] py-4 rounded-xl bg-primary text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-primary/20 disabled:opacity-30 disabled:grayscale transition-all hover:translate-y-[-1px] active:scale-[0.98] flex items-center justify-center gap-2"
+                >
+                  {accepting ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    "Update Driver"
+                  )}
+                </button>
+              )}
+            </div>
           </>
         )}
       </div>
