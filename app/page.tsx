@@ -101,15 +101,15 @@ export default function HomePage() {
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
       {/* Stats Section */}
-      <div className="bg-surface p-8 rounded-3xl shadow-lg border border-border-subtle relative overflow-hidden group">
+      <div className="bg-surface p-4 md:p-6 rounded-xl md:rounded-2xl shadow-sm border border-border-subtle relative overflow-hidden group">
         <div className="relative z-10 flex flex-col h-full">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/10 p-2.5 rounded-xl text-primary border border-primary/20">
-                <Activity size={20} strokeWidth={2.5} />
+          <div className="flex items-center justify-between mb-4 md:mb-5">
+            <div className="flex items-center gap-2.5">
+              <div className="bg-primary/10 p-2 rounded-lg text-primary border border-primary/20">
+                <Activity size={18} strokeWidth={2.5} />
               </div>
               <div>
-                <h2 className="text-lg font-black tracking-tight">
+                <h2 className="text-base font-black tracking-tight">
                   Analytics
                 </h2>
                 <p className="text-[10px] font-black uppercase tracking-[0.15em] opacity-40">
@@ -119,7 +119,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-3 md:gap-5">
             <MetricBox
               label="Pending"
               value={pendingCount.toString().padStart(2, "0")}
