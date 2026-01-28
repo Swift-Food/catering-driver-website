@@ -127,29 +127,47 @@ function StartDeliveryButton({ onStart }: { onStart: () => Promise<void> }) {
   );
 }
 
+function parseCollectionTime(
+  timeStr: string,
+  sessionDate?: string | null
+): Date | null {
+  // Try parsing as-is (full ISO date string)
+  const d = new Date(timeStr);
+  if (!isNaN(d.getTime())) return d;
+
+  // Try combining with session date (for time-only strings like "10:30" or "10:30 AM")
+  if (sessionDate) {
+    const datePrefix = sessionDate.split("T")[0];
+    const combined = new Date(`${datePrefix}T${timeStr}`);
+    if (!isNaN(combined.getTime())) return combined;
+  }
+
+  return null;
+}
+
 function getEarliestPickupTime(session: MealSession): string {
   const times: Date[] = [];
 
   // Check per-restaurant collection times
   if (session.restaurantCollectionTimes) {
     for (const t of Object.values(session.restaurantCollectionTimes)) {
-      const d = new Date(t);
-      if (!isNaN(d.getTime())) times.push(d);
+      const d = parseCollectionTime(t, session.sessionDate);
+      if (d) times.push(d);
     }
   }
 
   // Check per-order-item collection times
   for (const item of session.orderItems) {
     if (item.collectionTime) {
-      const d = new Date(item.collectionTime);
-      if (!isNaN(d.getTime())) times.push(d);
+      const d = parseCollectionTime(item.collectionTime, session.sessionDate);
+      if (d) times.push(d);
     }
   }
 
   // Fallback to session-level collection time
   if (times.length === 0 && session.collectionTime) {
-    const d = new Date(session.collectionTime);
-    if (!isNaN(d.getTime())) times.push(d);
+    const d = parseCollectionTime(session.collectionTime, session.sessionDate);
+    if (d) times.push(d);
   }
 
   if (times.length === 0) return "N/A";
