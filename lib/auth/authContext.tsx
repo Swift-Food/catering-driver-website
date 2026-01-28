@@ -1,10 +1,5 @@
 "use client";
 
-// =============================================================================
-// WARNING: Authentication is currently BYPASSED for development!
-// See the login() function below for instructions to revert to real auth.
-// =============================================================================
-
 import React, {
   createContext,
   useContext,
@@ -135,57 +130,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     };
   }, [logout]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const login = async (email: string, password: string): Promise<void> => {
     setState((prev) => ({ ...prev, isLoading: true }));
 
-    // =============================================================================
-    // DEV BYPASS: Skip actual authentication and use mock data
-    // Note: 'password' is intentionally unused during dev bypass
-    // TO REVERT: Remove this entire block (lines marked with DEV BYPASS) and
-    // uncomment the "REAL AUTH" block below. Also remove the eslint-disable above.
-    // =============================================================================
-    const mockUser: User = {
-      id: "dev-user-001",
-      email: email || "driver@example.com",
-      firstName: "Dev",
-      lastName: "Driver",
-      driver: {
-        id: "dev-driver-001",
-        email: email || "driver@example.com",
-        firstName: "Dev",
-        lastName: "Driver",
-        createdAt: new Date().toISOString(),
-      },
-    };
-    const mockTokens: TokenPair = {
-      access_token: "dev-mock-access-token",
-      refresh_token: "dev-mock-refresh-token",
-    };
-    setAuthData(mockTokens, mockUser);
-    return;
-    // =============================================================================
-    // END DEV BYPASS
-    // =============================================================================
+    try {
+      const response = await authApi.login(email, password);
 
-    // =============================================================================
-    // REAL AUTH: Uncomment this block when ready to use real authentication
-    // =============================================================================
-    // try {
-    //   const response = await authApi.login(email, password);
-    //
-    //   localStorage.setItem(TOKEN_STORAGE_KEY, response.access_token);
-    //   localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, response.refresh_token);
-    //
-    //   const userProfile = await authApi.getProfile();
-    //   setAuthData(response, userProfile);
-    // } catch (error) {
-    //   setState((prev) => ({ ...prev, isLoading: false }));
-    //   throw error;
-    // }
-    // =============================================================================
-    // END REAL AUTH
-    // =============================================================================
+      localStorage.setItem(TOKEN_STORAGE_KEY, response.access_token);
+      localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, response.refresh_token);
+
+      const userProfile = await authApi.getProfile();
+      setAuthData(response, userProfile);
+    } catch (error) {
+      setState((prev) => ({ ...prev, isLoading: false }));
+      throw error;
+    }
   };
 
   const value: AuthContextType = {
