@@ -22,11 +22,12 @@ export default function SessionDetailModal({
 
   const restaurantName = session.sessionName || "Meal Session";
   const portionCount = session.totalDeliveryPortions;
+  const date = session.sessionDate || "";
   const time = session.eventTime || "N/A";
-  const guestCount = session.guestCount;
 
   const pickupAddresses = session.restaurantPickupAddresses;
   const pickupEntries = pickupAddresses ? Object.entries(pickupAddresses) : [];
+  const pickupCount = pickupEntries.length;
 
   const dropoffAddress = session.cateringOrder?.deliveryAddress || "";
   const dropoffLocation = session.cateringOrder?.deliveryLocation;
@@ -74,16 +75,22 @@ export default function SessionDetailModal({
             value={portionCount.toString()}
             color="text-primary"
           />
+          <div className="bg-surface-variant p-4 rounded-2xl border border-border-subtle">
+            <div className="flex items-center gap-2 mb-1 text-status-blue">
+              <Clock size={16} />
+              <span className="text-[9px] font-black uppercase tracking-widest opacity-50 text-text-muted">
+                Event Time
+              </span>
+            </div>
+            <p className="text-lg font-mont leading-tight">{time}</p>
+            {date && (
+              <p className="text-[10px] font-bold opacity-50 mt-1">{date}</p>
+            )}
+          </div>
           <CompactInfo
-            icon={<Clock size={16} />}
-            label="Event Time"
-            value={time}
-            color="text-status-blue"
-          />
-          <CompactInfo
-            icon={<MapPin size={16} />}
-            label="Guests"
-            value={guestCount ? guestCount.toString() : "—"}
+            icon={<Store size={16} />}
+            label="Pickups"
+            value={pickupCount.toString()}
             color="text-amber-500"
           />
         </div>

@@ -184,7 +184,7 @@ export default function SessionCard({
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1">
               <p className="text-[8px] font-black uppercase tracking-widest opacity-30">
-                {isAssigned ? "Assigned Driver" : "Identity Assignment"}
+                {isAssigned ? "Assigned Driver" : "Driver Assignment"}
               </p>
               {isAssigned ? (
                 deliveryStatus && (
@@ -203,13 +203,7 @@ export default function SessionCard({
             </div>
 
             <div ref={driverRef} className="relative">
-              <div className="flex items-center gap-2">
-                {isAssigned && (
-                  <UserCheck
-                    size={14}
-                    className="shrink-0 text-status-green"
-                  />
-                )}
+              <div className="relative flex items-center">
                 <input
                   type="text"
                   placeholder="Assign Driver..."
@@ -220,12 +214,18 @@ export default function SessionCard({
                     if (e.key === "Enter") handleSubmit();
                     if (e.key === "Escape") handleCancel();
                   }}
-                  className={`w-full bg-surface-variant border p-2.5 text-[10px] font-black uppercase tracking-widest outline-none transition-all ${
+                  className={`w-full bg-surface-variant border p-2.5 ${isAssigned ? "pr-9" : ""} text-[10px] font-black uppercase tracking-widest outline-none transition-all ${
                     isFocused
                       ? "border-primary ring-2 ring-primary/10 rounded-t-xl rounded-b-none"
                       : "border-border-subtle rounded-xl"
                   }`}
                 />
+                {isAssigned && (
+                  <UserCheck
+                    size={14}
+                    className="absolute right-3 shrink-0 text-status-green pointer-events-none"
+                  />
+                )}
               </div>
 
               {isFocused && (
