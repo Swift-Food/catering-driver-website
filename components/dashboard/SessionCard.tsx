@@ -105,7 +105,7 @@ export default function SessionCard({
             </div>
             <div className="text-right">
               {date && (
-                <p className="text-[9px] font-black uppercase opacity-30 tracking-widest mb-1">
+                <p className="text-[11px] font-black uppercase opacity-30 tracking-widest mb-1">
                   {date}
                 </p>
               )}
