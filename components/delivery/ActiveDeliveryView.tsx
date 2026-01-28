@@ -161,7 +161,7 @@ export default function ActiveDeliveryView({
           <TabSwitcher viewMode={viewMode} onChangeViewMode={setViewMode} />
 
           {viewMode === "TIMELINE" ? (
-            <div className="bg-surface rounded-2xl p-6 shadow-lg border border-border-subtle relative">
+            <div className="bg-surface rounded-2xl p-6 border border-border-subtle relative">
               <div className="space-y-4">
                 {stops.map((stop, index) => {
                   const isSelectable =

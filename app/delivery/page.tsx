@@ -330,7 +330,7 @@ export default function DeliveryPage() {
           <button
             key={name}
             onClick={() => handleDriverSelect(name)}
-            className="p-4 bg-surface border border-border-subtle rounded-xl font-bold text-sm hover:border-primary hover:text-primary transition-all shadow-sm truncate"
+            className="p-4 bg-surface border border-border-subtle rounded-xl font-bold text-sm hover:border-primary hover:text-primary transition-all truncate"
           >
             {name}
           </button>

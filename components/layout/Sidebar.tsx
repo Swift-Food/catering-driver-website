@@ -3,7 +3,7 @@
 import { useState, ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   Map as MapIcon,
@@ -28,6 +28,7 @@ const navItems: NavItem[] = [
 export function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
   const { selectedDriverName, clearSelectedDriver } = useDriver();
 
   return (
@@ -103,7 +104,10 @@ export function Sidebar() {
                 {selectedDriverName}
               </p>
               <button
-                onClick={clearSelectedDriver}
+                onClick={() => {
+                  clearSelectedDriver();
+                  router.push("/delivery");
+                }}
                 className="text-[10px] text-primary font-bold mt-2 hover:underline"
               >
                 Switch Driver
