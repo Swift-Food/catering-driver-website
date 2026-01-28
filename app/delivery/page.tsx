@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { User, Loader2, AlertCircle, Map as MapIcon } from "lucide-react";
 import { cateringDriverApi, useDriver } from "@/lib/drivers";
+import type { MealSession } from "@/lib/drivers/types";
 
 export default function DeliveryPage() {
   const {
@@ -14,6 +15,25 @@ export default function DeliveryPage() {
   const [driverNames, setDriverNames] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [assignments, setAssignments] = useState<MealSession[]>([]);
+
+  useEffect(() => {
+    if (!selectedDriverName) {
+      setAssignments([]);
+      return;
+    }
+
+    const fetchAssignments = async () => {
+      try {
+        const data = await cateringDriverApi.getMyAssignments(selectedDriverName);
+        setAssignments(data);
+      } catch (err) {
+        console.error("Error fetching assignments:", err);
+      }
+    };
+
+    fetchAssignments();
+  }, [selectedDriverName]);
 
   useEffect(() => {
     const fetchDriverNames = async () => {
