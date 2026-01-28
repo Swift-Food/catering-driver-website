@@ -118,25 +118,28 @@ export default function SessionDetailModal({
         className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in"
         onClick={onClose}
       />
-      <div className="relative w-[95vw] max-w-lg bg-surface rounded-3xl shadow-2xl animate-in zoom-in-95 duration-200 border border-white/10 max-h-[80vh] flex flex-col p-4 md:p-8">
-        {/* Fixed Header */}
-        <div className="flex justify-between items-start pb-4 shrink-0">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">
-              {isPending ? "Incoming Session Invitation" : "Session Details"}
-            </p>
-            <h2 className="text-2xl font-black">{restaurantName}</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-surface-variant flex items-center justify-center hover:text-primary transition-colors border border-border-subtle shrink-0"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
+      <div className="relative w-[95vw] max-w-lg bg-surface rounded-3xl shadow-2xl animate-in zoom-in-95 duration-200 border border-white/10 max-h-[80vh]">
         {/* Scrollable Content */}
-        <div className="overflow-y-auto hide-scrollbar space-y-6">
+        <div className="overflow-y-auto hide-scrollbar max-h-[80vh] rounded-3xl">
+          {/* Sticky Header */}
+          <div className="sticky top-0 z-10 bg-surface/10 backdrop-blur-xs rounded-t-3xl px-4 md:px-8 pt-4 md:pt-8 pb-4 ">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">
+                  {isPending ? "Incoming Session Invitation" : "Session Details"}
+                </p>
+                <h2 className="text-2xl font-black">{restaurantName}</h2>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-lg bg-surface-variant flex items-center justify-center hover:text-primary transition-colors border border-border-subtle shrink-0"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-6 px-4 md:px-8 pb-4 md:pb-8 pt-2">
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
             <CompactInfo
@@ -347,6 +350,7 @@ export default function SessionDetailModal({
               Reject
             </button>
           )}
+          </div>
         </div>
       </div>
     </div>
