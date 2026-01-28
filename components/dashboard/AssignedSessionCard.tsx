@@ -9,12 +9,9 @@ import {
   UserCheck,
   Pencil,
   Check,
-  X,
   Loader2,
 } from "lucide-react";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MealSession = any;
+import type { MealSession } from "@/lib/drivers/types";
 
 interface AssignedSessionCardProps {
   session: MealSession;
@@ -32,41 +29,18 @@ export default function AssignedSessionCard({
   const [editName, setEditName] = useState(session.driverName || "");
   const [saving, setSaving] = useState(false);
 
-  const restaurantName =
-    session.restaurantName ||
-    session.restaurant?.name ||
-    session.mealSessionName ||
-    "Meal Session";
+  const restaurantName = session.sessionName || "Meal Session";
+  const portionCount = session.totalDeliveryPortions;
+  const date = session.sessionDate || "";
+  const time = session.eventTime || "";
 
-  const portionCount =
-    session.portionCount || session.totalPortions || session.quantity || 0;
+  const firstPickupAddress = session.restaurantPickupAddresses
+    ? Object.values(session.restaurantPickupAddresses)[0]
+    : null;
 
-  const date =
-    session.date || session.deliveryDate || session.scheduledDate || "";
-  const time =
-    session.time || session.deliveryTime || session.scheduledTime || "";
-
-  const pickupAddress =
-    session.pickupAddress?.addressLine1 ||
-    session.restaurant?.address?.addressLine1 ||
-    session.pickupLocation ||
-    "";
-
-  const dropoffName =
-    session.deliveryAddress?.name ||
-    session.dropoffName ||
-    session.destination?.name ||
-    "Delivery Location";
-
-  const dropoffAddress =
-    session.deliveryAddress?.addressLine1 ||
-    session.destination?.addressLine1 ||
-    session.dropoffLocation ||
-    "";
-
+  const dropoffAddress = session.cateringOrder?.deliveryAddress || "";
   const driverName = session.driverName || "Unknown Driver";
   const deliveryStatus = session.deliveryStatus || "";
-  const sessionId = session.id || session._id;
 
   const handleSave = async () => {
     if (!editName.trim() || editName.trim() === driverName) {
@@ -75,7 +49,7 @@ export default function AssignedSessionCard({
     }
     setSaving(true);
     try {
-      await onUpdateDriverName(sessionId, editName.trim());
+      await onUpdateDriverName(session.id, editName.trim());
       setIsEditing(false);
     } catch {
       // keep editing open on error
@@ -97,11 +71,9 @@ export default function AssignedSessionCard({
                 {date}
               </p>
             )}
-            {portionCount > 0 && (
-              <p className="text-[11px] font-black text-primary uppercase tracking-widest leading-none">
-                {portionCount} PORTIONS
-              </p>
-            )}
+            <p className="text-[11px] font-black text-primary uppercase tracking-widest leading-none">
+              {portionCount} PORTIONS
+            </p>
           </div>
         </div>
 
@@ -111,25 +83,26 @@ export default function AssignedSessionCard({
           </h3>
 
           <div className="space-y-2">
-            {pickupAddress && (
+            {firstPickupAddress && (
               <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
                 <div className="w-7 h-7 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
                   <Store size={14} />
                 </div>
                 <span className="uppercase tracking-wider truncate">
-                  {pickupAddress}
+                  {firstPickupAddress.addressLine1}
                 </span>
               </div>
             )}
-            <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
-              <div className="w-7 h-7 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
-                <MapPin size={14} />
+            {dropoffAddress && (
+              <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
+                <div className="w-7 h-7 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
+                  <MapPin size={14} />
+                </div>
+                <span className="uppercase tracking-wider truncate">
+                  Drop: {dropoffAddress}
+                </span>
               </div>
-              <span className="uppercase tracking-wider truncate">
-                Drop: {dropoffName}
-                {dropoffAddress ? ` — ${dropoffAddress}` : ""}
-              </span>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -139,7 +112,7 @@ export default function AssignedSessionCard({
         {time && (
           <div className="bg-surface-variant p-3 rounded-xl border border-border-subtle">
             <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1.5">
-              Delivery Time
+              Event Time
             </p>
             <div className="flex items-center gap-2 text-primary">
               <Clock size={12} strokeWidth={2.5} />
@@ -163,57 +136,69 @@ export default function AssignedSessionCard({
             )}
           </div>
 
-          {isEditing ? (
-            <div className="flex gap-2">
-              <input
-                autoFocus
-                type="text"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSave();
-                  if (e.key === "Escape") setIsEditing(false);
-                }}
-                className="flex-1 bg-surface-variant border border-primary/50 focus:ring-4 focus:ring-primary/5 rounded-xl py-2.5 px-3.5 text-[10px] font-black uppercase tracking-widest outline-none transition-all"
-              />
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="w-10 bg-primary text-white rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30 flex items-center justify-center"
-              >
-                {saving ? (
-                  <Loader2 size={14} className="animate-spin" />
-                ) : (
-                  <Check size={16} strokeWidth={3} />
-                )}
-              </button>
-              <button
-                onClick={() => {
-                  setIsEditing(false);
-                  setEditName(driverName);
-                }}
-                className="w-10 bg-surface-variant border border-border-subtle rounded-xl hover:text-status-red transition-all flex items-center justify-center"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between bg-surface-variant p-3 rounded-xl border border-border-subtle">
-              <div className="flex items-center gap-2 text-status-green">
-                <UserCheck size={14} />
-                <span className="text-[10px] font-black uppercase tracking-widest">
-                  {driverName}
-                </span>
+          <div className="relative">
+            <div
+              onClick={() => setIsEditing(!isEditing)}
+              className={`w-full bg-surface-variant border p-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-between cursor-pointer transition-all ${
+                isEditing
+                  ? "border-primary ring-2 ring-primary/10"
+                  : "border-border-subtle hover:border-primary/30"
+              }`}
+            >
+              <div className="flex items-center gap-2 text-status-green truncate mr-2">
+                <UserCheck size={12} />
+                <span>{driverName}</span>
               </div>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="w-7 h-7 rounded-lg hover:bg-primary/10 hover:text-primary flex items-center justify-center transition-all text-text-muted"
-                title="Edit driver name"
-              >
-                <Pencil size={12} />
-              </button>
+              <Pencil size={12} className="opacity-30 shrink-0" />
             </div>
-          )}
+
+            {isEditing && (
+              <div className="absolute bottom-full mb-2 left-0 right-0 bg-surface border border-border-subtle rounded-xl shadow-2xl z-[100] animate-in slide-in-from-bottom-2 duration-200 overflow-hidden">
+                <div className="p-2">
+                  <input
+                    autoFocus
+                    type="text"
+                    placeholder="Enter driver name..."
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSave();
+                      if (e.key === "Escape") {
+                        setIsEditing(false);
+                        setEditName(driverName);
+                      }
+                    }}
+                    className="w-full bg-surface-variant border-none rounded-lg py-1.5 px-3 text-[9px] font-bold uppercase tracking-widest outline-none focus:ring-1 focus:ring-primary/30"
+                  />
+                </div>
+                <div className="flex gap-2 p-2 pt-0">
+                  <button
+                    onClick={() => {
+                      setIsEditing(false);
+                      setEditName(driverName);
+                    }}
+                    className="flex-1 py-2 rounded-lg bg-surface-variant border border-border-subtle text-[9px] font-black uppercase tracking-widest hover:text-status-red transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving || !editName.trim()}
+                    className="flex-1 py-2 rounded-lg bg-primary text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/30 disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5"
+                  >
+                    {saving ? (
+                      <Loader2 size={12} className="animate-spin" />
+                    ) : (
+                      <>
+                        <Check size={12} strokeWidth={3} />
+                        Save
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

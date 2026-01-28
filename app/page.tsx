@@ -10,28 +10,29 @@ import {
   Loader2,
 } from "lucide-react";
 import { cateringDriverApi } from "@/lib/drivers";
+import type { MealSession } from "@/lib/drivers/types";
 import MetricBox from "@/components/dashboard/MetricBox";
 import SessionCard from "@/components/dashboard/SessionCard";
 import AssignedSessionCard from "@/components/dashboard/AssignedSessionCard";
 import AcceptSessionModal from "@/components/dashboard/AcceptSessionModal";
 
 export default function HomePage() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [availableSessions, setAvailableSessions] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [assignedSessions, setAssignedSessions] = useState<any[]>([]);
+  const [availableSessions, setAvailableSessions] = useState<MealSession[]>([]);
+  const [assignedSessions, setAssignedSessions] = useState<MealSession[]>([]);
   const [loadingAvailable, setLoadingAvailable] = useState(true);
   const [loadingAssigned, setLoadingAssigned] = useState(true);
   const [errorAvailable, setErrorAvailable] = useState<string | null>(null);
   const [errorAssigned, setErrorAssigned] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [selectedSession, setSelectedSession] = useState<any | null>(null);
+  const [selectedSession, setSelectedSession] = useState<MealSession | null>(
+    null
+  );
 
   const fetchAvailable = useCallback(async () => {
     try {
       setLoadingAvailable(true);
       setErrorAvailable(null);
       const data = await cateringDriverApi.getAvailableSessions();
+      console.log("Pending:", data);
       setAvailableSessions(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch available sessions:", err);
@@ -46,6 +47,7 @@ export default function HomePage() {
       setLoadingAssigned(true);
       setErrorAssigned(null);
       const data = await cateringDriverApi.getAssignedSessions();
+      console.log("Upcoming:", data);
       setAssignedSessions(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch assigned sessions:", err);
@@ -60,12 +62,9 @@ export default function HomePage() {
     fetchAssigned();
   }, [fetchAvailable, fetchAssigned]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleAccept = async (session: any, driverName: string) => {
-    const sessionId = session.id || session._id;
-    await cateringDriverApi.acceptMealSession(sessionId, { driverName });
+  const handleAccept = async (session: MealSession, driverName: string) => {
+    await cateringDriverApi.acceptMealSession(session.id, { driverName });
     setSelectedSession(null);
-    // Refresh both lists
     fetchAvailable();
     fetchAssigned();
   };
@@ -170,7 +169,7 @@ export default function HomePage() {
             {availableSessions.length > 0 ? (
               availableSessions.map((session) => (
                 <SessionCard
-                  key={session.id || session._id}
+                  key={session.id}
                   session={session}
                   onClick={() => setSelectedSession(session)}
                 />
@@ -223,7 +222,7 @@ export default function HomePage() {
             {assignedSessions.length > 0 ? (
               assignedSessions.map((session) => (
                 <AssignedSessionCard
-                  key={session.id || session._id}
+                  key={session.id}
                   session={session}
                   onUpdateDriverName={handleUpdateDriverName}
                 />

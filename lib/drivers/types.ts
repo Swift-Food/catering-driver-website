@@ -28,6 +28,27 @@ export enum UserRole {
   EVENT_ATTENDEE = "event_attendee",
 }
 
+export enum MealSessionDeliveryStatus {
+  PENDING = "pending",
+  FINDING_DRIVER = "finding_driver",
+  DRIVER_ASSIGNED = "driver_assigned",
+  AWAITING_PICKUP = "awaiting_pickup",
+  OUT_FOR_DELIVERY = "out_for_delivery",
+  AT_COLLECTION_POINT = "at_collection_point",
+  DELIVERED = "delivered",
+}
+
+export enum CateringOrderStatus {
+  PENDING_REVIEW = "pending_review",
+  ADMIN_REVIEWED = "admin_reviewed",
+  RESTAURANT_REVIEWED = "restaurant_reviewed",
+  PAYMENT_LINK_SENT = "payment_link_sent",
+  PAID = "paid",
+  CONFIRMED = "confirmed",
+  CANCELLED = "cancelled",
+  COMPLETED = "completed",
+}
+
 // ============================================================
 // CONSTANTS
 // ============================================================
@@ -112,6 +133,266 @@ export interface DriverUser {
   cateringEnabled: boolean;
   completedCateringDeliveries: string[];
   cateringRating: number;
+}
+
+// ============================================================
+// MEAL SESSION & CATERING ORDER
+// ============================================================
+
+export interface PricingAddonDto {
+  addonId: string;
+  name: string;
+  customerUnitPrice: number;
+  quantity: number;
+  groupTitle?: string;
+  dietaryRestrictions?: string[];
+  allergens?: string[];
+}
+
+export interface PricingMenuItemDto {
+  menuItemId: string;
+  menuItemName: string;
+  menuItemImage?: string;
+  description?: string;
+  quantity: number;
+  customerUnitPrice: number;
+  customerTotalPrice: number;
+  restaurantBaseUnitPrice: number;
+  restaurantBaseTotalPrice: number;
+  commissionRate: number;
+  commissionAmount: number;
+  restaurantNetAmount: number;
+  isDiscounted: boolean;
+  originalUnitPrice?: number;
+  discountAmount?: number;
+  cateringQuantityUnit?: number;
+  deliveryPortionSize?: number;
+  totalDeliveryPortions?: number;
+  feedsPerUnit?: number;
+  groupTitle?: string;
+  categoryName?: string;
+  subcategoryName?: string;
+  selectedAddons?: PricingAddonDto[];
+}
+
+export interface PricingOrderItemDto {
+  restaurantId: string;
+  restaurantName: string;
+  status: string;
+  specialInstructions?: string;
+  collectionTime?: string;
+  reminderConfirmed?: boolean;
+  reminderConfirmedAt?: string;
+  menuItems: PricingMenuItemDto[];
+  customerTotal: number;
+  restaurantGrossAmount: number;
+  restaurantCommissionTotal: number;
+  restaurantNetAmount: number;
+  totalDeliveryPortions?: number;
+}
+
+export interface RestaurantPickupAddress {
+  name: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  zipcode: string;
+  location: Location;
+}
+
+export interface AppliedPromotion {
+  id: string;
+  name: string;
+  type: string;
+  discountAmount: number;
+}
+
+export interface CateringOrder {
+  id: string;
+  userId: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  organization?: string;
+  publicNote?: string;
+  internalNote?: string;
+  ccEmails: string[];
+  billingAddress?: {
+    line1: string;
+    line2?: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
+  eventDate: string;
+  eventTime: string;
+  collectionTime?: string;
+  guestCount?: number;
+  eventType?: string;
+  deliveryAddress: string;
+  deliveryLocation?: Location;
+  specialRequirements?: string;
+  orderItems: PricingOrderItemDto[];
+  restaurantReviews?: string[];
+  restaurantRejections?: string[];
+  estimatedTotal: number | null;
+  finalTotal: number | null;
+  depositAmount: number;
+  subtotal: number;
+  serviceCharge: number;
+  deliveryFee: number;
+  promoDiscount: number;
+  promotionDiscount: number;
+  promoCodes: string[];
+  appliedPromotions?: Record<string, AppliedPromotion[]>;
+  status: CateringOrderStatus;
+  paymentId: string | null;
+  stripePaymentIntentId: string | null;
+  stripeChargeId: string | null;
+  paymentLinkUrl: string | null;
+  paymentLinkSentAt: string | null;
+  paidAt: string | null;
+  adminNotes?: string;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  reminder24HourSent: boolean;
+  reminder1HourSent: boolean;
+  eventId: string | null;
+  pickupContactName?: string;
+  pickupContactPhone?: string;
+  pickupContactEmail?: string;
+  deliveryTimeChangedAt: string | null;
+  deliveryTimeChangedBy: string | null;
+  scheduledTransferDate: string | null;
+  transfersCompleted: boolean;
+  transferFailureReason?: string;
+  transferRetryCount: number;
+  organizationId: string | null;
+  corporateUserId: string | null;
+  isPaidWithWallet: boolean;
+  walletAmountUsed: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MealSession {
+  id: string;
+
+  // Relationship to Catering Order
+  cateringOrder: CateringOrder;
+  cateringOrderId: string;
+
+  // Session Details
+  collectionTime: string;
+  restaurantCollectionTimes?: Record<string, string>;
+  sessionName: string;
+  sessionOrder: number;
+  sessionDate: string;
+  eventTime: string;
+
+  // Session Specifics
+  guestCount?: number;
+  specialRequirements?: string;
+
+  // Order Items
+  orderItems: PricingOrderItemDto[];
+  totalDeliveryPortions: number;
+
+  // Session Pricing
+  subtotal: number;
+  deliveryFee: number;
+  serviceCharge: number;
+  promoDiscount: number;
+  promotionDiscount: number;
+  sessionTotal: number;
+
+  // Applied Promotions
+  appliedPromotions?: Record<string, AppliedPromotion[]>;
+
+  // Restaurant Coordination
+  restaurantReviews?: string[];
+  restaurantRejections?: string[];
+
+  // Status Tracking
+  reminder24HourSent: boolean;
+  reminder1HourSent: boolean;
+  deliveryTimeChangedAt: string | null;
+  deliveryTimeChangedBy: string | null;
+
+  // Restaurant Pickup Addresses
+  restaurantPickupAddresses?: Record<string, RestaurantPickupAddress>;
+
+  // Driver Assignment & Delivery Tracking
+  driverName: string | null;
+  driverId: string | null;
+  deliveryStatus: MealSessionDeliveryStatus;
+  deliveryMethod: CateringDeliveryMethod | null;
+
+  // Delivery Timestamps
+  driverAssignedAt: string | null;
+  pickupStartedAt: string | null;
+  outForDeliveryAt: string | null;
+  arrivedAtDestinationAt: string | null;
+  deliveredAt: string | null;
+  estimatedDeliveryTime: string | null;
+
+  // Proof Images
+  pickupProofImageUrl: string | null;
+  deliveryProofImageUrl: string | null;
+
+  // Driver Notes
+  driverNotes: string | null;
+
+  // Delay Tracking
+  isDelayed: boolean;
+  delayMinutes: number | null;
+
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ============================================================
+// API RESPONSE DTOs
+// ============================================================
+
+export interface RestaurantRouteStop {
+  restaurantId: string;
+  restaurantName: string;
+  location: Location;
+  address: string;
+  estimatedCollectionTime: string;
+  travelTimeFromPrevious: number;
+  order: number;
+}
+
+export interface CollectionRouteDto {
+  restaurants: RestaurantRouteStop[];
+  totalCollectionTimeMinutes: number;
+  estimatedDeliveryTime: string;
+}
+
+export type CustomerDeliveryStatus =
+  | "awaiting_pickup"
+  | "out_for_delivery"
+  | "at_collection_point"
+  | "delivered";
+
+export interface DeliveryTrackingDto {
+  mealSessionId: string;
+  status: MealSessionDeliveryStatus;
+  customerStatus: CustomerDeliveryStatus;
+  estimatedDeliveryTime: string | null;
+  estimatedDeliveryWindow: {
+    earliest: string;
+    latest: string;
+  } | null;
+  isDelayed: boolean;
+  delayMessage: string | null;
+  driverInfo: {
+    name: string;
+    rating: number;
+  } | null;
 }
 
 // ============================================================

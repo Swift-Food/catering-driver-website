@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { X, MapPin, Package, Clock, DollarSign, Loader2 } from "lucide-react";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MealSession = any;
+import { X, MapPin, Package, Clock, Loader2 } from "lucide-react";
+import type { MealSession } from "@/lib/drivers/types";
 
 interface AcceptSessionModalProps {
   session: MealSession | null;
@@ -22,18 +20,10 @@ export default function AcceptSessionModal({
 
   if (!session) return null;
 
-  const restaurantName =
-    session.restaurantName ||
-    session.restaurant?.name ||
-    session.mealSessionName ||
-    "Meal Session";
-
-  const fee = session.fee || session.deliveryFee || session.driverFee || 0;
-  const portionCount =
-    session.portionCount || session.totalPortions || session.quantity || 0;
-  const time =
-    session.time || session.deliveryTime || session.scheduledTime || "N/A";
-  const distance = session.distance || session.estimatedDistance || "—";
+  const restaurantName = session.sessionName || "Meal Session";
+  const portionCount = session.totalDeliveryPortions;
+  const time = session.eventTime || "N/A";
+  const guestCount = session.guestCount;
 
   const handleAccept = async () => {
     if (!driverName.trim()) return;
@@ -70,27 +60,21 @@ export default function AcceptSessionModal({
 
         <div className="grid grid-cols-2 gap-4 mb-8">
           <CompactInfo
-            icon={<DollarSign size={16} />}
-            label="Fee"
-            value={fee > 0 ? `$${typeof fee === "number" ? fee.toFixed(2) : fee}` : "—"}
-            color="text-status-green"
-          />
-          <CompactInfo
             icon={<Package size={16} />}
             label="Portions"
-            value={portionCount > 0 ? portionCount.toString() : "—"}
+            value={portionCount.toString()}
             color="text-primary"
           />
           <CompactInfo
             icon={<Clock size={16} />}
-            label="Window"
+            label="Event Time"
             value={time}
             color="text-status-blue"
           />
           <CompactInfo
             icon={<MapPin size={16} />}
-            label="Distance"
-            value={distance}
+            label="Guests"
+            value={guestCount ? guestCount.toString() : "—"}
             color="text-amber-500"
           />
         </div>

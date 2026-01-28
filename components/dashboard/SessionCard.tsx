@@ -5,9 +5,7 @@ import {
   Store,
   ChevronRight,
 } from "lucide-react";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MealSession = any;
+import type { MealSession } from "@/lib/drivers/types";
 
 interface SessionCardProps {
   session: MealSession;
@@ -15,40 +13,15 @@ interface SessionCardProps {
 }
 
 export default function SessionCard({ session, onClick }: SessionCardProps) {
-  const restaurantName =
-    session.restaurantName ||
-    session.restaurant?.name ||
-    session.mealSessionName ||
-    "Meal Session";
+  const restaurantName = session.sessionName || "Meal Session";
+  const portionCount = session.totalDeliveryPortions;
+  const date = session.sessionDate || "";
+  const time = session.eventTime || "";
+  const firstPickupAddress = session.restaurantPickupAddresses
+    ? Object.values(session.restaurantPickupAddresses)[0]
+    : null;
 
-  const portionCount =
-    session.portionCount ||
-    session.totalPortions ||
-    session.quantity ||
-    0;
-
-  const date = session.date || session.deliveryDate || session.scheduledDate || "";
-  const time = session.time || session.deliveryTime || session.scheduledTime || "";
-
-  const pickupAddress =
-    session.pickupAddress?.addressLine1 ||
-    session.restaurant?.address?.addressLine1 ||
-    session.pickupLocation ||
-    "";
-
-  const dropoffName =
-    session.deliveryAddress?.name ||
-    session.dropoffName ||
-    session.destination?.name ||
-    "Delivery Location";
-
-  const dropoffAddress =
-    session.deliveryAddress?.addressLine1 ||
-    session.destination?.addressLine1 ||
-    session.dropoffLocation ||
-    "";
-
-  const fee = session.fee || session.deliveryFee || session.driverFee || 0;
+  const dropoffAddress = session.cateringOrder?.deliveryAddress || "";
 
   return (
     <div
@@ -66,11 +39,9 @@ export default function SessionCard({ session, onClick }: SessionCardProps) {
                 {date}
               </p>
             )}
-            {portionCount > 0 && (
-              <p className="text-[11px] font-black text-primary uppercase tracking-widest leading-none">
-                {portionCount} PORTIONS
-              </p>
-            )}
+            <p className="text-[11px] font-black text-primary uppercase tracking-widest leading-none">
+              {portionCount} PORTIONS
+            </p>
           </div>
         </div>
 
@@ -80,25 +51,26 @@ export default function SessionCard({ session, onClick }: SessionCardProps) {
           </h3>
 
           <div className="space-y-2">
-            {pickupAddress && (
+            {firstPickupAddress && (
               <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
                 <div className="w-7 h-7 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
                   <Store size={14} />
                 </div>
                 <span className="uppercase tracking-wider truncate">
-                  {pickupAddress}
+                  {firstPickupAddress.addressLine1}
                 </span>
               </div>
             )}
-            <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
-              <div className="w-7 h-7 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
-                <MapPin size={14} />
+            {dropoffAddress && (
+              <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
+                <div className="w-7 h-7 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
+                  <MapPin size={14} />
+                </div>
+                <span className="uppercase tracking-wider truncate">
+                  Drop: {dropoffAddress}
+                </span>
               </div>
-              <span className="uppercase tracking-wider truncate">
-                Drop: {dropoffName}
-                {dropoffAddress ? ` — ${dropoffAddress}` : ""}
-              </span>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -108,24 +80,12 @@ export default function SessionCard({ session, onClick }: SessionCardProps) {
           {time && (
             <div className="bg-surface-variant p-3 rounded-xl border border-border-subtle">
               <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1.5">
-                Delivery Time
+                Event Time
               </p>
               <div className="flex items-center gap-2 text-primary">
                 <Clock size={12} strokeWidth={2.5} />
                 <span className="text-[11px] font-black tracking-tight">
                   {time}
-                </span>
-              </div>
-            </div>
-          )}
-          {fee > 0 && (
-            <div className="bg-surface-variant p-3 rounded-xl border border-border-subtle">
-              <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1.5">
-                Driver Fee
-              </p>
-              <div className="flex items-center gap-2 text-status-green">
-                <span className="text-[11px] font-black tracking-tight">
-                  ${typeof fee === "number" ? fee.toFixed(2) : fee}
                 </span>
               </div>
             </div>

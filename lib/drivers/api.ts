@@ -1,6 +1,9 @@
 import { apiClient } from "@/lib/auth";
 import type {
   DriverUser,
+  MealSession,
+  CollectionRouteDto,
+  DeliveryTrackingDto,
   AcceptMealSessionDto,
   PickupCompleteDto,
   DeliveryCompleteDto,
@@ -18,17 +21,19 @@ export const driversApi = {
 
 export const cateringDriverApi = {
   /** Get all meal sessions available for pickup (FINDING_DRIVER status) */
-  getAvailableSessions: async () => {
-    const response = await apiClient.get("/catering-driver/available-sessions");
+  getAvailableSessions: async (): Promise<MealSession[]> => {
+    const response = await apiClient.get<MealSession[]>(
+      "/catering-driver/available-sessions"
+    );
     return response.data;
   },
 
-  /** Accept a meal session with a delivery method */
+  /** Accept a meal session with a driver name */
   acceptMealSession: async (
     mealSessionId: string,
     dto: AcceptMealSessionDto
-  ) => {
-    const response = await apiClient.post(
+  ): Promise<MealSession> => {
+    const response = await apiClient.post<MealSession>(
       `/catering-driver/accept/${mealSessionId}`,
       dto
     );
@@ -36,25 +41,29 @@ export const cateringDriverApi = {
   },
 
   /** Get driver's current catering assignments */
-  getMyAssignments: async (driverName?: string) => {
+  getMyAssignments: async (driverName?: string): Promise<MealSession[]> => {
     const params = driverName ? { driverName } : undefined;
-    const response = await apiClient.get("/catering-driver/my-assignments", {
-      params,
-    });
+    const response = await apiClient.get<MealSession[]>(
+      "/catering-driver/my-assignments",
+      { params }
+    );
     return response.data;
   },
 
   /** Start delivery (heading to restaurants) */
-  startDelivery: async (mealSessionId: string) => {
-    const response = await apiClient.post(
+  startDelivery: async (mealSessionId: string): Promise<MealSession> => {
+    const response = await apiClient.post<MealSession>(
       `/catering-driver/${mealSessionId}/start-delivery`
     );
     return response.data;
   },
 
   /** Confirm pickup with photo proof */
-  pickupComplete: async (mealSessionId: string, dto: PickupCompleteDto) => {
-    const response = await apiClient.post(
+  pickupComplete: async (
+    mealSessionId: string,
+    dto: PickupCompleteDto
+  ): Promise<MealSession> => {
+    const response = await apiClient.post<MealSession>(
       `/catering-driver/${mealSessionId}/pickup-complete`,
       dto
     );
@@ -62,8 +71,10 @@ export const cateringDriverApi = {
   },
 
   /** Mark arrival at delivery destination */
-  arriveAtDestination: async (mealSessionId: string) => {
-    const response = await apiClient.post(
+  arriveAtDestination: async (
+    mealSessionId: string
+  ): Promise<MealSession> => {
+    const response = await apiClient.post<MealSession>(
       `/catering-driver/${mealSessionId}/arrive`
     );
     return response.data;
@@ -73,8 +84,8 @@ export const cateringDriverApi = {
   deliveryComplete: async (
     mealSessionId: string,
     dto: DeliveryCompleteDto
-  ) => {
-    const response = await apiClient.post(
+  ): Promise<MealSession> => {
+    const response = await apiClient.post<MealSession>(
       `/catering-driver/${mealSessionId}/delivery-complete`,
       dto
     );
@@ -82,8 +93,10 @@ export const cateringDriverApi = {
   },
 
   /** Get collection route for meal session */
-  getCollectionRoute: async (mealSessionId: string) => {
-    const response = await apiClient.get(
+  getCollectionRoute: async (
+    mealSessionId: string
+  ): Promise<CollectionRouteDto> => {
+    const response = await apiClient.get<CollectionRouteDto>(
       `/catering-driver/${mealSessionId}/route`
     );
     return response.data;
@@ -98,8 +111,10 @@ export const cateringDriverApi = {
   },
 
   /** Track delivery status (public endpoint for customers) */
-  trackDelivery: async (mealSessionId: string) => {
-    const response = await apiClient.get(
+  trackDelivery: async (
+    mealSessionId: string
+  ): Promise<DeliveryTrackingDto> => {
+    const response = await apiClient.get<DeliveryTrackingDto>(
       `/catering-driver/track/${mealSessionId}`
     );
     return response.data;
@@ -109,8 +124,8 @@ export const cateringDriverApi = {
   updateDriverName: async (
     mealSessionId: string,
     dto: UpdateDriverNameDto
-  ) => {
-    const response = await apiClient.post(
+  ): Promise<MealSession> => {
+    const response = await apiClient.post<MealSession>(
       `/catering-driver/${mealSessionId}/update-driver-name`,
       dto
     );
@@ -118,8 +133,8 @@ export const cateringDriverApi = {
   },
 
   /** Get all meal sessions currently assigned to drivers */
-  getAssignedSessions: async () => {
-    const response = await apiClient.get(
+  getAssignedSessions: async (): Promise<MealSession[]> => {
+    const response = await apiClient.get<MealSession[]>(
       "/catering-driver/assigned-sessions"
     );
     return response.data;
