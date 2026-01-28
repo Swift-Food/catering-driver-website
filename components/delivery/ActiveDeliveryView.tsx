@@ -245,20 +245,27 @@ function deriveStops(
   const pickupsDone = PICKUP_DONE_STATUSES.includes(session.deliveryStatus);
   const deliveryDone = session.deliveryStatus === "delivered";
 
-  const pickupStops: DeliveryStop[] = session.restaurants.map((restaurant) => {
-    const addr = restaurant.address;
+  const pickupStops: DeliveryStop[] = session.restaurants
+    .slice()
+    .sort((a, b) => {
+      const ta = a.collectionTime ? new Date(a.collectionTime).getTime() : 0;
+      const tb = b.collectionTime ? new Date(b.collectionTime).getTime() : 0;
+      return ta - tb;
+    })
+    .map((restaurant) => {
+      const addr = restaurant.address;
 
-    return {
-      id: restaurant.restaurantId,
-      type: "PICKUP",
-      locationName: restaurant.restaurantName,
-      address: `${addr.addressLine1}${addr.addressLine2 ? `, ${addr.addressLine2}` : ""}, ${addr.city} ${addr.postcode}`,
-      time: formatTime(restaurant.collectionTime),
-      contactName: restaurant.contact.phone ? undefined : session.delivery.contactName,
-      contactPhone: restaurant.contact.phone || session.delivery.contactPhone,
-      completed: pickupsDone || locallyCompleted.has(restaurant.restaurantId),
-    };
-  });
+      return {
+        id: restaurant.restaurantId,
+        type: "PICKUP",
+        locationName: restaurant.restaurantName,
+        address: `${addr.addressLine1}${addr.addressLine2 ? `, ${addr.addressLine2}` : ""}, ${addr.city} ${addr.postcode}`,
+        time: formatTime(restaurant.collectionTime),
+        contactName: restaurant.contact.phone ? undefined : session.delivery.contactName,
+        contactPhone: restaurant.contact.phone || session.delivery.contactPhone,
+        completed: pickupsDone || locallyCompleted.has(restaurant.restaurantId),
+      };
+    });
 
   const dropoffStop: DeliveryStop = {
     id: "dropoff",

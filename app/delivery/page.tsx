@@ -159,13 +159,20 @@ export default function DeliveryPage() {
           <h2 className="text-2xl font-black mb-2 text-gray-900 dark:text-gray-100">
             No Active Routes
           </h2>
-          <p className="text-sm text-text-muted max-w-sm">
+          <p className="text-sm text-text-muted max-w-sm mb-8">
             No assignments found for{" "}
             <span className="font-bold text-gray-900 dark:text-gray-100">
               {selectedDriverName}
             </span>
             . Check back when routes are assigned.
           </p>
+          <button
+            onClick={clearSelectedDriver}
+            className="flex items-center gap-1.5 px-5 py-3 rounded-xl bg-surface border border-border-subtle text-[10px] font-black uppercase tracking-widest hover:border-primary hover:text-primary transition-all"
+          >
+            <RefreshCw size={12} />
+            Switch Driver
+          </button>
         </div>
       );
     }
