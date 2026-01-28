@@ -113,3 +113,25 @@ export interface DriverUser {
   completedCateringDeliveries: string[];
   cateringRating: number;
 }
+
+// ============================================================
+// CATERING DRIVER DTOs
+// ============================================================
+
+export interface AcceptMealSessionDto {
+  driverId: string;
+  driverName: string;
+  deliveryMethod: CateringDeliveryMethod;
+}
+
+export interface PickupCompleteDto {
+  driverId: string;
+  pickupProofImageUrl: string;
+  notes?: string;
+}
+
+export interface DeliveryCompleteDto {
+  driverId: string;
+  deliveryProofImageUrl: string;
+  notes?: string;
+}
