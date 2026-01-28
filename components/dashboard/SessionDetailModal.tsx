@@ -63,7 +63,7 @@ export default function SessionDetailModal({
     (session.deliveryStatus as MealSessionDeliveryStatus) === "finding_driver";
 
   const existingDriver = session.driverName || "";
-  const currentInput = driverName || existingDriver;
+  const currentInput = isFocused ? driverName : (driverName || existingDriver);
   const deliveryStatus = session.deliveryStatus || "";
 
   const mapPins: GoogleMapPin[] = [
@@ -198,12 +198,15 @@ export default function SessionDetailModal({
                   }
                   value={currentInput}
                   onChange={(e) => setDriverName(e.target.value)}
-                  onFocus={() => setIsFocused(true)}
+                  onFocus={() => {
+                    if (!isFocused) setDriverName(driverName || existingDriver);
+                    setIsFocused(true);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleSubmit();
                     if (e.key === "Escape") handleCancel();
                   }}
-                  className={`w-full bg-surface-variant border p-2.5 ${!isPending ? "pr-9" : ""} text-[10px] font-black uppercase tracking-widest outline-none transition-all ${
+                  className={`w-full bg-surface-variant border p-2.5 ${!isPending ? "pr-9" : ""} text-[10px] font-black outline-none transition-all ${
                     isFocused
                       ? "border-primary ring-2 ring-primary/10 rounded-t-xl rounded-b-none"
                       : "border-border-subtle rounded-xl"

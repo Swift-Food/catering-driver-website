@@ -210,7 +210,7 @@ export default function SessionCard({
                     if (e.key === "Enter") handleSubmit();
                     if (e.key === "Escape") handleCancel();
                   }}
-                  className={`w-full bg-surface-variant border p-2.5 ${isAssigned ? "pr-9" : ""} text-[10px] font-black uppercase tracking-widest outline-none transition-all ${
+                  className={`w-full bg-surface-variant border p-2.5 ${isAssigned ? "pr-9" : ""} text-[10px] font-black outline-none transition-all ${
                     isFocused
                       ? "border-primary ring-2 ring-primary/10 rounded-t-xl rounded-b-none"
                       : "border-border-subtle rounded-xl"
