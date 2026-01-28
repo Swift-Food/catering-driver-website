@@ -177,6 +177,16 @@ export default function SessionDetailModal({
               pins={mapPins}
               className="h-[200px] border border-border-subtle"
             />
+            <div className="flex items-center gap-4 mt-2 px-1">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-pink-500" />
+                <span className="text-[9px] font-bold uppercase tracking-widest opacity-50">Pickup</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                <span className="text-[9px] font-bold uppercase tracking-widest opacity-50">Dropoff</span>
+              </div>
+            </div>
           </div>
         )}
 
