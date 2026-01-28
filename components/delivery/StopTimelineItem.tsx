@@ -114,7 +114,7 @@ export default function StopTimelineItem({
 
         {/* Expanded Content */}
         {isExpanded && !isCompleted && (
-          <div className="mt-5 -ml-14 md:ml-0 grid md:grid-cols-2 gap-4 animate-in slide-in-from-top-1 duration-300">
+          <div className="mt-5 -ml-14 lg:ml-0 grid lg:grid-cols-2 gap-4 animate-in slide-in-from-top-1 duration-300">
             {/* Hidden file input */}
             <input
               ref={fileInputRef}
