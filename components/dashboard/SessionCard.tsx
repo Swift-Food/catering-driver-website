@@ -122,7 +122,7 @@ export default function SessionCard({
                   <Store size={14} />
                 </div>
                 <span className="uppercase tracking-wider">
-                  {pickupCount} Pickup Node{pickupCount !== 1 ? "s" : ""}
+                  {pickupCount} Pickup{/*pickupCount !== 1 ? "s" : ""*/}
                 </span>
               </div>
               {dropoffAddress && (

@@ -21,7 +21,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         <Header />
 
         {/* Scrolling Area */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 pb-24 md:pb-10 hide-scrollbar">
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 pb-40 md:pb-10 hide-scrollbar">
           <div className="max-w-6xl mx-auto w-full">{children}</div>
         </main>
 

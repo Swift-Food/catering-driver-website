@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { User, Loader2, AlertCircle, Map as MapIcon } from "lucide-react";
+import { User, Loader2, AlertCircle, Map as MapIcon, RefreshCw } from "lucide-react";
 import { cateringDriverApi, useDriver } from "@/lib/drivers";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import ActiveDeliveryView from "@/components/delivery/ActiveDeliveryView";
@@ -173,6 +173,28 @@ export default function DeliveryPage() {
     // Show delivery view
     return (
       <div className="space-y-6">
+        {/* Driver indicator with switch */}
+        <div className="flex items-center justify-between bg-surface rounded-xl border border-border-subtle px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+              <User size={16} />
+            </div>
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest opacity-40">
+                Driver
+              </p>
+              <p className="text-sm font-bold">{selectedDriverName}</p>
+            </div>
+          </div>
+          <button
+            onClick={clearSelectedDriver}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-variant border border-border-subtle text-[9px] font-black uppercase tracking-widest hover:border-primary hover:text-primary transition-all"
+          >
+            <RefreshCw size={12} />
+            Switch
+          </button>
+        </div>
+
         {/* Session selector */}
         {assignments.length > 1 && (
           <div>
