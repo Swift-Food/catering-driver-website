@@ -24,7 +24,7 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      router.push("/");
+      router.replace("/");
     }
   }, [authLoading, isAuthenticated, router]);
 
@@ -43,7 +43,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      router.push("/");
+      router.replace("/");
     } catch (err: unknown) {
       if (err instanceof AxiosError) {
         if (err.response?.status === 401) {
