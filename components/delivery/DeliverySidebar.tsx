@@ -34,7 +34,7 @@ export default function DeliverySidebar({
       {/* Mission Communications */}
       <div className="bg-surface p-6 rounded-2xl shadow-md border border-border-subtle space-y-6">
         <h3 className="text-xs font-black uppercase tracking-widest opacity-40">
-          Mission Communications
+          Customer Details
         </h3>
         <div className="space-y-4">
           <SidebarItem

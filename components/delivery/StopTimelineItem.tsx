@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import {
   CheckCircle,
   Camera,
@@ -8,6 +9,7 @@ import {
   Phone,
   MessageSquare,
   ImageIcon,
+  Loader2,
 } from "lucide-react";
 import type { DeliveryStop } from "./types";
 
@@ -17,8 +19,9 @@ interface StopTimelineItemProps {
   isExpanded: boolean;
   isSelectable: boolean;
   photoUrl?: string;
+  isUploading: boolean;
   onSelect: () => void;
-  onOpenCamera: () => void;
+  onPhotoSelected: (file: File) => void;
   onComplete: () => void;
   isCompleting: boolean;
 }
@@ -29,12 +32,20 @@ export default function StopTimelineItem({
   isExpanded,
   isSelectable,
   photoUrl,
+  isUploading,
   onSelect,
-  onOpenCamera,
+  onPhotoSelected,
   onComplete,
   isCompleting,
 }: StopTimelineItemProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isCompleted = stop.completed;
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) onPhotoSelected(file);
+    e.target.value = "";
+  };
 
   return (
     <div
@@ -104,6 +115,16 @@ export default function StopTimelineItem({
         {/* Expanded Content */}
         {isExpanded && !isCompleted && (
           <div className="mt-5 -ml-14 md:ml-0 grid md:grid-cols-2 gap-4 animate-in slide-in-from-top-1 duration-300">
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+
             {/* Contact Panel */}
             <div className="bg-surface-variant p-5 rounded-xl border border-border-subtle shadow-sm">
               {stop.type === "PICKUP" ? (
@@ -168,16 +189,27 @@ export default function StopTimelineItem({
               )}
             </div>
 
-            {/* Camera + Action Panel */}
+            {/* Photo + Action Panel */}
             <div className="flex flex-col justify-between gap-3">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onOpenCamera();
+                  fileInputRef.current?.click();
                 }}
-                className="flex-1 bg-primary/5 p-4 rounded-xl border border-primary/10 border-dashed flex flex-col items-center justify-center text-center cursor-pointer hover:bg-primary/10 transition-all"
+                disabled={isUploading}
+                className="flex-1 bg-primary/5 p-4 rounded-xl border border-primary/10 border-dashed flex flex-col items-center justify-center text-center cursor-pointer hover:bg-primary/10 transition-all disabled:opacity-50"
               >
-                {photoUrl ? (
+                {isUploading ? (
+                  <>
+                    <Loader2
+                      size={20}
+                      className="text-primary animate-spin mb-1"
+                    />
+                    <p className="text-[10px] font-bold text-primary">
+                      Uploading...
+                    </p>
+                  </>
+                ) : photoUrl ? (
                   <>
                     <ImageIcon
                       size={20}
@@ -197,10 +229,10 @@ export default function StopTimelineItem({
                       className="text-primary opacity-40 mb-1"
                     />
                     <p className="text-[10px] font-bold opacity-60">
-                      Identity Confirmation
+                      Take Photo
                     </p>
                     <p className="text-[8px] opacity-30 mt-0.5">
-                      Tap to capture
+                      Tap to capture or select
                     </p>
                   </>
                 )}

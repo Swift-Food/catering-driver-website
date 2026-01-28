@@ -13,7 +13,6 @@ import DeliveryHeaderPanel from "./DeliveryHeaderPanel";
 import TabSwitcher from "./TabSwitcher";
 import StopTimelineItem from "./StopTimelineItem";
 import DeliverySidebar from "./DeliverySidebar";
-import CameraView from "./CameraView";
 import GoogleMap from "@/components/dashboard/GoogleMap";
 
 interface ActiveDeliveryViewProps {
@@ -37,13 +36,7 @@ export default function ActiveDeliveryView({
     new Set()
   );
   const [stopPhotos, setStopPhotos] = useState<Record<string, string>>({});
-  const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [cameraPurpose, setCameraPurpose] = useState<"PICKUP" | "DROPOFF">(
-    "PICKUP"
-  );
-  const [activeStopIdForCamera, setActiveStopIdForCamera] = useState<
-    string | null
-  >(null);
+  const [uploadingStopId, setUploadingStopId] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
 
   // Derive stops from session data
@@ -70,26 +63,19 @@ export default function ActiveDeliveryView({
     onSessionUpdate(updated);
   }, [session.id, onSessionUpdate]);
 
-  const handleOpenCamera = useCallback(
-    (stopId: string, purpose: "PICKUP" | "DROPOFF") => {
-      setActiveStopIdForCamera(stopId);
-      setCameraPurpose(purpose);
-      setIsCameraOpen(true);
+  const handlePhotoSelected = useCallback(
+    async (stopId: string, file: File) => {
+      setUploadingStopId(stopId);
+      try {
+        const url = await cateringDriverApi.uploadImage(file);
+        setStopPhotos((prev) => ({ ...prev, [stopId]: url }));
+      } catch (err) {
+        console.error("Upload failed:", err);
+      } finally {
+        setUploadingStopId(null);
+      }
     },
     []
-  );
-
-  const handleCameraCapture = useCallback(
-    (photoUrl: string) => {
-      if (activeStopIdForCamera) {
-        setStopPhotos((prev) => ({
-          ...prev,
-          [activeStopIdForCamera]: photoUrl,
-        }));
-      }
-      setIsCameraOpen(false);
-    },
-    [activeStopIdForCamera]
   );
 
   const handleCompleteStop = useCallback(
@@ -176,9 +162,10 @@ export default function ActiveDeliveryView({
                       isExpanded={activeId === stop.id}
                       isSelectable={isSelectable}
                       photoUrl={stopPhotos[stop.id]}
+                      isUploading={uploadingStopId === stop.id}
                       onSelect={() => setExpandedStopId(stop.id)}
-                      onOpenCamera={() =>
-                        handleOpenCamera(stop.id, stop.type)
+                      onPhotoSelected={(file) =>
+                        handlePhotoSelected(stop.id, file)
                       }
                       onComplete={() => handleCompleteStop(stop)}
                       isCompleting={isCompleting}
@@ -208,15 +195,6 @@ export default function ActiveDeliveryView({
           remainingStops={stops.filter((s) => !s.completed).length}
         />
       </div>
-
-      {/* Camera Modal */}
-      {isCameraOpen && (
-        <CameraView
-          purpose={cameraPurpose}
-          onCapture={handleCameraCapture}
-          onClose={() => setIsCameraOpen(false)}
-        />
-      )}
     </div>
   );
 }
