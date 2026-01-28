@@ -89,11 +89,11 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="pt-8 border-t border-border-subtle">
+      {/* <div className="pt-8 border-t border-border-subtle">
         <p className="text-[10px] text-center opacity-20 font-bold uppercase tracking-[0.2em] text-gray-900 dark:text-gray-100">
           SwiftFoods Driver Console v2.4.0
         </p>
-      </div>
+      </div> */}
     </div>
   );
 }

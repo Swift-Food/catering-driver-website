@@ -5,6 +5,8 @@ import {
   Clock,
   MapPin,
   ListChecks,
+  Phone,
+  MessageSquare,
 } from "lucide-react";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 
@@ -50,19 +52,35 @@ export default function DeliverySidebar({
           />
         </div>
 
-        <div className="pt-4 border-t border-border-subtle space-y-2">
-          {customerPhone ? (
-            <a
-              href={`tel:${customerPhone}`}
-              className="block w-full py-3 bg-primary/5 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all border border-primary/10 text-center"
-            >
-              Contact Customer
-            </a>
-          ) : (
-            <button className="w-full py-3 bg-primary/5 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all border border-primary/10">
-              Contact Customer
-            </button>
-          )}
+        <div className="pt-4 border-t border-border-subtle">
+          <div className="flex gap-2">
+            {customerPhone ? (
+              <a
+                href={`tel:${customerPhone}`}
+                className="flex-1 py-3 bg-primary/5 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all border border-primary/10 flex items-center justify-center gap-2"
+              >
+                <Phone size={14} /> Call
+              </a>
+            ) : (
+              <button disabled className="flex-1 py-3 bg-primary/5 text-primary/30 rounded-xl text-[10px] font-black uppercase tracking-widest border border-primary/10 flex items-center justify-center gap-2">
+                <Phone size={14} /> Call
+              </button>
+            )}
+            {customerPhone ? (
+              <a
+                href={`https://wa.me/${customerPhone.replace(/[^0-9]/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 py-3 bg-primary/5 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all border border-primary/10 flex items-center justify-center gap-2"
+              >
+                <MessageSquare size={14} /> WhatsApp
+              </a>
+            ) : (
+              <button disabled className="flex-1 py-3 bg-primary/5 text-primary/30 rounded-xl text-[10px] font-black uppercase tracking-widest border border-primary/10 flex items-center justify-center gap-2">
+                <MessageSquare size={14} /> WhatsApp
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

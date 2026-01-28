@@ -140,13 +140,27 @@ export default function StopTimelineItem({
                           <Phone size={14} /> Call
                         </a>
                       ) : (
-                        <button className="flex-1 py-3 bg-primary/5 text-primary rounded-lg text-[9px] font-black uppercase flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all">
+                        <button disabled className="flex-1 py-3 bg-primary/5 text-primary/30 rounded-lg text-[9px] font-black uppercase flex items-center justify-center gap-2">
                           <Phone size={14} /> Call
                         </button>
                       )}
-                      <button className="flex-1 py-3 bg-primary/5 text-primary rounded-lg text-[9px] font-black uppercase flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all">
-                        <MessageSquare size={14} /> Chat
-                      </button>
+                      {/* TODO: Restaurant WhatsApp
+                      {stop.contactPhone ? (
+                        <a
+                          href={`https://wa.me/${stop.contactPhone.replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex-1 py-3 bg-primary/5 text-primary rounded-lg text-[9px] font-black uppercase flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all"
+                        >
+                          <MessageSquare size={14} /> WhatsApp
+                        </a>
+                      ) : (
+                        <button disabled className="flex-1 py-3 bg-primary/5 text-primary/30 rounded-lg text-[9px] font-black uppercase flex items-center justify-center gap-2">
+                          <MessageSquare size={14} /> WhatsApp
+                        </button>
+                      )}
+                      */}
                     </div>
                   </div>
                 </div>
@@ -163,16 +177,28 @@ export default function StopTimelineItem({
                         onClick={(e) => e.stopPropagation()}
                         className="flex-1 py-3 bg-primary/10 text-primary rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all"
                       >
-                        Direct Call
+                        Call
                       </a>
                     ) : (
-                      <button className="flex-1 py-3 bg-primary/10 text-primary rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all">
-                        Direct Call
+                      <button disabled className="flex-1 py-3 bg-primary/10 text-primary/30 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                        Call
                       </button>
                     )}
-                    <button className="flex-1 py-3 bg-primary/10 text-primary rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all">
-                      Secure Message
-                    </button>
+                    {stop.contactPhone ? (
+                      <a
+                        href={`https://wa.me/${stop.contactPhone.replace(/[^0-9]/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex-1 py-3 bg-primary/10 text-primary rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all"
+                      >
+                        WhatsApp
+                      </a>
+                    ) : (
+                      <button disabled className="flex-1 py-3 bg-primary/10 text-primary/30 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                        WhatsApp
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
