@@ -2,26 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { User, Loader2, AlertCircle, Map as MapIcon } from "lucide-react";
-import { driversApi, useDriver, type DriverUser } from "@/lib/drivers";
+import { cateringDriverApi, useDriver } from "@/lib/drivers";
 
 export default function DeliveryPage() {
   const {
-    selectedDriver,
-    setSelectedDriver,
+    selectedDriverName,
+    setSelectedDriverName,
     clearSelectedDriver,
     isLoading: driverLoading,
   } = useDriver();
-  const [drivers, setDrivers] = useState<DriverUser[]>([]);
+  const [driverNames, setDriverNames] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchDrivers = async () => {
+    const fetchDriverNames = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        const data = await driversApi.getAvailableDrivers();
-        setDrivers(data);
+        const data = await cateringDriverApi.getActiveDriverNames();
+        setDriverNames(data);
       } catch (err) {
         setError("Failed to load available drivers. Please try again.");
         console.error("Error fetching drivers:", err);
@@ -31,15 +31,15 @@ export default function DeliveryPage() {
     };
 
     // Only fetch drivers if no driver is selected
-    if (!selectedDriver) {
-      fetchDrivers();
+    if (!selectedDriverName) {
+      fetchDriverNames();
     } else {
       setIsLoading(false);
     }
-  }, [selectedDriver]);
+  }, [selectedDriverName]);
 
-  const handleDriverSelect = (driver: DriverUser) => {
-    setSelectedDriver(driver);
+  const handleDriverSelect = (name: string) => {
+    setSelectedDriverName(name);
   };
 
   // Show loading while checking for persisted driver
@@ -60,7 +60,7 @@ export default function DeliveryPage() {
   }
 
   // Show routes view when driver is selected
-  if (selectedDriver) {
+  if (selectedDriverName) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
         <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
@@ -72,8 +72,7 @@ export default function DeliveryPage() {
         <p className="text-sm text-text-muted mb-8 max-w-sm">
           Route details for{" "}
           <span className="font-bold text-gray-900 dark:text-gray-100">
-            {selectedDriver.user.username ||
-              selectedDriver.user.email.split("@")[0]}
+            {selectedDriverName}
           </span>{" "}
           will appear here.
         </p>
@@ -126,7 +125,7 @@ export default function DeliveryPage() {
   }
 
   // No drivers available
-  if (drivers.length === 0) {
+  if (driverNames.length === 0) {
     return (
       <div className="h-[60vh] flex flex-col items-center justify-center text-center p-8">
         <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-6">
@@ -156,13 +155,13 @@ export default function DeliveryPage() {
         verification tools.
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 w-full max-w-4xl">
-        {drivers.map((driver) => (
+        {driverNames.map((name) => (
           <button
-            key={driver.id}
-            onClick={() => handleDriverSelect(driver)}
+            key={name}
+            onClick={() => handleDriverSelect(name)}
             className="p-4 bg-surface border border-border-subtle rounded-xl font-bold text-sm hover:border-primary hover:text-primary transition-all shadow-sm truncate"
           >
-            {driver.user.username || driver.user.email.split("@")[0]}
+            {name}
           </button>
         ))}
       </div>

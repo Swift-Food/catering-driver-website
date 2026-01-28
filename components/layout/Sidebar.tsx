@@ -28,7 +28,7 @@ const navItems: NavItem[] = [
 export function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(true);
   const pathname = usePathname();
-  const { selectedDriver, clearSelectedDriver } = useDriver();
+  const { selectedDriverName, clearSelectedDriver } = useDriver();
 
   return (
     <aside
@@ -94,14 +94,13 @@ export function Sidebar() {
 
         {/* Selected Driver & Toggle Button */}
         <div className="mt-auto space-y-4">
-          {selectedDriver && isExpanded && (
+          {selectedDriverName && isExpanded && (
             <div className="bg-primary/5 p-4 rounded-xl border border-primary/20">
               <p className="text-[9px] font-black uppercase tracking-widest text-primary mb-1">
                 Active Identity
               </p>
               <p className="text-sm font-bold truncate text-gray-900 dark:text-gray-100">
-                {selectedDriver.user.username ||
-                  selectedDriver.user.email.split("@")[0]}
+                {selectedDriverName}
               </p>
               <button
                 onClick={clearSelectedDriver}

@@ -7,13 +7,12 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { DriverUser } from "./types";
 
-const STORAGE_KEY = "selectedDriver";
+const STORAGE_KEY = "selectedDriverName";
 
 interface DriverContextType {
-  selectedDriver: DriverUser | null;
-  setSelectedDriver: (driver: DriverUser | null) => void;
+  selectedDriverName: string | null;
+  setSelectedDriverName: (name: string | null) => void;
   clearSelectedDriver: () => void;
   isLoading: boolean;
 }
@@ -21,9 +20,9 @@ interface DriverContextType {
 const DriverContext = createContext<DriverContextType | undefined>(undefined);
 
 export function DriverProvider({ children }: { children: ReactNode }) {
-  const [selectedDriver, setSelectedDriverState] = useState<DriverUser | null>(
-    null
-  );
+  const [selectedDriverName, setSelectedDriverNameState] = useState<
+    string | null
+  >(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load from localStorage on mount
@@ -31,7 +30,7 @@ export function DriverProvider({ children }: { children: ReactNode }) {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        setSelectedDriverState(JSON.parse(stored));
+        setSelectedDriverNameState(stored);
       }
     } catch (error) {
       console.error("Failed to load selected driver:", error);
@@ -40,25 +39,25 @@ export function DriverProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const setSelectedDriver = (driver: DriverUser | null) => {
-    setSelectedDriverState(driver);
-    if (driver) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(driver));
+  const setSelectedDriverName = (name: string | null) => {
+    setSelectedDriverNameState(name);
+    if (name) {
+      localStorage.setItem(STORAGE_KEY, name);
     } else {
       localStorage.removeItem(STORAGE_KEY);
     }
   };
 
   const clearSelectedDriver = () => {
-    setSelectedDriverState(null);
+    setSelectedDriverNameState(null);
     localStorage.removeItem(STORAGE_KEY);
   };
 
   return (
     <DriverContext.Provider
       value={{
-        selectedDriver,
-        setSelectedDriver,
+        selectedDriverName,
+        setSelectedDriverName,
         clearSelectedDriver,
         isLoading,
       }}
