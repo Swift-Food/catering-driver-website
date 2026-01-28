@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { User, Loader2, AlertCircle, Map as MapIcon, Package } from "lucide-react";
+import { User, Loader2, AlertCircle, Map as MapIcon } from "lucide-react";
 import { cateringDriverApi, useDriver } from "@/lib/drivers";
 import type { MealSession } from "@/lib/drivers/types";
 import ActiveDeliveryView from "@/components/delivery/ActiveDeliveryView";
@@ -172,23 +172,34 @@ export default function DeliveryPage() {
     // Show delivery view
     return (
       <div className="space-y-6">
-        {/* Session selector for multiple assignments */}
+        {/* Session selector */}
         {assignments.length > 1 && (
-          <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
-            {assignments.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setSelectedSessionId(s.id)}
-                className={`flex-shrink-0 flex items-center gap-2 px-4 py-3 rounded-xl border text-xs font-bold transition-all ${
-                  selectedSessionId === s.id
-                    ? "bg-primary/10 border-primary/20 text-primary"
-                    : "bg-surface border-border-subtle hover:border-primary/20"
-                }`}
-              >
-                <Package size={14} />
-                {s.sessionName || `Session ${s.sessionOrder}`}
-              </button>
-            ))}
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-widest opacity-40 mb-3 px-1">
+              Your Delivery Sessions ({assignments.length})
+            </p>
+            <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
+              {assignments.map((s, i) => (
+                <button
+                  key={s.id}
+                  onClick={() => setSelectedSessionId(s.id)}
+                  className={`flex-shrink-0 flex items-center gap-3 px-4 py-3 rounded-xl border text-xs font-bold transition-all ${
+                    selectedSessionId === s.id
+                      ? "bg-primary/10 border-primary/20 text-primary"
+                      : "bg-surface border-border-subtle hover:border-primary/20"
+                  }`}
+                >
+                  <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black ${
+                    selectedSessionId === s.id
+                      ? "bg-primary text-white"
+                      : "bg-surface-variant"
+                  }`}>
+                    {i + 1}
+                  </span>
+                  {s.sessionName || `Session ${s.sessionOrder}`}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
