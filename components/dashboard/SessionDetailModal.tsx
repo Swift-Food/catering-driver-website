@@ -319,7 +319,7 @@ export default function SessionDetailModal({
             <div>
               <GoogleMap
                 pins={mapPins}
-                className="h-[200px] border border-border-subtle"
+                className="aspect-[4/3] border border-border-subtle"
               />
               <div className="flex items-center gap-4 mt-2 px-1">
                 <div className="flex items-center gap-1.5">

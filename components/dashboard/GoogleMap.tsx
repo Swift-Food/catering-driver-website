@@ -68,7 +68,7 @@ export default function GoogleMap({ pins, className = "" }: GoogleMapProps) {
 
         const map = new google.maps.Map(mapRef.current, {
           center: { lat: validPins[0].latitude, lng: validPins[0].longitude },
-          zoom: 15,
+          zoom: 12,
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: false,
@@ -79,6 +79,7 @@ export default function GoogleMap({ pins, className = "" }: GoogleMapProps) {
 
         const bounds = new google.maps.LatLngBounds();
         const infoWindow = new google.maps.InfoWindow();
+        let pinnedMarker: google.maps.Marker | null = null;
 
         const newMarkers = validPins.map((pin) => {
           const position = { lat: pin.latitude, lng: pin.longitude };
@@ -92,35 +93,52 @@ export default function GoogleMap({ pins, className = "" }: GoogleMapProps) {
           });
 
           if (pin.label || pin.address) {
-            const content = `
+            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${pin.latitude},${pin.longitude}`;
+            const hoverContent = `
               <div style="padding:4px 2px;min-width:140px;">
                 ${pin.label ? `<div style="font-weight:700;font-size:12px;color:#111;margin-bottom:2px;">${pin.label}</div>` : ""}
                 ${pin.address ? `<div style="font-size:11px;color:#666;">${pin.address}</div>` : ""}
               </div>
             `;
+            const clickContent = `
+              <div style="padding:4px 2px;min-width:140px;">
+                ${pin.label ? `<div style="font-weight:700;font-size:12px;color:#111;margin-bottom:2px;">${pin.label}</div>` : ""}
+                ${pin.address ? `<div style="font-size:11px;color:#666;margin-bottom:6px;">${pin.address}</div>` : ""}
+                <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;font-size:11px;font-weight:600;color:#1a73e8;text-decoration:none;">Open in Google Maps &rarr;</a>
+              </div>
+            `;
 
             marker.addListener("click", () => {
-              infoWindow.setContent(content);
+              pinnedMarker = marker;
+              infoWindow.setContent(clickContent);
               infoWindow.open(map, marker);
             });
 
             marker.addListener("mouseover", () => {
-              infoWindow.setContent(content);
-              infoWindow.open(map, marker);
+              if (pinnedMarker !== marker) {
+                infoWindow.setContent(hoverContent);
+                infoWindow.open(map, marker);
+              }
             });
 
             marker.addListener("mouseout", () => {
-              infoWindow.close();
+              if (pinnedMarker !== marker) {
+                infoWindow.close();
+              }
             });
           }
 
           return marker;
         });
 
+        infoWindow.addListener("closeclick", () => {
+          pinnedMarker = null;
+        });
+
         markersRef.current = newMarkers;
 
         if (validPins.length > 1) {
-          map.fitBounds(bounds, 40);
+          map.fitBounds(bounds, 100);
         }
 
         setIsLoading(false);
