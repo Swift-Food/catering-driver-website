@@ -4,9 +4,6 @@ import {
   User,
   Clock,
   MapPin,
-  Navigation,
-  Phone,
-  MessageSquare,
   ListChecks,
 } from "lucide-react";
 import type { MealSession } from "@/lib/drivers/types";
@@ -41,7 +38,6 @@ export default function DeliverySidebar({
             name={customerName}
             role="Customer Contact"
             icon={<User size={14} />}
-            phone={customerPhone}
           />
           <SidebarItem
             name={eventTime}
@@ -52,8 +48,7 @@ export default function DeliverySidebar({
             name={deliveryAddress}
             role="Delivery Location"
             icon={<MapPin size={14} />}
-            actionIcon={<Navigation size={10} />}
-            actionHref={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(deliveryAddress)}`}
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(deliveryAddress)}`}
           />
         </div>
 
@@ -106,56 +101,43 @@ function SidebarItem({
   name,
   role,
   icon,
-  phone,
-  actionIcon,
-  actionHref,
+  href,
 }: {
   name: string;
   role: string;
   icon: React.ReactNode;
-  phone?: string;
-  actionIcon?: React.ReactNode;
-  actionHref?: string;
+  href?: string;
 }) {
-  return (
-    <div className="flex items-center justify-between group cursor-pointer hover:bg-surface-variant p-2 rounded-xl transition-all">
-      <div className="flex items-center gap-3 overflow-hidden">
-        <div className="w-8 h-8 rounded-lg bg-surface-variant flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all flex-shrink-0">
-          {icon}
-        </div>
-        <div className="overflow-hidden">
-          <p className="font-bold text-xs truncate">{name}</p>
-          <p className="text-[8px] font-bold uppercase opacity-30 tracking-widest truncate">
-            {role}
-          </p>
-        </div>
+  const content = (
+    <>
+      <div className="w-8 h-8 rounded-lg bg-surface-variant flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all flex-shrink-0">
+        {icon}
       </div>
-      {(phone || actionIcon) && (
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-          {actionIcon && actionHref ? (
-            <a
-              href={actionHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-1.5 bg-primary/10 text-primary rounded-md"
-            >
-              {actionIcon}
-            </a>
-          ) : phone ? (
-            <>
-              <a
-                href={`tel:${phone}`}
-                className="p-1.5 bg-primary/10 text-primary rounded-md"
-              >
-                <Phone size={10} />
-              </a>
-              <button className="p-1.5 bg-primary/10 text-primary rounded-md">
-                <MessageSquare size={10} />
-              </button>
-            </>
-          ) : null}
-        </div>
-      )}
+      <div className="overflow-hidden">
+        <p className="font-bold text-xs truncate">{name}</p>
+        <p className="text-[8px] font-bold uppercase opacity-30 tracking-widest truncate">
+          {role}
+        </p>
+      </div>
+    </>
+  );
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 overflow-hidden group hover:bg-surface-variant p-2 rounded-xl transition-all"
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-3 overflow-hidden p-2 rounded-xl">
+      {content}
     </div>
   );
 }
