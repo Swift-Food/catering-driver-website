@@ -95,7 +95,10 @@ export default function ActiveDeliveryView({
           );
 
           if (allDone) {
-            // All pickups done, call API
+            // All pickups done — auto-expand the dropoff stop
+            setExpandedStopId("dropoff");
+
+            // Call API
             const updated = await cateringDriverApi.pickupComplete(session.id, {
               driverId: "",
               pickupProofImageUrl: photoUrl,
