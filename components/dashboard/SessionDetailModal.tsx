@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { X, MapPin, Package, Clock, Store, Loader2, UserCheck } from "lucide-react";
 import type { MealSession, MealSessionDeliveryStatus } from "@/lib/drivers/types";
-import GoogleMap from "@/components/dashboard/GoogleMap";
+import GoogleMap, { type MapPin as GoogleMapPin } from "@/components/dashboard/GoogleMap";
 
 interface SessionDetailModalProps {
   session: MealSession | null;
@@ -34,6 +34,27 @@ export default function SessionDetailModal({
 
   const dropoffAddress = session.cateringOrder?.deliveryAddress || "";
   const dropoffLocation = session.cateringOrder?.deliveryLocation;
+
+  const mapPins: GoogleMapPin[] = [
+    ...pickupEntries.map(([, addr]) => ({
+      latitude: addr.location.latitude,
+      longitude: addr.location.longitude,
+      label: addr.name,
+      address: `${addr.addressLine1}, ${addr.city}`,
+      color: "pink" as const,
+    })),
+    ...(dropoffLocation
+      ? [
+          {
+            latitude: dropoffLocation.latitude,
+            longitude: dropoffLocation.longitude,
+            label: "Delivery",
+            address: dropoffAddress,
+            color: "green" as const,
+          },
+        ]
+      : []),
+  ];
 
   const isPending =
     (session.deliveryStatus as MealSessionDeliveryStatus) === "finding_driver";
@@ -147,13 +168,15 @@ export default function SessionDetailModal({
                 </p>
               </div>
             </div>
-            {dropoffLocation && (
-              <GoogleMap
-                latitude={dropoffLocation.latitude}
-                longitude={dropoffLocation.longitude}
-                className="mt-3 h-[180px] border border-border-subtle"
-              />
-            )}
+          </div>
+        )}
+
+        {mapPins.length > 0 && (
+          <div className="mb-6">
+            <GoogleMap
+              pins={mapPins}
+              className="h-[200px] border border-border-subtle"
+            />
           </div>
         )}
 

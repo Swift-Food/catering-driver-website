@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 import { loadGoogleMapsScript } from "@/lib/google-maps-loader";
 import { useTheme } from "@/lib/theme";
 
@@ -19,31 +19,43 @@ const DARK_STYLES: google.maps.MapTypeStyle[] = [
 
 const LIGHT_STYLES: google.maps.MapTypeStyle[] = [];
 
-interface GoogleMapProps {
+export interface MapPin {
   latitude: number;
   longitude: number;
+  label?: string;
+  address?: string;
+  color: "red" | "green" | "blue" | "pink" | "purple" | "orange";
+}
+
+interface GoogleMapProps {
+  pins: MapPin[];
   className?: string;
 }
 
-export default function GoogleMap({
-  latitude,
-  longitude,
-  className = "",
-}: GoogleMapProps) {
+const PIN_URLS: Record<MapPin["color"], string> = {
+  red: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+  green: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+  blue: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+  pink: "https://maps.google.com/mapfiles/ms/icons/pink-dot.png",
+  purple: "https://maps.google.com/mapfiles/ms/icons/purple-dot.png",
+  orange: "https://maps.google.com/mapfiles/ms/icons/orange-dot.png",
+};
+
+export default function GoogleMap({ pins, className = "" }: GoogleMapProps) {
   const { isDarkMode } = useTheme();
   const mapRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
+  const markersRef = useRef<google.maps.Marker[]>([]);
 
-  const hasValidCoordinates = useMemo(() => {
-    const lat = Number(latitude);
-    const lng = Number(longitude);
+  const validPins = pins.filter((p) => {
+    const lat = Number(p.latitude);
+    const lng = Number(p.longitude);
     return !isNaN(lat) && !isNaN(lng) && !(lat === 0 && lng === 0);
-  }, [latitude, longitude]);
+  });
 
   useEffect(() => {
-    if (!hasValidCoordinates) {
+    if (validPins.length === 0) {
       setIsLoading(false);
       return;
     }
@@ -55,7 +67,7 @@ export default function GoogleMap({
         if (!mapRef.current) return;
 
         const map = new google.maps.Map(mapRef.current, {
-          center: { lat: latitude, lng: longitude },
+          center: { lat: validPins[0].latitude, lng: validPins[0].longitude },
           zoom: 15,
           mapTypeControl: false,
           streetViewControl: false,
@@ -65,12 +77,51 @@ export default function GoogleMap({
         });
         mapInstanceRef.current = map;
 
-        const marker = new google.maps.Marker({
-          position: { lat: latitude, lng: longitude },
-          map,
-          animation: google.maps.Animation.DROP,
+        const bounds = new google.maps.LatLngBounds();
+        const infoWindow = new google.maps.InfoWindow();
+
+        const newMarkers = validPins.map((pin) => {
+          const position = { lat: pin.latitude, lng: pin.longitude };
+          bounds.extend(position);
+
+          const marker = new google.maps.Marker({
+            position,
+            map,
+            icon: PIN_URLS[pin.color],
+            animation: google.maps.Animation.DROP,
+          });
+
+          if (pin.label || pin.address) {
+            const content = `
+              <div style="padding:4px 2px;min-width:140px;">
+                ${pin.label ? `<div style="font-weight:700;font-size:12px;color:#111;margin-bottom:2px;">${pin.label}</div>` : ""}
+                ${pin.address ? `<div style="font-size:11px;color:#666;">${pin.address}</div>` : ""}
+              </div>
+            `;
+
+            marker.addListener("click", () => {
+              infoWindow.setContent(content);
+              infoWindow.open(map, marker);
+            });
+
+            marker.addListener("mouseover", () => {
+              infoWindow.setContent(content);
+              infoWindow.open(map, marker);
+            });
+
+            marker.addListener("mouseout", () => {
+              infoWindow.close();
+            });
+          }
+
+          return marker;
         });
-        markerRef.current = marker;
+
+        markersRef.current = newMarkers;
+
+        if (validPins.length > 1) {
+          map.fitBounds(bounds, 40);
+        }
 
         setIsLoading(false);
       } catch {
@@ -81,24 +132,16 @@ export default function GoogleMap({
     initMap();
 
     return () => {
-      if (markerRef.current) markerRef.current.setMap(null);
+      markersRef.current.forEach((m) => m.setMap(null));
+      markersRef.current = [];
     };
-  }, [latitude, longitude, hasValidCoordinates, isDarkMode]);
+  }, [validPins.length, isDarkMode]);
 
-  const handleClick = () => {
-    window.open(
-      `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`,
-      "_blank"
-    );
-  };
-
-  if (!hasValidCoordinates) return null;
+  if (validPins.length === 0) return null;
 
   return (
     <div
-      className={`relative overflow-hidden rounded-xl cursor-pointer group ${className}`}
-      onClick={handleClick}
-      title="Open in Google Maps"
+      className={`relative overflow-hidden rounded-xl group ${className}`}
     >
       <div ref={mapRef} className="h-full w-full" />
       {isLoading && (
@@ -106,9 +149,6 @@ export default function GoogleMap({
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
       )}
-      <div className="absolute bottom-2 right-2 rounded-md bg-black/60 px-2 py-1 text-[9px] font-bold text-white uppercase tracking-widest opacity-0 transition-opacity group-hover:opacity-100">
-        Open in Maps
-      </div>
     </div>
   );
 }
