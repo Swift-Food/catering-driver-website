@@ -11,7 +11,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   return (
-    <div className="flex h-screen bg-app-bg transition-colors duration-300 overflow-hidden font-sans">
+    <div className="flex h-screen bg-app-bg transition-colors duration-300 overflow-hidden font-sans safe-top">
       {/* Sidebar Navigation - Desktop only */}
       <Sidebar />
 

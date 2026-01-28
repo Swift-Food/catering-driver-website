@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  viewportFit: "cover" as const,
+};
+
 export const metadata: Metadata = {
   title: "SwiftFoods Driver Console",
   description: "Driver console for SwiftFoods delivery management",
