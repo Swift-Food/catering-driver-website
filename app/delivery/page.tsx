@@ -42,6 +42,10 @@ export default function DeliveryPage() {
         setError(null);
         const data = await cateringDriverApi.getActiveDriverNames();
         setDriverNames(data);
+
+        if (selectedDriverName && !data.includes(selectedDriverName)) {
+          clearSelectedDriver();
+        }
       } catch (err) {
         setError("Failed to load available drivers. Please try again.");
         console.error("Error fetching drivers:", err);
@@ -50,13 +54,8 @@ export default function DeliveryPage() {
       }
     };
 
-    // Only fetch drivers if no driver is selected
-    if (!selectedDriverName) {
-      fetchDriverNames();
-    } else {
-      setIsLoading(false);
-    }
-  }, [selectedDriverName]);
+    fetchDriverNames();
+  }, []);
 
   const handleDriverSelect = (name: string) => {
     setSelectedDriverName(name);
