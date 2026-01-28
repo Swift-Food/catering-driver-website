@@ -8,25 +8,29 @@ import {
   Store,
   ChevronRight,
   UserPlus,
+  UserCheck,
   Check,
   Loader2,
-  Pencil,
 } from "lucide-react";
-import type { MealSession } from "@/lib/drivers/types";
+import type { MealSession, MealSessionDeliveryStatus } from "@/lib/drivers/types";
 
 interface SessionCardProps {
   session: MealSession;
   onClick?: () => void;
-  onAccept?: (mealSessionId: string, driverName: string) => Promise<void>;
+  onDriverSubmit?: (mealSessionId: string, driverName: string) => Promise<void>;
 }
 
 export default function SessionCard({
   session,
   onClick,
-  onAccept,
+  onDriverSubmit,
 }: SessionCardProps) {
-  const [isAssigning, setIsAssigning] = useState(false);
-  const [driverName, setDriverName] = useState("");
+  const isAssigned =
+    (session.deliveryStatus as MealSessionDeliveryStatus) !== "finding_driver";
+  const existingDriver = session.driverName || "";
+
+  const [inputValue, setInputValue] = useState(existingDriver);
+  const [isFocused, setIsFocused] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const restaurantName = session.sessionName || "Meal Session";
@@ -49,14 +53,22 @@ export default function SessionCard({
         : "";
 
   const dropoffAddress = session.cateringOrder?.deliveryAddress || "";
+  const deliveryStatus = session.deliveryStatus || "";
 
-  const handleSave = async () => {
-    if (!driverName.trim() || !onAccept) return;
+  const isDirty = isAssigned
+    ? inputValue.trim() !== existingDriver
+    : inputValue.trim().length > 0;
+
+  const handleSubmit = async () => {
+    if (!inputValue.trim() || !onDriverSubmit) return;
+    if (isAssigned && inputValue.trim() === existingDriver) {
+      setIsFocused(false);
+      return;
+    }
     setSaving(true);
     try {
-      await onAccept(session.id, driverName.trim());
-      setIsAssigning(false);
-      setDriverName("");
+      await onDriverSubmit(session.id, inputValue.trim());
+      setIsFocused(false);
     } catch {
       // keep open on error
     } finally {
@@ -64,12 +76,23 @@ export default function SessionCard({
     }
   };
 
+  const handleCancel = () => {
+    setInputValue(existingDriver);
+    setIsFocused(false);
+  };
+
   return (
     <div className="w-full text-left bg-surface p-6 rounded-2xl shadow-sm border border-border-subtle transition-all duration-300 relative flex flex-col h-full group hover:border-primary/40">
       <div onClick={onClick} className={onClick ? "cursor-pointer" : ""}>
         <div className="flex-1">
           <div className="flex justify-between items-start mb-6">
-            <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+            <div
+              className={`p-3 rounded-xl transition-colors ${
+                isAssigned
+                  ? "bg-status-blue/10 text-status-blue"
+                  : "bg-primary/10 text-primary group-hover:bg-primary/20"
+              }`}
+            >
               <Package size={20} />
             </div>
             <div className="text-right">
@@ -149,84 +172,77 @@ export default function SessionCard({
         </div>
 
         {/* Driver Assignment */}
-        {onAccept && (
+        {onDriverSubmit && (
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1">
               <p className="text-[8px] font-black uppercase tracking-widest opacity-30">
-                Identity Assignment
+                {isAssigned ? "Assigned Driver" : "Identity Assignment"}
               </p>
-              <div className="flex items-center gap-1.5 text-amber-500">
-                <UserPlus size={12} />
-                <span className="text-[9px] font-black uppercase tracking-widest italic">
-                  Unassigned
-                </span>
-              </div>
-            </div>
-
-            <div className="relative">
-              <div
-                onClick={() => setIsAssigning(!isAssigning)}
-                className={`w-full bg-surface-variant border p-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-between cursor-pointer transition-all ${
-                  isAssigning
-                    ? "border-primary ring-2 ring-primary/10"
-                    : "border-border-subtle hover:border-primary/30"
-                }`}
-              >
-                <span
-                  className={`truncate mr-2 ${driverName ? "" : "text-gray-400"}`}
-                >
-                  {driverName || "Assign Driver..."}
-                </span>
-                <Pencil size={12} className="opacity-30 shrink-0" />
-              </div>
-
-              {isAssigning && (
-                <div className="absolute bottom-full mb-2 left-0 right-0 bg-surface border border-border-subtle rounded-xl shadow-2xl z-[100] animate-in slide-in-from-bottom-2 duration-200 overflow-hidden">
-                  <div className="p-2">
-                    <input
-                      autoFocus
-                      type="text"
-                      placeholder="Enter driver name..."
-                      value={driverName}
-                      onChange={(e) => setDriverName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleSave();
-                        if (e.key === "Escape") {
-                          setIsAssigning(false);
-                          setDriverName("");
-                        }
-                      }}
-                      className="w-full bg-surface-variant border-none rounded-lg py-1.5 px-3 text-[9px] font-bold uppercase tracking-widest outline-none focus:ring-1 focus:ring-primary/30"
-                    />
-                  </div>
-                  <div className="flex gap-2 p-2 pt-0">
-                    <button
-                      onClick={() => {
-                        setIsAssigning(false);
-                        setDriverName("");
-                      }}
-                      className="flex-1 py-2 rounded-lg bg-surface-variant border border-border-subtle text-[9px] font-black uppercase tracking-widest hover:text-status-red transition-all"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSave}
-                      disabled={saving || !driverName.trim()}
-                      className="flex-1 py-2 rounded-lg bg-primary text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/30 disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5"
-                    >
-                      {saving ? (
-                        <Loader2 size={12} className="animate-spin" />
-                      ) : (
-                        <>
-                          <Check size={12} strokeWidth={3} />
-                          Accept
-                        </>
-                      )}
-                    </button>
-                  </div>
+              {isAssigned ? (
+                deliveryStatus && (
+                  <span className="px-2 py-0.5 rounded bg-status-blue/10 text-status-blue text-[8px] font-black uppercase tracking-widest border border-status-blue/20">
+                    {deliveryStatus.replace(/_/g, " ")}
+                  </span>
+                )
+              ) : (
+                <div className="flex items-center gap-1.5 text-amber-500">
+                  <UserPlus size={12} />
+                  <span className="text-[9px] font-black uppercase tracking-widest italic">
+                    Unassigned
+                  </span>
                 </div>
               )}
             </div>
+
+            <div className="flex items-center gap-2">
+              {isAssigned && (
+                <UserCheck
+                  size={14}
+                  className="shrink-0 text-status-green"
+                />
+              )}
+              <input
+                type="text"
+                placeholder="Assign Driver..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmit();
+                  if (e.key === "Escape") handleCancel();
+                }}
+                className={`w-full bg-surface-variant border p-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none transition-all ${
+                  isFocused
+                    ? "border-primary ring-2 ring-primary/10"
+                    : "border-border-subtle hover:border-primary/30"
+                }`}
+              />
+            </div>
+
+            {isFocused && isDirty && (
+              <div className="flex gap-2 animate-in slide-in-from-top-1 duration-150">
+                <button
+                  onClick={handleCancel}
+                  className="flex-1 py-2 rounded-lg bg-surface-variant border border-border-subtle text-[9px] font-black uppercase tracking-widest hover:text-status-red transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={saving || !inputValue.trim()}
+                  className="flex-1 py-2 rounded-lg bg-primary text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/30 disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5"
+                >
+                  {saving ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : (
+                    <>
+                      <Check size={12} strokeWidth={3} />
+                      {isAssigned ? "Save" : "Accept"}
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         )}
 

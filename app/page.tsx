@@ -13,8 +13,7 @@ import { cateringDriverApi } from "@/lib/drivers";
 import type { MealSession } from "@/lib/drivers/types";
 import MetricBox from "@/components/dashboard/MetricBox";
 import SessionCard from "@/components/dashboard/SessionCard";
-import AssignedSessionCard from "@/components/dashboard/AssignedSessionCard";
-import AcceptSessionModal from "@/components/dashboard/AcceptSessionModal";
+import SessionDetailModal from "@/components/dashboard/SessionDetailModal";
 
 export default function HomePage() {
   const [availableSessions, setAvailableSessions] = useState<MealSession[]>([]);
@@ -62,20 +61,7 @@ export default function HomePage() {
     fetchAssigned();
   }, [fetchAvailable, fetchAssigned]);
 
-  const handleAcceptFromModal = async (
-    session: MealSession,
-    driverName: string
-  ) => {
-    await cateringDriverApi.acceptMealSession(session.id, { driverName });
-    setSelectedSession(null);
-    fetchAvailable();
-    fetchAssigned();
-  };
-
-  const handleAcceptFromCard = async (
-    mealSessionId: string,
-    driverName: string
-  ) => {
+  const handleAccept = async (mealSessionId: string, driverName: string) => {
     await cateringDriverApi.acceptMealSession(mealSessionId, { driverName });
     fetchAvailable();
     fetchAssigned();
@@ -86,6 +72,16 @@ export default function HomePage() {
     driverName: string
   ) => {
     await cateringDriverApi.updateDriverName(mealSessionId, { driverName });
+    fetchAssigned();
+  };
+
+  const handleAcceptFromModal = async (
+    session: MealSession,
+    driverName: string
+  ) => {
+    await cateringDriverApi.acceptMealSession(session.id, { driverName });
+    setSelectedSession(null);
+    fetchAvailable();
     fetchAssigned();
   };
 
@@ -184,7 +180,7 @@ export default function HomePage() {
                   key={session.id}
                   session={session}
                   onClick={() => setSelectedSession(session)}
-                  onAccept={handleAcceptFromCard}
+                  onDriverSubmit={handleAccept}
                 />
               ))
             ) : (
@@ -234,11 +230,11 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {assignedSessions.length > 0 ? (
               assignedSessions.map((session) => (
-                <AssignedSessionCard
+                <SessionCard
                   key={session.id}
                   session={session}
-                  onUpdateDriverName={handleUpdateDriverName}
                   onClick={() => setSelectedSession(session)}
+                  onDriverSubmit={handleUpdateDriverName}
                 />
               ))
             ) : (
@@ -252,8 +248,8 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Accept Session Modal */}
-      <AcceptSessionModal
+      {/* Session Detail Modal */}
+      <SessionDetailModal
         session={selectedSession}
         onClose={() => setSelectedSession(null)}
         onAccept={handleAcceptFromModal}

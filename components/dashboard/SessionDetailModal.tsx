@@ -4,17 +4,17 @@ import { useState } from "react";
 import { X, MapPin, Package, Clock, Store, Loader2, UserCheck } from "lucide-react";
 import type { MealSession, MealSessionDeliveryStatus } from "@/lib/drivers/types";
 
-interface AcceptSessionModalProps {
+interface SessionDetailModalProps {
   session: MealSession | null;
   onClose: () => void;
   onAccept: (session: MealSession, driverName: string) => Promise<void>;
 }
 
-export default function AcceptSessionModal({
+export default function SessionDetailModal({
   session,
   onClose,
   onAccept,
-}: AcceptSessionModalProps) {
+}: SessionDetailModalProps) {
   const [driverName, setDriverName] = useState("");
   const [accepting, setAccepting] = useState(false);
 
