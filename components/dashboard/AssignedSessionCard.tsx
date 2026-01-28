@@ -10,6 +10,7 @@ import {
   Pencil,
   Check,
   Loader2,
+  ChevronRight,
 } from "lucide-react";
 import type { MealSession } from "@/lib/drivers/types";
 
@@ -19,11 +20,13 @@ interface AssignedSessionCardProps {
     mealSessionId: string,
     driverName: string
   ) => Promise<void>;
+  onClick?: () => void;
 }
 
 export default function AssignedSessionCard({
   session,
   onUpdateDriverName,
+  onClick,
 }: AssignedSessionCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(session.driverName || "");
@@ -60,7 +63,7 @@ export default function AssignedSessionCard({
 
   return (
     <div className="w-full text-left bg-surface p-6 rounded-2xl shadow-sm border border-border-subtle transition-all duration-300 relative flex flex-col h-full group hover:border-primary/40">
-      <div className="flex-1">
+      <div onClick={onClick} className={`flex-1 ${onClick ? "cursor-pointer" : ""}`}>
         <div className="flex justify-between items-start mb-6">
           <div className="p-3 rounded-xl bg-status-blue/10 text-status-blue transition-colors">
             <Package size={20} />
@@ -85,7 +88,7 @@ export default function AssignedSessionCard({
           <div className="space-y-2">
             {firstPickupAddress && (
               <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
-                <div className="w-7 h-7 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
+                <div className="w-7 h-7 shrink-0 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
                   <Store size={14} />
                 </div>
                 <span className="uppercase tracking-wider truncate">
@@ -94,13 +97,18 @@ export default function AssignedSessionCard({
               </div>
             )}
             {dropoffAddress && (
-              <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
-                <div className="w-7 h-7 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
+              <div className="flex items-start gap-2.5 text-[10px] font-bold opacity-60">
+                <div className="w-7 h-7 shrink-0 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
                   <MapPin size={14} />
                 </div>
-                <span className="uppercase tracking-wider truncate">
-                  Drop: {dropoffAddress}
-                </span>
+                <div className="min-w-0">
+                  <p className="text-[8px] font-black uppercase tracking-widest opacity-60 mb-0.5">
+                    Drop
+                  </p>
+                  <p className="uppercase tracking-wider truncate">
+                    {dropoffAddress}
+                  </p>
+                </div>
               </div>
             )}
           </div>
@@ -199,6 +207,19 @@ export default function AssignedSessionCard({
               </div>
             )}
           </div>
+        </div>
+
+        <div
+          onClick={onClick}
+          className={`flex items-center justify-between text-primary ${onClick ? "cursor-pointer" : ""}`}
+        >
+          <span className="text-[9px] font-black uppercase tracking-widest">
+            View Details
+          </span>
+          <ChevronRight
+            size={16}
+            className="group-hover:translate-x-1 transition-transform"
+          />
         </div>
       </div>
     </div>

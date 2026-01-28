@@ -62,9 +62,21 @@ export default function HomePage() {
     fetchAssigned();
   }, [fetchAvailable, fetchAssigned]);
 
-  const handleAccept = async (session: MealSession, driverName: string) => {
+  const handleAcceptFromModal = async (
+    session: MealSession,
+    driverName: string
+  ) => {
     await cateringDriverApi.acceptMealSession(session.id, { driverName });
     setSelectedSession(null);
+    fetchAvailable();
+    fetchAssigned();
+  };
+
+  const handleAcceptFromCard = async (
+    mealSessionId: string,
+    driverName: string
+  ) => {
+    await cateringDriverApi.acceptMealSession(mealSessionId, { driverName });
     fetchAvailable();
     fetchAssigned();
   };
@@ -172,6 +184,7 @@ export default function HomePage() {
                   key={session.id}
                   session={session}
                   onClick={() => setSelectedSession(session)}
+                  onAccept={handleAcceptFromCard}
                 />
               ))
             ) : (
@@ -225,6 +238,7 @@ export default function HomePage() {
                   key={session.id}
                   session={session}
                   onUpdateDriverName={handleUpdateDriverName}
+                  onClick={() => setSelectedSession(session)}
                 />
               ))
             ) : (
@@ -242,7 +256,7 @@ export default function HomePage() {
       <AcceptSessionModal
         session={selectedSession}
         onClose={() => setSelectedSession(null)}
-        onAccept={handleAccept}
+        onAccept={handleAcceptFromModal}
       />
     </div>
   );
