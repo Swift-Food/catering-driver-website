@@ -95,7 +95,7 @@ function StartDeliveryButton({ onStart }: { onStart: () => Promise<void> }) {
       ) : (
         <Play size={14} />
       )}
-      Start Route
+      Start Delivery
     </button>
   );
 }
