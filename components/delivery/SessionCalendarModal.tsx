@@ -266,9 +266,9 @@ export default function SessionCalendarModal({
                             </p>
                           )}
                         </div>
-                        {s.driverName && (
+                        {s.driverNames && s.driverNames.length > 0 && (
                           <span className="text-[9px] font-black text-status-green shrink-0 truncate max-w-[100px]">
-                            {s.driverName}
+                            {s.driverNames.join(", ")}
                           </span>
                         )}
                       </button>

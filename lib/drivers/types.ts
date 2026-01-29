@@ -446,6 +446,21 @@ export interface DriverDeliveryInfo {
   contactPhone?: string;
 }
 
+// Per-restaurant pickup tracking for multi-driver
+export interface RestaurantPickupStatusEntry {
+  collectedAt: string;
+  pickupProofImageUrl: string;
+  collectedBy: string;
+  notes?: string;
+}
+
+// Per-driver delivery confirmation for multi-driver
+export interface DriverDeliveryConfirmation {
+  confirmedAt: string;
+  deliveryProofImageUrl: string;
+  notes?: string;
+}
+
 export interface DriverMealSessionDto {
   id: string;
   sessionName: string;
@@ -453,8 +468,20 @@ export interface DriverMealSessionDto {
   eventTime: string;
 
   deliveryStatus: MealSessionDeliveryStatus;
-  driverName?: string;
+
+  // MULTI-DRIVER: Arrays instead of single values
+  driverIds: string[];
+  driverNames: string[];
   driverAssignedAt?: string;
+
+  // MULTI-DRIVER: Per-restaurant pickup tracking
+  restaurantPickupStatus: Record<string, RestaurantPickupStatusEntry>;
+
+  // MULTI-DRIVER: Per-driver delivery confirmations
+  driverDeliveryConfirmations: Record<string, DriverDeliveryConfirmation>;
+
+  // Optimistic locking version
+  version: number;
 
   restaurants: DriverRestaurantPickup[];
   totalPortions: number;
@@ -470,8 +497,6 @@ export interface DriverMealSessionDto {
   arrivedAtDestinationAt?: string;
   deliveredAt?: string;
 
-  pickupProofImageUrl?: string;
-  deliveryProofImageUrl?: string;
   driverNotes?: string;
 }
 
@@ -484,14 +509,15 @@ export interface AcceptMealSessionDto {
   driverName: string;
 }
 
-export interface PickupCompleteDto {
-  driverId: string;
+// MULTI-DRIVER: Per-restaurant collection
+export interface CollectRestaurantDto {
+  restaurantId: string;
   pickupProofImageUrl: string;
   notes?: string;
 }
 
-export interface DeliveryCompleteDto {
-  driverId: string;
+// MULTI-DRIVER: Per-driver delivery confirmation
+export interface ConfirmDriverDeliveryDto {
   deliveryProofImageUrl: string;
   notes?: string;
 }
@@ -499,4 +525,9 @@ export interface DeliveryCompleteDto {
 export interface UpdateDriverNameDto {
   driverId?: string;
   driverName: string;
+}
+
+export interface SetDestinationDto {
+  type: "restaurant" | "delivery";
+  restaurantId?: string;
 }

@@ -90,7 +90,14 @@ export default function ActiveDeliveryView({
       setIsCompleting(true);
       try {
         if (stop.type === "PICKUP") {
-          // Mark locally completed
+          // MULTI-DRIVER: Collect individual restaurant
+          const updated = await cateringDriverApi.collectRestaurant(session.id, {
+            restaurantId: stop.id,
+            pickupProofImageUrl: photoUrl,
+          });
+          onSessionUpdate(updated);
+
+          // Mark locally completed for optimistic UI
           const newCompleted = new Set(locallyCompleted);
           newCompleted.add(stop.id);
           setLocallyCompleted(newCompleted);
@@ -104,23 +111,15 @@ export default function ActiveDeliveryView({
           if (allDone) {
             // All pickups done — auto-expand the dropoff stop
             setExpandedStopId("dropoff");
-
-            // Call API
-            const updated = await cateringDriverApi.pickupComplete(session.id, {
-              driverId: "",
-              pickupProofImageUrl: photoUrl,
-            });
-            onSessionUpdate(updated);
           }
         } else {
-          // Dropoff - call arrive then delivery complete
+          // MULTI-DRIVER: Each driver confirms delivery individually
           try {
             await cateringDriverApi.arriveAtDestination(session.id);
           } catch {
             // May already be at destination
           }
-          const updated = await cateringDriverApi.deliveryComplete(session.id, {
-            driverId: "",
+          const updated = await cateringDriverApi.confirmDriverDelivery(session.id, {
             deliveryProofImageUrl: photoUrl,
           });
           onSessionUpdate(updated);

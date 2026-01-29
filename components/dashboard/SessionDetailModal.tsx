@@ -52,16 +52,14 @@ export default function SessionDetailModal({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isFocused]);
 
-  // Re-initialize drivers when session or driverName changes
+  // Re-initialize drivers when session or driverNames changes
   useEffect(() => {
     if (!session) return;
-    const key = `${session.id}::${session.driverName || ""}`;
+    // MULTI-DRIVER: Use driverNames array directly
+    const driverNamesStr = (session.driverNames || []).join(",");
+    const key = `${session.id}::${driverNamesStr}`;
     if (key === lastSyncRef.current) return;
-    const existing = session.driverName || "";
-    const parsed = existing
-      ? existing.split(",").map((n) => n.trim()).filter(Boolean)
-      : [];
-    setDrivers(parsed);
+    setDrivers(session.driverNames || []);
     setDriverInput("");
     setIsFocused(false);
     lastSyncRef.current = key;
@@ -82,10 +80,9 @@ export default function SessionDetailModal({
   const isPending =
     (session.deliveryStatus as MealSessionDeliveryStatus) === "finding_driver";
 
-  const existingDriver = session.driverName || "";
-  const existingDrivers = existingDriver
-    ? existingDriver.split(",").map((n) => n.trim()).filter(Boolean)
-    : [];
+  // MULTI-DRIVER: Use driverNames array directly
+  const existingDrivers = session.driverNames || [];
+  const existingDriver = existingDrivers.join(", ");
   const deliveryStatus = session.deliveryStatus || "";
 
   const hasChanges =

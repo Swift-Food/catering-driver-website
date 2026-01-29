@@ -6,9 +6,10 @@ import type {
   CollectionRouteDto,
   DeliveryTrackingDto,
   AcceptMealSessionDto,
-  PickupCompleteDto,
-  DeliveryCompleteDto,
+  CollectRestaurantDto,
+  ConfirmDriverDeliveryDto,
   UpdateDriverNameDto,
+  SetDestinationDto,
 } from "./types";
 
 export const driversApi = {
@@ -59,13 +60,13 @@ export const cateringDriverApi = {
     return response.data;
   },
 
-  /** Confirm pickup with photo proof */
-  pickupComplete: async (
+  /** MULTI-DRIVER: Collect from a specific restaurant with photo proof */
+  collectRestaurant: async (
     mealSessionId: string,
-    dto: PickupCompleteDto
+    dto: CollectRestaurantDto
   ): Promise<DriverMealSessionDto> => {
     const response = await apiClient.post<DriverMealSessionDto>(
-      `/catering-driver/${mealSessionId}/pickup-complete`,
+      `/catering-driver/${mealSessionId}/collect-restaurant`,
       dto
     );
     return response.data;
@@ -81,16 +82,32 @@ export const cateringDriverApi = {
     return response.data;
   },
 
-  /** Confirm delivery with photo proof */
-  deliveryComplete: async (
+  /** MULTI-DRIVER: Confirm delivery with photo proof (per driver) */
+  confirmDriverDelivery: async (
     mealSessionId: string,
-    dto: DeliveryCompleteDto
+    dto: ConfirmDriverDeliveryDto
   ): Promise<DriverMealSessionDto> => {
     const response = await apiClient.post<DriverMealSessionDto>(
-      `/catering-driver/${mealSessionId}/delivery-complete`,
+      `/catering-driver/${mealSessionId}/confirm-delivery`,
       dto
     );
     return response.data;
+  },
+
+  /** Leave a session (before delivery starts) */
+  leaveSession: async (mealSessionId: string): Promise<void> => {
+    await apiClient.post(`/catering-driver/${mealSessionId}/leave`);
+  },
+
+  /** Set driver's current destination (where they're heading) */
+  setDestination: async (
+    mealSessionId: string,
+    dto: SetDestinationDto
+  ): Promise<void> => {
+    await apiClient.post(
+      `/catering-driver/${mealSessionId}/set-destination`,
+      dto
+    );
   },
 
   /** Get collection route for meal session */

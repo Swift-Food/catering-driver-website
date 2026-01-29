@@ -28,10 +28,9 @@ export default function SessionCard({
 }: SessionCardProps) {
   const isAssigned =
     (session.deliveryStatus as MealSessionDeliveryStatus) !== "finding_driver";
-  const existingDriver = session.driverName || "";
-  const existingDrivers = existingDriver
-    ? existingDriver.split(",").map((n) => n.trim()).filter(Boolean)
-    : [];
+  // MULTI-DRIVER: Use driverNames array directly
+  const existingDrivers = session.driverNames || [];
+  const existingDriver = existingDrivers.join(", ");
 
   const [drivers, setDrivers] = useState<string[]>(existingDrivers);
   const [inputValue, setInputValue] = useState("");
