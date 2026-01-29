@@ -87,7 +87,7 @@ export default function SessionCard({
   };
 
   return (
-    <div className="w-full text-left bg-surface p-6 rounded-2xl shadow-sm border border-border-subtle transition-all duration-300 relative flex flex-col h-full group hover:border-primary/40">
+    <div className="w-full text-left bg-surface p-4 rounded-2xl shadow-sm border border-border-subtle transition-all duration-300 relative flex flex-col h-full group hover:border-primary/40">
       <div onClick={onClick} className={onClick ? "cursor-pointer" : ""}>
         <div className="flex-1">
           <div className="flex justify-between items-start mb-6">
@@ -151,7 +151,7 @@ export default function SessionCard({
           {time && (
             <div className="bg-surface-variant p-3 rounded-xl border border-border-subtle">
               <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1.5">
-                Event Time
+                Event<br />Time
               </p>
               <div className="flex items-center gap-2 text-primary">
                 <Clock size={12} strokeWidth={2.5} />
@@ -164,7 +164,7 @@ export default function SessionCard({
           {pickupTimeRange && (
             <div className="bg-surface-variant p-3 rounded-xl border border-border-subtle">
               <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1.5">
-                Pickup Window
+                Pickup<br />Window
               </p>
               <div className="flex items-center gap-2 text-status-green">
                 <Clock size={12} strokeWidth={2.5} />
