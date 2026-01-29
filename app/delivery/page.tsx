@@ -1,11 +1,20 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { User, Loader2, AlertCircle, Map as MapIcon, RefreshCw } from "lucide-react";
+import {
+  User,
+  Loader2,
+  AlertCircle,
+  Map as MapIcon,
+  RefreshCw,
+} from "lucide-react";
 import { cateringDriverApi, useDriver } from "@/lib/drivers";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import ActiveDeliveryView from "@/components/delivery/ActiveDeliveryView";
-import { getSessionDateLabel, getSessionTimeRange } from "@/components/delivery/sessionUtils";
+import {
+  getSessionDateLabel,
+  getSessionTimeRange,
+} from "@/components/delivery/sessionUtils";
 
 export default function DeliveryPage() {
   const {
@@ -21,7 +30,7 @@ export default function DeliveryPage() {
   const [assignmentsLoading, setAssignmentsLoading] = useState(false);
   const [assignmentsError, setAssignmentsError] = useState<string | null>(null);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
-    null
+    null,
   );
 
   // Fetch assignments when driver is selected
@@ -81,14 +90,11 @@ export default function DeliveryPage() {
     setSelectedDriverName(name);
   };
 
-  const handleSessionUpdate = useCallback(
-    (updated: DriverMealSessionDto) => {
-      setAssignments((prev) =>
-        prev.map((s) => (s.id === updated.id ? updated : s))
-      );
-    },
-    []
-  );
+  const handleSessionUpdate = useCallback((updated: DriverMealSessionDto) => {
+    setAssignments((prev) =>
+      prev.map((s) => (s.id === updated.id ? updated : s)),
+    );
+  }, []);
 
   const selectedSession = assignments.find((s) => s.id === selectedSessionId);
 
@@ -222,11 +228,13 @@ export default function DeliveryPage() {
                         : "bg-surface border-border-subtle hover:border-primary/20"
                     }`}
                   >
-                    <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black ${
-                      selectedSessionId === s.id
-                        ? "bg-primary text-white"
-                        : "bg-surface-variant"
-                    }`}>
+                    <span
+                      className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black ${
+                        selectedSessionId === s.id
+                          ? "bg-primary text-white"
+                          : "bg-surface-variant"
+                      }`}
+                    >
                       {i + 1}
                     </span>
                     <div className="text-left">
@@ -235,7 +243,9 @@ export default function DeliveryPage() {
                       </p>
                       {(dateLabel || timeRange) && (
                         <p className="text-[9px] font-medium opacity-50 leading-tight mt-0.5">
-                          {dateLabel}{dateLabel && timeRange ? " · " : ""}{timeRange}
+                          {dateLabel}
+                          {dateLabel && timeRange ? " · " : ""}
+                          {timeRange}
                         </p>
                       )}
                     </div>
@@ -322,8 +332,7 @@ export default function DeliveryPage() {
         Identify Driver
       </h2>
       <p className="text-sm text-text-muted mb-8 max-w-sm">
-        Please select your driver profile to access active route task lists and
-        verification tools.
+        Please select your driver profile to access delivery lists.
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 w-full max-w-4xl">
         {driverNames.map((name) => (
