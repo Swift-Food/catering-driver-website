@@ -7,11 +7,13 @@ import {
   AlertCircle,
   Map as MapIcon,
   RefreshCw,
+  Calendar,
 } from "lucide-react";
 import { cateringDriverApi, useDriver } from "@/lib/drivers";
 import { useAuth } from "@/lib/auth";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import ActiveDeliveryView from "@/components/delivery/ActiveDeliveryView";
+import SessionCalendarModal from "@/components/delivery/SessionCalendarModal";
 import {
   getSessionDateLabel,
   getSessionTimeRange,
@@ -34,6 +36,7 @@ export default function DeliveryPage() {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
     null,
   );
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // Fetch assignments when driver is selected
   useEffect(() => {
@@ -213,11 +216,19 @@ export default function DeliveryPage() {
         </div>
 
         {/* Session selector */}
-        {assignments.length > 1 && (
-          <div>
-            <p className="text-[9px] font-black uppercase tracking-widest opacity-40 mb-3 px-1">
+        <div>
+          <div className="flex items-center justify-between mb-3 px-1">
+            <p className="text-[9px] font-black uppercase tracking-widest opacity-40">
               Your Delivery Sessions ({assignments.length})
             </p>
+            <button
+              onClick={() => setCalendarOpen(true)}
+              className="w-7 h-7 rounded-lg bg-surface-variant border border-border-subtle flex items-center justify-center hover:border-primary hover:text-primary transition-all"
+            >
+              <Calendar size={14} />
+            </button>
+          </div>
+          {assignments.length > 1 && (
             <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
               {assignments.map((s, i) => {
                 const dateLabel = getSessionDateLabel(s);
@@ -257,7 +268,16 @@ export default function DeliveryPage() {
                 );
               })}
             </div>
-          </div>
+          )}
+        </div>
+
+        {calendarOpen && (
+          <SessionCalendarModal
+            sessions={assignments}
+            selectedSessionId={selectedSessionId}
+            onSelectSession={setSelectedSessionId}
+            onClose={() => setCalendarOpen(false)}
+          />
         )}
 
         {selectedSession && (
