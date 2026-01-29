@@ -17,6 +17,28 @@ import SessionCard from "@/components/dashboard/SessionCard";
 import SessionDetailModal from "@/components/dashboard/SessionDetailModal";
 import SessionCalendarModal from "@/components/delivery/SessionCalendarModal";
 
+function getEarliestPickupTimestamp(session: DriverMealSessionDto): number {
+  let earliest = Infinity;
+  for (const r of session.restaurants) {
+    if (!r.collectionTime) continue;
+    let d = new Date(r.collectionTime);
+    if (isNaN(d.getTime()) && session.sessionDate) {
+      const datePrefix = session.sessionDate.split("T")[0];
+      d = new Date(`${datePrefix}T${r.collectionTime}`);
+    }
+    if (!isNaN(d.getTime()) && d.getTime() < earliest) {
+      earliest = d.getTime();
+    }
+  }
+  return earliest;
+}
+
+function sortByEarliestPickup(sessions: DriverMealSessionDto[]): DriverMealSessionDto[] {
+  return [...sessions].sort(
+    (a, b) => getEarliestPickupTimestamp(a) - getEarliestPickupTimestamp(b)
+  );
+}
+
 export default function HomePage() {
   const [availableSessions, setAvailableSessions] = useState<DriverMealSessionDto[]>([]);
   const [assignedSessions, setAssignedSessions] = useState<DriverMealSessionDto[]>([]);
@@ -197,7 +219,7 @@ export default function HomePage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {availableSessions.length > 0 ? (
-              availableSessions.map((session) => (
+              sortByEarliestPickup(availableSessions).map((session) => (
                 <SessionCard
                   key={session.id}
                   session={session}
@@ -268,7 +290,7 @@ export default function HomePage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {assignedSessions.length > 0 ? (
-              assignedSessions.map((session) => (
+              sortByEarliestPickup(assignedSessions).map((session) => (
                 <SessionCard
                   key={session.id}
                   session={session}
