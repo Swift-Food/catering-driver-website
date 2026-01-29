@@ -73,6 +73,7 @@ export default function GoogleMap({ pins, className = "" }: GoogleMapProps) {
           streetViewControl: false,
           fullscreenControl: false,
           zoomControl: true,
+          gestureHandling: "cooperative",
           styles: isDarkMode ? DARK_STYLES : LIGHT_STYLES,
         });
         mapInstanceRef.current = map;
