@@ -34,7 +34,7 @@ export function Sidebar() {
   return (
     <aside
       className={`hidden md:flex h-full bg-surface border-r border-border-subtle flex-col transition-all duration-300 z-50 ${
-        isExpanded ? "w-72 shadow-xl" : "w-20"
+        isExpanded ? "w-56 shadow-xl" : "w-20"
       }`}
     >
       <div
