@@ -47,6 +47,27 @@ export function formatTime(
 }
 
 /**
+ * Format a date string as "Mon, Jan 1" (short weekday, short month, day).
+ */
+export function formatDateLabel(
+  dateStr?: string | null,
+  fallback = ""
+): string {
+  if (!dateStr) return fallback;
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
+/**
  * Format a Date object to 12-hour time with AM/PM.
  */
 export function formatTimeFromDate(date: Date): string {

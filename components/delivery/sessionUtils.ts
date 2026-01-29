@@ -1,5 +1,5 @@
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
-import { formatDate, formatTimeFromDate } from "@/lib/formatters";
+import { formatDateLabel, formatTimeFromDate } from "@/lib/formatters";
 
 function parseCollectionTime(
   timeStr: string,
@@ -18,7 +18,7 @@ function parseCollectionTime(
 }
 
 export function getSessionDateLabel(session: DriverMealSessionDto): string {
-  return formatDate(session.sessionDate);
+  return formatDateLabel(session.sessionDate);
 }
 
 export function getSessionTimeRange(session: DriverMealSessionDto): string {
