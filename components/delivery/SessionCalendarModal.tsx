@@ -172,7 +172,7 @@ export default function SessionCalendarModal({
                   return <div key={cell.key} />;
                 }
 
-                const hasSessions = !!sessionsByDate[cell.key];
+                const sessionCount = sessionsByDate[cell.key]?.length ?? 0;
                 const isToday = cell.key === todayKey;
                 const isSelected = cell.key === selectedDay;
 
@@ -188,15 +188,20 @@ export default function SessionCalendarModal({
                         : isToday
                           ? "ring-1 ring-primary/40"
                           : ""
-                    } ${hasSessions && !isSelected ? "hover:bg-primary/10" : "hover:bg-surface-variant"}`}
+                    } ${sessionCount > 0 && !isSelected ? "hover:bg-primary/10" : "hover:bg-surface-variant"}`}
                   >
                     {cell.day}
-                    {hasSessions && (
-                      <span
-                        className={`absolute bottom-1 w-1 h-1 rounded-full ${
-                          isSelected ? "bg-white" : "bg-primary"
-                        }`}
-                      />
+                    {sessionCount > 0 && (
+                      <span className="flex gap-0.5 mt-0.5">
+                        {Array.from({ length: sessionCount }).map((_, j) => (
+                          <span
+                            key={j}
+                            className={`w-1 h-1 rounded-full ${
+                              isSelected ? "bg-white" : "bg-primary"
+                            }`}
+                          />
+                        ))}
+                      </span>
                     )}
                   </button>
                 );
