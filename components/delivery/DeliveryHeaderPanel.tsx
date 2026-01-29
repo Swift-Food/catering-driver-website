@@ -1,6 +1,7 @@
 "use client";
 
-import { Package, Clock, Calendar, Store } from "lucide-react";
+import { useState } from "react";
+import { Package, Clock, Calendar, Store, Play, Loader2 } from "lucide-react";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import { formatTime, formatDate } from "@/lib/formatters";
 
@@ -17,16 +18,22 @@ const STATUS_LABELS: Record<string, string> = {
 interface DeliveryHeaderPanelProps {
   session: DriverMealSessionDto;
   pickupCount: number;
+  onStartDelivery?: () => Promise<void>;
 }
 
 export default function DeliveryHeaderPanel({
   session,
   pickupCount,
+  onStartDelivery,
 }: DeliveryHeaderPanelProps) {
   const statusLabel =
     STATUS_LABELS[session.deliveryStatus] || session.deliveryStatus;
 
   const earliestPickupTime = getEarliestPickupTime(session);
+  const showStartButton =
+    session.deliveryStatus === "driver_assigned" &&
+    onStartDelivery &&
+    isWithinTwoHoursOfPickup(session);
 
   return (
     <div className="bg-surface p-6 rounded-2xl border border-border-subtle flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
@@ -59,21 +66,25 @@ export default function DeliveryHeaderPanel({
       </div>
 
       <div className="flex items-center gap-4 lg:gap-6">
-        {/* Earliest Pickup */}
-        <div className="text-left lg:text-right">
-          <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5 flex items-center gap-1.5">
-            <Store size={10} />
-            Earliest Pickup
-          </p>
-          <div className="flex items-center gap-2 text-primary">
-            <Clock size={14} strokeWidth={3} />
-            <span className="text-base font-bold tracking-tight">
-              {earliestPickupTime}
-            </span>
-          </div>
-        </div>
+        {!showStartButton && (
+          <>
+            {/* Earliest Pickup - hidden when start button is shown */}
+            <div className="text-left lg:text-right">
+              <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5 flex items-center gap-1.5">
+                <Store size={10} />
+                Earliest Pickup
+              </p>
+              <div className="flex items-center gap-2 text-primary">
+                <Clock size={14} strokeWidth={3} />
+                <span className="text-base font-bold tracking-tight">
+                  {earliestPickupTime}
+                </span>
+              </div>
+            </div>
 
-        <div className="w-px h-10 bg-border-subtle" />
+            <div className="w-px h-10 bg-border-subtle" />
+          </>
+        )}
 
         {/* Event Time */}
         <div className="text-left lg:text-right">
@@ -87,9 +98,63 @@ export default function DeliveryHeaderPanel({
             </span>
           </div>
         </div>
+
+        {showStartButton && (
+          <>
+            <div className="w-px h-10 bg-border-subtle" />
+            <StartDeliveryButton onStart={onStartDelivery} />
+          </>
+        )}
       </div>
     </div>
   );
+}
+
+function StartDeliveryButton({ onStart }: { onStart: () => Promise<void> }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async () => {
+    setLoading(true);
+    try {
+      await onStart();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={loading}
+      className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50"
+    >
+      {loading ? (
+        <Loader2 size={14} className="animate-spin" />
+      ) : (
+        <Play size={14} />
+      )}
+      Start Delivery
+    </button>
+  );
+}
+
+function isWithinTwoHoursOfPickup(session: DriverMealSessionDto): boolean {
+  const times: Date[] = [];
+
+  for (const restaurant of session.restaurants) {
+    if (restaurant.collectionTime) {
+      const d = parseCollectionTime(restaurant.collectionTime, session.sessionDate);
+      if (d) times.push(d);
+    }
+  }
+
+  if (times.length === 0) return false;
+
+  const earliest = new Date(Math.min(...times.map((d) => d.getTime())));
+  const now = new Date();
+  const twoHoursBefore = new Date(earliest.getTime() - 2 * 60 * 60 * 1000);
+
+  return now >= twoHoursBefore;
 }
 
 function parseCollectionTime(

@@ -37,6 +37,11 @@ export default function ActiveDeliveryView({
   const [uploadingStopId, setUploadingStopId] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
 
+  const handleStartDelivery = useCallback(async () => {
+    const updated = await cateringDriverApi.startDelivery(session.id);
+    onSessionUpdate(updated);
+  }, [session.id, onSessionUpdate]);
+
   // Derive stops from session data
   const stops = useMemo(() => deriveStops(session, locallyCompleted), [
     session,
@@ -140,6 +145,7 @@ export default function ActiveDeliveryView({
       <DeliveryHeaderPanel
         session={session}
         pickupCount={pickupStops.length}
+        onStartDelivery={handleStartDelivery}
       />
 
       {/* Customer details & route progress - mobile only, at top */}
