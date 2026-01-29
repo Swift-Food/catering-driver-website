@@ -9,6 +9,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { cateringDriverApi, useDriver } from "@/lib/drivers";
+import { useAuth } from "@/lib/auth";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import ActiveDeliveryView from "@/components/delivery/ActiveDeliveryView";
 import {
@@ -17,6 +18,7 @@ import {
 } from "@/components/delivery/sessionUtils";
 
 export default function DeliveryPage() {
+  const { isAuthenticated } = useAuth();
   const {
     selectedDriverName,
     setSelectedDriverName,
@@ -35,7 +37,7 @@ export default function DeliveryPage() {
 
   // Fetch assignments when driver is selected
   useEffect(() => {
-    if (!selectedDriverName) {
+    if (!isAuthenticated || !selectedDriverName) {
       setAssignments([]);
       setSelectedSessionId(null);
       return;
@@ -61,18 +63,20 @@ export default function DeliveryPage() {
     };
 
     fetchAssignments();
-  }, [selectedDriverName]);
+  }, [isAuthenticated, selectedDriverName]);
 
-  // Fetch driver names on mount
+  // Fetch driver names once authenticated
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     const fetchDriverNames = async () => {
       try {
         setIsLoading(true);
         setError(null);
         const data = await cateringDriverApi.getActiveDriverNames();
-        setDriverNames(data);
+        setDriverNames(data ?? []);
 
-        if (selectedDriverName && !data.includes(selectedDriverName)) {
+        if (selectedDriverName && !(data ?? []).includes(selectedDriverName)) {
           clearSelectedDriver();
         }
       } catch (err) {
@@ -84,7 +88,7 @@ export default function DeliveryPage() {
     };
 
     fetchDriverNames();
-  }, []);
+  }, [isAuthenticated]);
 
   const handleDriverSelect = (name: string) => {
     setSelectedDriverName(name);
