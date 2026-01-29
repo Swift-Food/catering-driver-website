@@ -64,10 +64,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-app-bg p-4">
-      <div className="bg-surface rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col lg:flex-row">
-        {/* Left side - Image */}
-        <div className="w-full lg:w-1/2 relative bg-surface-variant h-48 lg:h-[600px] flex-shrink-0">
+    <div className="h-dvh flex items-center justify-center bg-surface lg:bg-app-bg lg:p-4">
+      <div className="w-full h-full lg:h-auto lg:bg-surface lg:rounded-3xl lg:shadow-2xl lg:max-w-5xl lg:overflow-hidden flex flex-col lg:flex-row">
+        {/* Left side - Image (hidden on mobile) */}
+        <div className="hidden lg:block w-1/2 relative bg-surface-variant h-[600px] flex-shrink-0">
           <Image
             src="/login-illustration.jpg"
             alt="SwiftFoods Illustration"
@@ -78,7 +78,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right side - Form */}
-        <div className="w-full lg:w-1/2 bg-surface p-8 lg:p-12 flex items-center">
+        <div className="w-full lg:w-1/2 bg-surface px-6 lg:p-12 flex flex-col justify-center flex-1">
           <div className="w-full max-w-md mx-auto">
             {/* Logo/Brand */}
             <div className="text-center mb-8">
