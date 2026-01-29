@@ -41,7 +41,6 @@ export default function HomePage() {
       setLoadingAvailable(true);
       setErrorAvailable(null);
       const data = await cateringDriverApi.getAvailableSessions();
-      console.log("Pending:", data);
       setAvailableSessions(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch available sessions:", err);
@@ -56,7 +55,6 @@ export default function HomePage() {
       setLoadingAssigned(true);
       setErrorAssigned(null);
       const data = await cateringDriverApi.getAssignedSessions();
-      console.log("Upcoming:", data);
       setAssignedSessions(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch assigned sessions:", err);

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Package, Clock, Play, Loader2, Calendar, Store } from "lucide-react";
+import { Package, Clock, Calendar, Store } from "lucide-react";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 
 const STATUS_LABELS: Record<string, string> = {
@@ -17,17 +16,14 @@ const STATUS_LABELS: Record<string, string> = {
 interface DeliveryHeaderPanelProps {
   session: DriverMealSessionDto;
   pickupCount: number;
-  onStartDelivery: () => Promise<void>;
 }
 
 export default function DeliveryHeaderPanel({
   session,
   pickupCount,
-  onStartDelivery,
 }: DeliveryHeaderPanelProps) {
   const statusLabel =
     STATUS_LABELS[session.deliveryStatus] || session.deliveryStatus;
-  const isAssigned = session.deliveryStatus === "driver_assigned";
 
   const earliestPickupTime = getEarliestPickupTime(session);
 
@@ -78,52 +74,20 @@ export default function DeliveryHeaderPanel({
 
         <div className="h-10 w-px bg-border-subtle hidden md:block" />
 
-        {/* Event Time / Start Button */}
-        {isAssigned ? (
-          <StartDeliveryButton onStart={onStartDelivery} />
-        ) : (
-          <div className="text-left md:text-right">
-            <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5">
-              Event Time
-            </p>
-            <div className="flex items-center gap-2 text-primary">
-              <Clock size={14} strokeWidth={3} />
-              <span className="text-base font-bold tracking-tight">
-                {formatTime(session.eventTime)}
-              </span>
-            </div>
+        {/* Event Time */}
+        <div className="text-left md:text-right">
+          <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5">
+            Event Time
+          </p>
+          <div className="flex items-center gap-2 text-primary">
+            <Clock size={14} strokeWidth={3} />
+            <span className="text-base font-bold tracking-tight">
+              {formatTime(session.eventTime)}
+            </span>
           </div>
-        )}
+        </div>
       </div>
     </div>
-  );
-}
-
-function StartDeliveryButton({ onStart }: { onStart: () => Promise<void> }) {
-  const [loading, setLoading] = useState(false);
-
-  const handleClick = async () => {
-    setLoading(true);
-    try {
-      await onStart();
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <button
-      onClick={handleClick}
-      disabled={loading}
-      className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50"
-    >
-      {loading ? (
-        <Loader2 size={14} className="animate-spin" />
-      ) : (
-        <Play size={14} />
-      )}
-      Start Delivery
-    </button>
   );
 }
 

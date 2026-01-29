@@ -61,11 +61,6 @@ export default function ActiveDeliveryView({
   // Map pins
   const mapPins = useMemo(() => deriveMapPins(session), [session]);
 
-  const handleStartDelivery = useCallback(async () => {
-    const updated = await cateringDriverApi.startDelivery(session.id);
-    onSessionUpdate(updated);
-  }, [session.id, onSessionUpdate]);
-
   const handlePhotoSelected = useCallback(
     async (stopId: string, file: File) => {
       setUploadingStopId(stopId);
@@ -144,7 +139,6 @@ export default function ActiveDeliveryView({
       <DeliveryHeaderPanel
         session={session}
         pickupCount={pickupStops.length}
-        onStartDelivery={handleStartDelivery}
       />
 
       {/* Customer details - mobile only, right after header */}
