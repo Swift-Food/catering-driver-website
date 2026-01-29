@@ -38,6 +38,16 @@ export default function SessionCard({
   const [isFocused, setIsFocused] = useState(false);
   const [saving, setSaving] = useState(false);
   const driverRef = useRef<HTMLDivElement>(null);
+  const lastSyncedDriver = useRef(existingDriver);
+
+  // Sync local state when session prop updates (e.g. after parent refetch)
+  useEffect(() => {
+    if (existingDriver !== lastSyncedDriver.current) {
+      setDrivers(existingDrivers);
+      setInputValue("");
+      lastSyncedDriver.current = existingDriver;
+    }
+  }, [existingDriver]);
 
   useEffect(() => {
     if (!isFocused) return;

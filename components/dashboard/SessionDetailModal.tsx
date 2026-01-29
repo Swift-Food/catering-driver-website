@@ -39,7 +39,7 @@ export default function SessionDetailModal({
   const [accepting, setAccepting] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const driverRef = useRef<HTMLDivElement>(null);
-  const [initialized, setInitialized] = useState<string | null>(null);
+  const lastSyncRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!isFocused) return;
@@ -52,18 +52,20 @@ export default function SessionDetailModal({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isFocused]);
 
-  // Re-initialize drivers when session changes
+  // Re-initialize drivers when session or driverName changes
   useEffect(() => {
-    if (session && session.id !== initialized) {
-      const existing = session.driverName || "";
-      const parsed = existing
-        ? existing.split(",").map((n) => n.trim()).filter(Boolean)
-        : [];
-      setDrivers(parsed);
-      setDriverInput("");
-      setInitialized(session.id);
-    }
-  }, [session, initialized]);
+    if (!session) return;
+    const key = `${session.id}::${session.driverName || ""}`;
+    if (key === lastSyncRef.current) return;
+    const existing = session.driverName || "";
+    const parsed = existing
+      ? existing.split(",").map((n) => n.trim()).filter(Boolean)
+      : [];
+    setDrivers(parsed);
+    setDriverInput("");
+    setIsFocused(false);
+    lastSyncRef.current = key;
+  }, [session]);
 
   if (!session) return null;
 
