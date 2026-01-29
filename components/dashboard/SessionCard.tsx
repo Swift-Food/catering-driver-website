@@ -148,19 +148,6 @@ export default function SessionCard({
 
       <div className="mt-6 pt-6 border-t border-border-subtle space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          {time && (
-            <div className="bg-surface-variant p-3 rounded-xl border border-border-subtle">
-              <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1.5">
-                Event<br />Time
-              </p>
-              <div className="flex items-center gap-2 text-primary">
-                <Clock size={12} strokeWidth={2.5} />
-                <span className="text-[11px] font-black tracking-tight">
-                  {time}
-                </span>
-              </div>
-            </div>
-          )}
           {pickupTimeRange && (
             <div className="bg-surface-variant p-3 rounded-xl border border-border-subtle">
               <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1.5">
@@ -170,6 +157,19 @@ export default function SessionCard({
                 <Clock size={12} strokeWidth={2.5} />
                 <span className="text-[11px] font-black tracking-tight">
                   {pickupTimeRange}
+                </span>
+              </div>
+            </div>
+          )}
+          {time && (
+            <div className="bg-surface-variant p-3 rounded-xl border border-border-subtle">
+              <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1.5">
+                Event<br />Time
+              </p>
+              <div className="flex items-center gap-2 text-primary">
+                <Clock size={12} strokeWidth={2.5} />
+                <span className="text-[11px] font-black tracking-tight">
+                  {time}
                 </span>
               </div>
             </div>
