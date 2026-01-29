@@ -9,7 +9,7 @@ import type { MapPin } from "@/components/dashboard/GoogleMap";
 import DeliveryHeaderPanel from "./DeliveryHeaderPanel";
 import TabSwitcher from "./TabSwitcher";
 import StopTimelineItem from "./StopTimelineItem";
-import DeliverySidebar from "./DeliverySidebar";
+import DeliverySidebar, { ContactSwiftCard } from "./DeliverySidebar";
 import GoogleMap from "@/components/dashboard/GoogleMap";
 import { formatTime } from "@/lib/formatters";
 
@@ -142,6 +142,15 @@ export default function ActiveDeliveryView({
         pickupCount={pickupStops.length}
       />
 
+      {/* Customer details & route progress - mobile only, at top */}
+      <div className="lg:hidden">
+        <DeliverySidebar
+          session={session}
+          totalStops={stops.length}
+          remainingStops={stops.filter((s) => !s.completed).length}
+        />
+      </div>
+
       <div className="grid lg:grid-cols-12 gap-6 items-start">
         <div className="lg:col-span-8 space-y-6">
           <TabSwitcher viewMode={viewMode} onChangeViewMode={setViewMode} />
@@ -209,23 +218,20 @@ export default function ActiveDeliveryView({
           )}
         </div>
 
-        {/* Customer details - desktop only, in sidebar */}
-        <div className="hidden lg:block lg:col-span-4">
+        {/* Customer details, route progress & contact - desktop sidebar */}
+        <div className="hidden lg:block lg:col-span-4 space-y-6">
           <DeliverySidebar
             session={session}
             totalStops={stops.length}
             remainingStops={stops.filter((s) => !s.completed).length}
           />
+          <ContactSwiftCard />
         </div>
       </div>
 
-      {/* Customer details & contact - mobile only, at bottom */}
+      {/* Contact Swift - mobile only, at bottom */}
       <div className="lg:hidden">
-        <DeliverySidebar
-          session={session}
-          totalStops={stops.length}
-          remainingStops={stops.filter((s) => !s.completed).length}
-        />
+        <ContactSwiftCard />
       </div>
     </div>
   );
