@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${geistMono.variable} antialiased text-gray-900 dark:text-gray-100 transition-colors duration-300 overflow-hidden`}
+        className={`${inter.variable} ${geistMono.variable} antialiased text-gray-900 dark:text-gray-100 transition-colors duration-150 overflow-hidden`}
       >
         <Providers>
           <AuthGuard>{children}</AuthGuard>
