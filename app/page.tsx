@@ -195,7 +195,7 @@ export default function HomePage() {
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {availableSessions.length > 0 ? (
               availableSessions.map((session) => (
                 <SessionCard
@@ -266,7 +266,7 @@ export default function HomePage() {
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {assignedSessions.length > 0 ? (
               assignedSessions.map((session) => (
                 <SessionCard
