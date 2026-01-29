@@ -142,15 +142,6 @@ export default function ActiveDeliveryView({
         pickupCount={pickupStops.length}
       />
 
-      {/* Customer details - mobile only, right after header */}
-      <div className="lg:hidden">
-        <DeliverySidebar
-          session={session}
-          totalStops={stops.length}
-          remainingStops={stops.filter((s) => !s.completed).length}
-        />
-      </div>
-
       <div className="grid lg:grid-cols-12 gap-6 items-start">
         <div className="lg:col-span-8 space-y-6">
           <TabSwitcher viewMode={viewMode} onChangeViewMode={setViewMode} />
@@ -226,6 +217,15 @@ export default function ActiveDeliveryView({
             remainingStops={stops.filter((s) => !s.completed).length}
           />
         </div>
+      </div>
+
+      {/* Customer details & contact - mobile only, at bottom */}
+      <div className="lg:hidden">
+        <DeliverySidebar
+          session={session}
+          totalStops={stops.length}
+          remainingStops={stops.filter((s) => !s.completed).length}
+        />
       </div>
     </div>
   );

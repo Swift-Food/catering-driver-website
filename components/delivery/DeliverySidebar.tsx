@@ -7,6 +7,7 @@ import {
   ListChecks,
   Phone,
   MessageSquare,
+  MessageCircle,
 } from "lucide-react";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import { formatTime } from "@/lib/formatters";
@@ -108,6 +109,29 @@ export default function DeliverySidebar({
               {remainingStops}
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* Contact Swift */}
+      <div className="bg-surface p-6 rounded-2xl border border-border-subtle space-y-4">
+        <h3 className="text-xs font-black uppercase tracking-widest opacity-40">
+          Contact Swift
+        </h3>
+        <div className="flex gap-2">
+          <a
+            href="tel:+441234567890"
+            className="flex-1 py-3 bg-primary/5 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all border border-primary/10 flex items-center justify-center gap-2"
+          >
+            <Phone size={14} /> Call
+          </a>
+          <a
+            href="https://wa.me/441234567890"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 py-3 bg-green-500/10 text-green-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-green-500/20 transition-all border border-green-500/20 flex items-center justify-center gap-2"
+          >
+            <MessageCircle size={14} /> WhatsApp
+          </a>
         </div>
       </div>
     </div>
