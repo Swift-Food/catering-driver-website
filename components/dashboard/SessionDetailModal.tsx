@@ -8,7 +8,6 @@ import {
   Clock,
   Store,
   Loader2,
-  UserCheck,
   UserPlus,
   Check,
   ChevronLeft,
@@ -86,6 +85,10 @@ export default function SessionDetailModal({
     ? existingDriver.split(",").map((n) => n.trim()).filter(Boolean)
     : [];
   const deliveryStatus = session.deliveryStatus || "";
+
+  const hasChanges =
+    drivers.length !== existingDrivers.length ||
+    drivers.some((d, i) => d !== existingDrivers[i]);
 
   const mapPins: GoogleMapPin[] = [
     ...session.restaurants
@@ -226,50 +229,60 @@ export default function SessionDetailModal({
             </div>
 
             <div ref={driverRef} className="relative">
-              <button
-                type="button"
-                onClick={() => setIsFocused(true)}
-                className={`w-full bg-surface-variant border p-2.5 text-left transition-all ${
-                  isFocused
-                    ? "border-primary ring-2 ring-primary/10 rounded-t-xl rounded-b-none"
-                    : "border-border-subtle rounded-xl"
-                } relative ${!isPending ? "pr-9" : ""}`}
-              >
-                {drivers.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {drivers.map((name, i) => (
-                      <span
-                        key={i}
-                        className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded-md text-[10px] font-black"
-                      >
-                        {name}
-                        {isFocused && (
-                          <span
-                            role="button"
-                            onPointerDown={(e) => {
-                              e.stopPropagation();
-                              removeDriver(i);
-                            }}
-                            className="hover:text-status-red transition-colors cursor-pointer"
-                          >
-                            <X size={10} strokeWidth={3} />
-                          </span>
-                        )}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-[10px] font-black opacity-40">
-                    {isPending ? "Assign Driver..." : "Change driver..."}
-                  </span>
+              <div className="flex items-stretch gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsFocused(true)}
+                  className={`flex-1 min-w-0 bg-surface-variant border p-2.5 text-left transition-all ${
+                    isFocused
+                      ? "border-primary ring-2 ring-primary/10 rounded-t-xl rounded-b-none"
+                      : "border-border-subtle rounded-xl"
+                  } relative`}
+                >
+                  {drivers.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {drivers.map((name, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded-md text-[10px] font-black"
+                        >
+                          {name}
+                          {isFocused && (
+                            <span
+                              role="button"
+                              onPointerDown={(e) => {
+                                e.stopPropagation();
+                                removeDriver(i);
+                              }}
+                              className="hover:text-status-red transition-colors cursor-pointer"
+                            >
+                              <X size={10} strokeWidth={3} />
+                            </span>
+                          )}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-[10px] font-black opacity-40">
+                      {isPending ? "Assign Driver..." : "Change driver..."}
+                    </span>
+                  )}
+                </button>
+                {hasChanges && (
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={accepting}
+                    className="w-10 shrink-0 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/30 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    {accepting ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <Check size={16} strokeWidth={3} />
+                    )}
+                  </button>
                 )}
-                {!isPending && !isFocused && (
-                  <UserCheck
-                    size={14}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-status-green pointer-events-none"
-                  />
-                )}
-              </button>
+              </div>
 
               {isFocused && (
                 <div className="absolute top-full left-0 right-0 bg-surface border border-border-subtle border-t-0 rounded-b-xl shadow-2xl z-[100] animate-in slide-in-from-top-2 duration-200 overflow-hidden p-3 space-y-3">
@@ -291,11 +304,7 @@ export default function SessionDetailModal({
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
-                        if (driverInput.trim()) {
-                          addDriver(driverInput);
-                        } else {
-                          handleSubmit();
-                        }
+                        if (driverInput.trim()) addDriver(driverInput);
                       }
                       if (e.key === "Backspace" && !driverInput && drivers.length > 0) {
                         removeDriver(drivers.length - 1);
@@ -312,23 +321,14 @@ export default function SessionDetailModal({
                       Cancel
                     </button>
                     <button
-                      onClick={handleSubmit}
-                      disabled={
-                        accepting ||
-                        (drivers.length === 0 && !driverInput.trim()) ||
-                        (!isPending &&
-                          [...drivers, ...(driverInput.trim() ? [driverInput.trim()] : [])].join(", ") === existingDriver)
-                      }
+                      onClick={() => {
+                        if (driverInput.trim()) addDriver(driverInput);
+                      }}
+                      disabled={!driverInput.trim()}
                       className="flex-1 py-2.5 rounded-lg bg-primary text-white text-[9px] font-black uppercase tracking-widest shadow-lg shadow-primary/30 disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5"
                     >
-                      {accepting ? (
-                        <Loader2 size={12} className="animate-spin" />
-                      ) : (
-                        <>
-                          <Check size={12} strokeWidth={3} />
-                          {isPending ? "Accept" : "Update"}
-                        </>
-                      )}
+                      <Check size={12} strokeWidth={3} />
+                      Add
                     </button>
                   </div>
                 </div>
