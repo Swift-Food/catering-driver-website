@@ -141,27 +141,20 @@ export default function SessionDetailModal({
 
           <div className="space-y-6 px-4 md:px-8 pb-4 md:pb-8 pt-2">
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2 md:gap-4">
             <CompactInfo
-              icon={<Package size={16} />}
+              icon={<Clock size={16} />}
+              label="Event Time"
+              value={time}
+              color="text-status-blue"
+              subtitle={date || undefined}
+            />
+            <CompactInfo
+              icon={<Package size={18} />}
               label="Portions"
               value={portionCount.toString()}
               color="text-primary"
             />
-            <div className="bg-surface-variant p-4 rounded-2xl border border-border-subtle">
-              <div className="flex items-center gap-2 mb-1 text-status-blue">
-                <Clock size={16} />
-                <span className="text-[9px] font-black uppercase tracking-widest opacity-50 text-text-muted">
-                  Event Time
-                </span>
-              </div>
-              <p className="text-lg font-mont leading-tight">{time}</p>
-              {date && (
-                <p className="text-[10px] font-bold opacity-50 mt-1">
-                  {date}
-                </p>
-              )}
-            </div>
             <CompactInfo
               icon={<Store size={16} />}
               label="Pickups"
@@ -379,11 +372,13 @@ function CompactInfo({
   label,
   value,
   color,
+  subtitle,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   color: string;
+  subtitle?: string;
 }) {
   return (
     <div className="bg-surface-variant p-4 rounded-2xl border border-border-subtle">
@@ -393,7 +388,10 @@ function CompactInfo({
           {label}
         </span>
       </div>
-      <p className="text-lg font-mont">{value}</p>
+      <p className="text-sm font-semibold font-mont">{value}</p>
+      {subtitle && (
+        <p className="text-[10px] font-bold opacity-50 mt-1">{subtitle}</p>
+      )}
     </div>
   );
 }
