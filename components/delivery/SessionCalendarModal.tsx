@@ -13,6 +13,7 @@ interface SessionCalendarModalProps {
   selectedSessionId: string | null;
   onSelectSession: (id: string) => void;
   onClose: () => void;
+  initialSelectedDay?: string | null;
 }
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -33,11 +34,18 @@ export default function SessionCalendarModal({
   selectedSessionId,
   onSelectSession,
   onClose,
+  initialSelectedDay,
 }: SessionCalendarModalProps) {
   const today = new Date();
-  const [viewYear, setViewYear] = useState(today.getFullYear());
-  const [viewMonth, setViewMonth] = useState(today.getMonth());
-  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const initialMonth = initialSelectedDay
+    ? parseInt(initialSelectedDay.split("-")[1], 10) - 1
+    : today.getMonth();
+  const initialYear = initialSelectedDay
+    ? parseInt(initialSelectedDay.split("-")[0], 10)
+    : today.getFullYear();
+  const [viewYear, setViewYear] = useState(initialYear);
+  const [viewMonth, setViewMonth] = useState(initialMonth);
+  const [selectedDay, setSelectedDay] = useState<string | null>(initialSelectedDay ?? null);
 
   // Map date keys to sessions
   const sessionsByDate = useMemo(() => {
@@ -242,7 +250,7 @@ export default function SessionCalendarModal({
                         >
                           {globalIndex >= 0 ? globalIndex + 1 : i + 1}
                         </span>
-                        <div className="text-left">
+                        <div className="text-left flex-1 min-w-0">
                           <p className="leading-tight">
                             {s.sessionName || `Session ${globalIndex >= 0 ? globalIndex + 1 : i + 1}`}
                           </p>
@@ -258,6 +266,11 @@ export default function SessionCalendarModal({
                             </p>
                           )}
                         </div>
+                        {s.driverName && (
+                          <span className="text-[9px] font-black text-status-green shrink-0 truncate max-w-[100px]">
+                            {s.driverName}
+                          </span>
+                        )}
                       </button>
                     );
                   })}

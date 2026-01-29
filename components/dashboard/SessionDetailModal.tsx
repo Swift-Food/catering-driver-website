@@ -11,6 +11,7 @@ import {
   UserCheck,
   UserPlus,
   Check,
+  ChevronLeft,
 } from "lucide-react";
 import type { DriverMealSessionDto, MealSessionDeliveryStatus } from "@/lib/drivers/types";
 import GoogleMap, { type MapPin as GoogleMapPin } from "@/components/dashboard/GoogleMap";
@@ -24,6 +25,7 @@ interface SessionDetailModalProps {
     session: DriverMealSessionDto,
     driverName: string
   ) => Promise<void>;
+  onBack?: () => void;
 }
 
 export default function SessionDetailModal({
@@ -31,6 +33,7 @@ export default function SessionDetailModal({
   onClose,
   onAccept,
   onUpdateDriverName,
+  onBack,
 }: SessionDetailModalProps) {
   const [driverName, setDriverName] = useState("");
   const [accepting, setAccepting] = useState(false);
@@ -123,7 +126,7 @@ export default function SessionDetailModal({
         {/* Scrollable Content */}
         <div className="overflow-y-auto hide-scrollbar max-h-[80vh] rounded-3xl">
           {/* Sticky Header */}
-          <div className="sticky top-0 z-10 bg-surface/10 backdrop-blur-xs rounded-t-3xl px-4 md:px-8 pt-4 md:pt-8 pb-4 ">
+          <div className="sticky top-0 z-10 bg-surface rounded-t-3xl px-4 md:px-8 pt-4 md:pt-8 pb-4">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">
@@ -132,10 +135,10 @@ export default function SessionDetailModal({
                 <h2 className="text-2xl font-black">{restaurantName}</h2>
               </div>
               <button
-                onClick={onClose}
+                onClick={onBack ?? onClose}
                 className="w-8 h-8 rounded-lg bg-surface-variant flex items-center justify-center hover:text-primary transition-colors border border-border-subtle shrink-0"
               >
-                <X size={18} />
+                {onBack ? <ChevronLeft size={18} /> : <X size={18} />}
               </button>
             </div>
           </div>

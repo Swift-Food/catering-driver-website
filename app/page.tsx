@@ -8,12 +8,14 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
+  Calendar,
 } from "lucide-react";
 import { cateringDriverApi } from "@/lib/drivers";
 import type { DriverMealSessionDto, DeliveryAnalyticsDto } from "@/lib/drivers/types";
 import MetricBox from "@/components/dashboard/MetricBox";
 import SessionCard from "@/components/dashboard/SessionCard";
 import SessionDetailModal from "@/components/dashboard/SessionDetailModal";
+import SessionCalendarModal from "@/components/delivery/SessionCalendarModal";
 
 export default function HomePage() {
   const [availableSessions, setAvailableSessions] = useState<DriverMealSessionDto[]>([]);
@@ -26,6 +28,9 @@ export default function HomePage() {
   const [selectedSession, setSelectedSession] = useState<DriverMealSessionDto | null>(
     null
   );
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [openedFromCalendar, setOpenedFromCalendar] = useState(false);
+  const [calendarSelectedDay, setCalendarSelectedDay] = useState<string | null>(null);
 
   const fetchAnalytics = useCallback(async () => {
     try {
@@ -214,12 +219,29 @@ export default function HomePage() {
 
       {/* Upcoming Deliveries (Assigned) Section */}
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-black">Upcoming Deliveries</h2>
+        <div>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black">Upcoming Deliveries</h2>
+            <div className="flex items-center gap-3">
+              {!loadingAssigned && (
+                <span className="text-xs font-bold opacity-40 uppercase tracking-widest hidden md:block">
+                  {assignedSessions.length} Upcoming
+                </span>
+              )}
+              {assignedSessions.length > 0 && (
+                <button
+                  onClick={() => setCalendarOpen(true)}
+                  className="w-8 h-8 rounded-lg bg-pink-500 text-white flex items-center justify-center hover:bg-pink-600 transition-colors cursor-pointer"
+                >
+                  <Calendar size={16} />
+                </button>
+              )}
+            </div>
+          </div>
           {!loadingAssigned && (
-            <span className="text-xs font-bold opacity-40 uppercase tracking-widest">
+            <p className="text-xs font-bold opacity-40 uppercase tracking-widest mt-1 md:hidden">
               {assignedSessions.length} Upcoming
-            </span>
+            </p>
           )}
         </div>
 
@@ -265,12 +287,50 @@ export default function HomePage() {
         )}
       </div>
 
+      {/* Calendar Modal */}
+      {calendarOpen && (
+        <SessionCalendarModal
+          sessions={assignedSessions}
+          selectedSessionId={selectedSession?.id ?? null}
+          initialSelectedDay={calendarSelectedDay}
+          onSelectSession={(id) => {
+            const session = assignedSessions.find((s) => s.id === id);
+            if (session) {
+              setSelectedSession(session);
+              setOpenedFromCalendar(true);
+              if (session.sessionDate) {
+                const d = new Date(session.sessionDate);
+                if (!isNaN(d.getTime())) {
+                  setCalendarSelectedDay(
+                    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+                  );
+                }
+              }
+            }
+            setCalendarOpen(false);
+          }}
+          onClose={() => setCalendarOpen(false)}
+        />
+      )}
+
       {/* Session Detail Modal */}
       <SessionDetailModal
         session={selectedSession}
-        onClose={() => setSelectedSession(null)}
+        onClose={() => {
+          setSelectedSession(null);
+          setOpenedFromCalendar(false);
+          setCalendarSelectedDay(null);
+        }}
         onAccept={handleAcceptFromModal}
         onUpdateDriverName={handleUpdateDriverNameFromModal}
+        onBack={
+          openedFromCalendar
+            ? () => {
+                setSelectedSession(null);
+                setCalendarOpen(true);
+              }
+            : undefined
+        }
       />
     </div>
   );
