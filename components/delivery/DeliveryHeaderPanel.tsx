@@ -58,7 +58,7 @@ export default function DeliveryHeaderPanel({
         </div>
       </div>
 
-      <div className="flex items-center gap-4 lg:gap-6 flex-wrap">
+      <div className="flex items-center gap-4 lg:gap-6">
         {/* Earliest Pickup */}
         <div className="text-left lg:text-right">
           <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5 flex items-center gap-1.5">
@@ -73,7 +73,7 @@ export default function DeliveryHeaderPanel({
           </div>
         </div>
 
-        <div className="w-full h-px lg:w-px lg:h-10 bg-border-subtle" />
+        <div className="w-px h-10 bg-border-subtle" />
 
         {/* Event Time */}
         <div className="text-left lg:text-right">
