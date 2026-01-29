@@ -46,51 +46,61 @@ export default function DeliveryPage() {
       return;
     }
 
+    let stale = false;
+
     const fetchAssignments = async () => {
       try {
         setAssignmentsLoading(true);
         setAssignmentsError(null);
         const data =
           await cateringDriverApi.getMyAssignments(selectedDriverName);
+        if (stale) return;
         const sessions = data ?? [];
         setAssignments(sessions);
         if (sessions.length > 0) {
           setSelectedSessionId(sessions[0].id);
         }
       } catch (err) {
+        if (stale) return;
         setAssignmentsError("Failed to load assignments. Please try again.");
         console.error("Error fetching assignments:", err);
       } finally {
-        setAssignmentsLoading(false);
+        if (!stale) setAssignmentsLoading(false);
       }
     };
 
     fetchAssignments();
+    return () => { stale = true; };
   }, [isAuthenticated, selectedDriverName]);
 
   // Fetch driver names once authenticated
   useEffect(() => {
     if (!isAuthenticated) return;
 
+    let stale = false;
+
     const fetchDriverNames = async () => {
       try {
         setIsLoading(true);
         setError(null);
         const data = await cateringDriverApi.getActiveDriverNames();
+        if (stale) return;
         setDriverNames(data ?? []);
 
         if (selectedDriverName && !(data ?? []).includes(selectedDriverName)) {
           clearSelectedDriver();
         }
       } catch (err) {
+        if (stale) return;
         setError("Failed to load available drivers. Please try again.");
         console.error("Error fetching drivers:", err);
       } finally {
-        setIsLoading(false);
+        if (!stale) setIsLoading(false);
       }
     };
 
     fetchDriverNames();
+    return () => { stale = true; };
   }, [isAuthenticated]);
 
   const handleDriverSelect = (name: string) => {

@@ -4,7 +4,6 @@ import {
   createContext,
   useContext,
   useState,
-  useEffect,
   ReactNode,
 } from "react";
 
@@ -22,22 +21,17 @@ const DriverContext = createContext<DriverContextType | undefined>(undefined);
 export function DriverProvider({ children }: { children: ReactNode }) {
   const [selectedDriverName, setSelectedDriverNameState] = useState<
     string | null
-  >(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setSelectedDriverNameState(stored);
+  >(() => {
+    if (typeof window !== "undefined") {
+      try {
+        return localStorage.getItem(STORAGE_KEY);
+      } catch {
+        return null;
       }
-    } catch (error) {
-      console.error("Failed to load selected driver:", error);
-    } finally {
-      setIsLoading(false);
     }
-  }, []);
+    return null;
+  });
+  const [isLoading] = useState(false);
 
   const setSelectedDriverName = (name: string | null) => {
     setSelectedDriverNameState(name);

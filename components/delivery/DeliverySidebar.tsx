@@ -8,6 +8,7 @@ import {
   Phone,
   MessageSquare,
   MessageCircle,
+  Mail,
 } from "lucide-react";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import { formatTime } from "@/lib/formatters";
@@ -64,7 +65,10 @@ export default function DeliverySidebar({
                 <Phone size={14} /> Call
               </a>
             ) : (
-              <button disabled className="flex-1 py-3 bg-primary/5 text-primary/30 rounded-xl text-[10px] font-black uppercase tracking-widest border border-primary/10 flex items-center justify-center gap-2">
+              <button
+                disabled
+                className="flex-1 py-3 bg-primary/5 text-primary/30 rounded-xl text-[10px] font-black uppercase tracking-widest border border-primary/10 flex items-center justify-center gap-2"
+              >
                 <Phone size={14} /> Call
               </button>
             )}
@@ -78,7 +82,10 @@ export default function DeliverySidebar({
                 <MessageSquare size={14} /> WhatsApp
               </a>
             ) : (
-              <button disabled className="flex-1 py-3 bg-primary/5 text-primary/30 rounded-xl text-[10px] font-black uppercase tracking-widest border border-primary/10 flex items-center justify-center gap-2">
+              <button
+                disabled
+                className="flex-1 py-3 bg-primary/5 text-primary/30 rounded-xl text-[10px] font-black uppercase tracking-widest border border-primary/10 flex items-center justify-center gap-2"
+              >
                 <MessageSquare size={14} /> WhatsApp
               </button>
             )}
@@ -111,7 +118,6 @@ export default function DeliverySidebar({
           </div>
         </div>
       </div>
-
     </div>
   );
 }
@@ -124,18 +130,24 @@ export function ContactSwiftCard() {
       </h3>
       <div className="flex gap-2">
         <a
-          href="tel:+441234567890"
+          href="tel:+447579861074"
           className="flex-1 py-3 bg-primary/5 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all border border-primary/10 flex items-center justify-center gap-2"
         >
-          <Phone size={14} /> Call
+          <Phone size={12} /> 
         </a>
         <a
-          href="https://wa.me/441234567890"
+          href="mailto:masahirohan@swiftfood.uk"
+          className="flex-1 py-3 bg-blue-500/10 text-blue-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-500/20 transition-all border border-blue-500/20 flex items-center justify-center gap-2"
+        >
+          <Mail size={12} /> 
+        </a>
+        <a
+          href="https://wa.me/447579861074"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 py-3 bg-green-500/10 text-green-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-green-500/20 transition-all border border-green-500/20 flex items-center justify-center gap-2"
+          className="flex-2 py-3 bg-green-500/10 text-green-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-green-500/20 transition-all border border-green-500/20 flex items-center justify-center gap-2"
         >
-          <MessageCircle size={14} /> WhatsApp
+          <MessageCircle size={12} /> WhatsApp
         </a>
       </div>
     </div>
@@ -186,4 +198,3 @@ function SidebarItem({
     </div>
   );
 }
-
