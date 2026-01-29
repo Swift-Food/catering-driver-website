@@ -247,7 +247,7 @@ export default function DeliveryPage() {
                       </p>
                       {(dateLabel || timeRange) && (
                         <p className="text-[9px] font-medium opacity-50 leading-tight mt-0.5">
-                          {dateLabel}
+                          {dateLabel && <span className="font-black opacity-100 text-text">{dateLabel}</span>}
                           {dateLabel && timeRange ? " · " : ""}
                           {timeRange}
                         </p>
