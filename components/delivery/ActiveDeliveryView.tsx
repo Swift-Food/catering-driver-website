@@ -157,8 +157,8 @@ export default function ActiveDeliveryView({
         />
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-6 items-start">
-        <div className="lg:col-span-8 space-y-6">
+      <div className="grid lg:grid-cols-5 gap-6 items-start">
+        <div className="lg:col-span-3 space-y-6">
           <TabSwitcher viewMode={viewMode} onChangeViewMode={setViewMode} />
 
           {viewMode === "TIMELINE" ? (
@@ -225,7 +225,7 @@ export default function ActiveDeliveryView({
         </div>
 
         {/* Customer details, route progress & contact - desktop sidebar */}
-        <div className="hidden lg:block lg:col-span-4 space-y-6">
+        <div className="hidden lg:block lg:col-span-2 space-y-6">
           <DeliverySidebar
             session={session}
             totalStops={stops.length}
