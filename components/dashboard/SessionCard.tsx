@@ -48,16 +48,16 @@ export default function SessionCard({
   const restaurantName = session.sessionName || "Meal Session";
   const portionCount = session.totalPortions;
   const date = session.sessionDate || "";
-  const time = session.eventTime || "";
+  const time = formatTime(session.eventTime);
 
   const pickupCount = session.restaurants.length;
 
   const collectionTimes = session.restaurants.map((r) => r.collectionTime).filter(Boolean);
   const pickupTimeRange =
     collectionTimes.length > 1
-      ? `${collectionTimes[0]} – ${collectionTimes[collectionTimes.length - 1]}`
+      ? `${formatTime(collectionTimes[0])} – ${formatTime(collectionTimes[collectionTimes.length - 1])}`
       : collectionTimes.length === 1
-        ? collectionTimes[0]
+        ? formatTime(collectionTimes[0])
         : "";
 
   const dropoffAddress = session.delivery.address || "";
@@ -269,4 +269,22 @@ export default function SessionCard({
       </div>
     </div>
   );
+}
+
+function formatTime(dateStr?: string | null): string {
+  if (!dateStr) return "";
+  try {
+    let date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      date = new Date(`1970-01-01T${dateStr}`);
+      if (isNaN(date.getTime())) return dateStr;
+    }
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  } catch {
+    return dateStr;
+  }
 }

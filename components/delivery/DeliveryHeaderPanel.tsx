@@ -28,7 +28,7 @@ export default function DeliveryHeaderPanel({
   const earliestPickupTime = getEarliestPickupTime(session);
 
   return (
-    <div className="bg-surface p-6 rounded-2xl border border-border-subtle flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div className="bg-surface p-6 rounded-2xl border border-border-subtle flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
       <div className="flex items-center gap-5">
         <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
           <Package size={24} />
@@ -57,9 +57,9 @@ export default function DeliveryHeaderPanel({
         </div>
       </div>
 
-      <div className="flex items-center gap-4 md:gap-6 flex-wrap">
+      <div className="flex items-center gap-4 lg:gap-6 flex-wrap">
         {/* Earliest Pickup */}
-        <div className="text-left md:text-right">
+        <div className="text-left lg:text-right">
           <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5 flex items-center gap-1.5">
             <Store size={10} />
             Earliest Pickup
@@ -72,10 +72,10 @@ export default function DeliveryHeaderPanel({
           </div>
         </div>
 
-        <div className="h-10 w-px bg-border-subtle hidden md:block" />
+        <div className="w-full h-px lg:w-px lg:h-10 bg-border-subtle" />
 
         {/* Event Time */}
-        <div className="text-left md:text-right">
+        <div className="text-left lg:text-right">
           <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5">
             Event Time
           </p>
@@ -129,8 +129,12 @@ function getEarliestPickupTime(session: DriverMealSessionDto): string {
 function formatTime(dateStr?: string | null): string {
   if (!dateStr) return "N/A";
   try {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return dateStr;
+    let date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      // Try as time-only string (e.g. "11:00", "2:30 PM")
+      date = new Date(`1970-01-01T${dateStr}`);
+      if (isNaN(date.getTime())) return dateStr;
+    }
     return date.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",

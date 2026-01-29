@@ -161,8 +161,11 @@ function SidebarItem({
 function formatTime(dateStr?: string | null): string {
   if (!dateStr) return "N/A";
   try {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return dateStr;
+    let date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      date = new Date(`1970-01-01T${dateStr}`);
+      if (isNaN(date.getTime())) return dateStr;
+    }
     return date.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
