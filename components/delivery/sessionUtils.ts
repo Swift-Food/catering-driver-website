@@ -1,4 +1,5 @@
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
+import { formatDate, formatTimeFromDate } from "@/lib/formatters";
 
 function parseCollectionTime(
   timeStr: string,
@@ -16,28 +17,8 @@ function parseCollectionTime(
   return null;
 }
 
-function formatTime(date: Date): string {
-  return date.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-}
-
 export function getSessionDateLabel(session: DriverMealSessionDto): string {
-  const dateStr = session.sessionDate;
-  if (!dateStr) return "";
-  try {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return "";
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-    });
-  } catch {
-    return "";
-  }
+  return formatDate(session.sessionDate);
 }
 
 export function getSessionTimeRange(session: DriverMealSessionDto): string {
@@ -63,8 +44,8 @@ export function getSessionTimeRange(session: DriverMealSessionDto): string {
 
   if (!earliest && !eventDate) return "";
   if (earliest && eventDate)
-    return `${formatTime(earliest)} – ${formatTime(eventDate)}`;
-  if (earliest) return formatTime(earliest);
-  if (eventDate) return formatTime(eventDate);
+    return `${formatTimeFromDate(earliest)} – ${formatTimeFromDate(eventDate)}`;
+  if (earliest) return formatTimeFromDate(earliest);
+  if (eventDate) return formatTimeFromDate(eventDate);
   return "";
 }

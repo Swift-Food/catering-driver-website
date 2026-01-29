@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { DriverMealSessionDto, MealSessionDeliveryStatus } from "@/lib/drivers/types";
 import GoogleMap, { type MapPin as GoogleMapPin } from "@/components/dashboard/GoogleMap";
+import { formatTime } from "@/lib/formatters";
 
 interface SessionDetailModalProps {
   session: DriverMealSessionDto | null;
@@ -52,7 +53,7 @@ export default function SessionDetailModal({
   const restaurantName = session.sessionName || "Meal Session";
   const portionCount = session.totalPortions;
   const date = session.sessionDate || "";
-  const time = formatCollectionTime(session.eventTime || "") || "N/A";
+  const time = formatTime(session.eventTime || "") || "N/A";
 
   const pickupCount = session.restaurants.length;
 
@@ -274,7 +275,7 @@ export default function SessionDetailModal({
                           <div className="flex items-center gap-1 shrink-0 text-status-blue">
                             <Clock size={10} />
                             <span className="text-[9px] font-black uppercase tracking-wider">
-                              {formatCollectionTime(restaurant.collectionTime)}
+                              {formatTime(restaurant.collectionTime)}
                             </span>
                           </div>
                         )}
@@ -348,23 +349,6 @@ export default function SessionDetailModal({
       </div>
     </div>
   );
-}
-
-function formatCollectionTime(dateStr: string): string {
-  try {
-    let date = new Date(dateStr);
-    if (isNaN(date.getTime())) {
-      date = new Date(`1970-01-01T${dateStr}`);
-      if (isNaN(date.getTime())) return dateStr;
-    }
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  } catch {
-    return dateStr;
-  }
 }
 
 function CompactInfo({

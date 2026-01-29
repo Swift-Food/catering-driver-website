@@ -9,6 +9,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
+import { formatTime } from "@/lib/formatters";
 
 interface DeliverySidebarProps {
   session: DriverMealSessionDto;
@@ -24,7 +25,7 @@ export default function DeliverySidebar({
   const customerName = session.delivery.contactName || "Customer";
   const customerPhone = session.delivery.contactPhone || "";
   const deliveryAddress = session.delivery.address || "Delivery Destination";
-  const eventTime = formatTime(session.eventTime);
+  const eventTime = formatTime(session.eventTime, "N/A");
 
   return (
     <div className="space-y-6">
@@ -158,20 +159,3 @@ function SidebarItem({
   );
 }
 
-function formatTime(dateStr?: string | null): string {
-  if (!dateStr) return "N/A";
-  try {
-    let date = new Date(dateStr);
-    if (isNaN(date.getTime())) {
-      date = new Date(`1970-01-01T${dateStr}`);
-      if (isNaN(date.getTime())) return dateStr;
-    }
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  } catch {
-    return dateStr;
-  }
-}

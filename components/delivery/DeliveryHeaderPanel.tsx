@@ -2,6 +2,7 @@
 
 import { Package, Clock, Calendar, Store } from "lucide-react";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
+import { formatTime, formatDate } from "@/lib/formatters";
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "Pending",
@@ -46,7 +47,7 @@ export default function DeliveryHeaderPanel({
             <div className="flex items-center gap-1.5 text-text-muted">
               <Calendar size={11} />
               <span className="font-bold uppercase tracking-widest text-[9px]">
-                {formatDate(session.sessionDate)}
+                {formatDate(session.sessionDate, "N/A")}
               </span>
             </div>
             <span className="text-text-muted text-[9px]">&bull;</span>
@@ -82,7 +83,7 @@ export default function DeliveryHeaderPanel({
           <div className="flex items-center gap-2 text-primary">
             <Clock size={14} strokeWidth={3} />
             <span className="text-base font-bold tracking-tight">
-              {formatTime(session.eventTime)}
+              {formatTime(session.eventTime, "N/A")}
             </span>
           </div>
         </div>
@@ -126,36 +127,3 @@ function getEarliestPickupTime(session: DriverMealSessionDto): string {
   return formatTime(earliest.toISOString());
 }
 
-function formatTime(dateStr?: string | null): string {
-  if (!dateStr) return "N/A";
-  try {
-    let date = new Date(dateStr);
-    if (isNaN(date.getTime())) {
-      // Try as time-only string (e.g. "11:00", "2:30 PM")
-      date = new Date(`1970-01-01T${dateStr}`);
-      if (isNaN(date.getTime())) return dateStr;
-    }
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  } catch {
-    return dateStr;
-  }
-}
-
-function formatDate(dateStr?: string | null): string {
-  if (!dateStr) return "N/A";
-  try {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return dateStr;
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-    });
-  } catch {
-    return dateStr;
-  }
-}

@@ -13,6 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import type { DriverMealSessionDto, MealSessionDeliveryStatus } from "@/lib/drivers/types";
+import { formatDate, formatTime } from "@/lib/formatters";
 
 interface SessionCardProps {
   session: DriverMealSessionDto;
@@ -271,34 +272,3 @@ export default function SessionCard({
   );
 }
 
-function formatDate(dateStr?: string | null): string {
-  if (!dateStr) return "";
-  try {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return dateStr;
-    const dd = String(date.getDate()).padStart(2, "0");
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const yyyy = date.getFullYear();
-    return `${dd}-${mm}-${yyyy}`;
-  } catch {
-    return dateStr;
-  }
-}
-
-function formatTime(dateStr?: string | null): string {
-  if (!dateStr) return "";
-  try {
-    let date = new Date(dateStr);
-    if (isNaN(date.getTime())) {
-      date = new Date(`1970-01-01T${dateStr}`);
-      if (isNaN(date.getTime())) return dateStr;
-    }
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  } catch {
-    return dateStr;
-  }
-}
