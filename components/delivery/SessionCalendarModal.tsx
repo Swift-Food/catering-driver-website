@@ -118,7 +118,7 @@ export default function SessionCalendarModal({
       <div className="relative w-[95vw] max-w-lg bg-surface rounded-3xl shadow-2xl animate-in zoom-in-95 duration-200 border border-white/10 max-h-[80vh]">
         <div className="overflow-y-auto hide-scrollbar max-h-[80vh] rounded-3xl">
           {/* Sticky Header */}
-          <div className="sticky top-0 z-10 bg-surface/10 backdrop-blur-xs rounded-t-3xl px-4 md:px-8 pt-4 md:pt-8 pb-4">
+          <div className="sticky top-0 z-10 bg-surface rounded-t-3xl px-4 md:px-8 pt-4 md:pt-8 pb-4">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">
