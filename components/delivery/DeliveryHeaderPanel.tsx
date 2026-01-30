@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Package, Clock, Calendar, Store, Play, Loader2 } from "lucide-react";
+import { Package, Clock, Calendar, Store, Play, Loader2, User } from "lucide-react";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import { formatTime, formatDate } from "@/lib/formatters";
 
@@ -43,9 +43,13 @@ export default function DeliveryHeaderPanel({
         </div>
         <div>
           <div className="flex items-center gap-3 mb-1 flex-wrap">
-            <h2 className="text-lg font-black">
-              {session.sessionName || "Delivery"}
+            <h2 className="text-lg font-black flex items-center gap-2">
+              <User size={16} className="text-primary" />
+              {session.delivery.contactName || "Delivery"}
             </h2>
+            <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-[8px] font-black uppercase tracking-widest border border-primary/20">
+              #{session.id.slice(0, 4).toUpperCase()}
+            </span>
             <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-[8px] font-black uppercase tracking-widest border border-primary/20">
               {statusLabel}
             </span>
@@ -66,25 +70,21 @@ export default function DeliveryHeaderPanel({
       </div>
 
       <div className="flex items-center gap-4 lg:gap-6">
-        {!showStartButton && (
-          <>
-            {/* Earliest Pickup - hidden when start button is shown */}
-            <div className="text-left lg:text-right">
-              <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5 flex items-center gap-1.5">
-                <Store size={10} />
-                Earliest Pickup
-              </p>
-              <div className="flex items-center gap-2 text-primary">
-                <Clock size={14} strokeWidth={3} />
-                <span className="text-base font-bold tracking-tight">
-                  {earliestPickupTime}
-                </span>
-              </div>
-            </div>
+        {/* Earliest Pickup - always shown */}
+        <div className="text-left lg:text-right">
+          <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5 flex items-center gap-1.5">
+            <Store size={10} />
+            Earliest Pickup
+          </p>
+          <div className="flex items-center gap-2 text-primary">
+            <Clock size={14} strokeWidth={3} />
+            <span className="text-base font-bold tracking-tight">
+              {earliestPickupTime}
+            </span>
+          </div>
+        </div>
 
-            <div className="w-px h-10 bg-border-subtle" />
-          </>
-        )}
+        <div className="w-px h-10 bg-border-subtle" />
 
         {/* Event Time */}
         <div className="text-left lg:text-right">
