@@ -143,7 +143,7 @@ export default function SessionCalendarModal({
             </div>
           </div>
 
-          <div className="space-y-5 px-4 md:px-8 pb-4 md:pb-8 pt-2">
+          <div className="space-y-5 px-4 md:px-8 pb-8 md:pb-12 pt-2">
             {/* Month navigation */}
             <div className="flex items-center justify-between">
               <button
@@ -226,7 +226,6 @@ export default function SessionCalendarModal({
                   {daySessions.map((s, i) => {
                     const dateLabel = getSessionDateLabel(s);
                     const timeRange = getSessionTimeRange(s);
-                    const globalIndex = sessions.indexOf(s);
 
                     return (
                       <button
@@ -248,11 +247,11 @@ export default function SessionCalendarModal({
                               : "bg-surface-variant"
                           }`}
                         >
-                          {globalIndex >= 0 ? globalIndex + 1 : i + 1}
+                          {i + 1}
                         </span>
                         <div className="text-left flex-1 min-w-0">
                           <p className="leading-tight">
-                            {s.sessionName || `Session ${globalIndex >= 0 ? globalIndex + 1 : i + 1}`}
+                            {s.sessionName || `Session ${i + 1}`}
                           </p>
                           {(dateLabel || timeRange) && (
                             <p className="text-[9px] font-medium opacity-50 leading-tight mt-0.5">
