@@ -32,11 +32,13 @@ export default function CompletedPage() {
       setLoading(true);
       setError(null);
       const data = await cateringDriverApi.getCompletedSessions();
-      // Sort by recency — latest first
+      // Sort by most recent session date first, then by event time descending
       const sorted = (Array.isArray(data) ? data : []).sort((a, b) => {
-        const dateA = a.deliveredAt || a.sessionDate || "";
-        const dateB = b.deliveredAt || b.sessionDate || "";
-        return new Date(dateB).getTime() - new Date(dateA).getTime();
+        const dateA = new Date(a.sessionDate || "").getTime() || 0;
+        const dateB = new Date(b.sessionDate || "").getTime() || 0;
+        if (dateB !== dateA) return dateB - dateA;
+        // Same date — sort by event time descending
+        return (b.eventTime || "").localeCompare(a.eventTime || "");
       });
       setSessions(sorted);
     } catch (err) {
