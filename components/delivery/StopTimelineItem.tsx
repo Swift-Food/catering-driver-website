@@ -123,7 +123,8 @@ export default function StopTimelineItem({
 
         {/* Expanded Content */}
         {isExpanded && !isCompleted && (
-          <div className="mt-5 -ml-14 lg:ml-0 grid lg:grid-cols-2 gap-4 animate-in slide-in-from-top-1 duration-300">
+          <div className="mt-5 -ml-14 flex flex-col gap-4 animate-in slide-in-from-top-1 duration-300">
+            <div className="grid md:grid-cols-2 gap-4">
             {/* Hidden file input */}
             <input
               ref={fileInputRef}
@@ -140,7 +141,7 @@ export default function StopTimelineItem({
                 <div className="space-y-4">
                   {/* Item Checklist */}
                   <div>
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2 mb-1">
                       <ListChecks size={14} className="text-primary" />
                       <p className="text-[9px] font-black uppercase tracking-widest opacity-40">
                         Item Checklist
@@ -151,10 +152,12 @@ export default function StopTimelineItem({
                         </span>
                       )}
                     </div>
+                    <p className="text-[9px] opacity-30 mb-3">
+                      For your own reference — tick off items as you check them
+                    </p>
 
-                    {/* Individual item checkboxes */}
                     {stop.items && stop.items.length > 0 && (
-                      <div className="max-h-48 overflow-y-auto pr-1 space-y-1.5 mb-3">
+                      <div className="max-h-48 overflow-y-auto pr-1 space-y-1.5">
                         {stop.items.map((item) => (
                           <label
                             key={item.id}
@@ -175,37 +178,13 @@ export default function StopTimelineItem({
                             <span className="text-[11px] font-semibold text-gray-700 dark:text-gray-300">
                               {item.label}
                             </span>
-                            {item.quantity > 1 && (
-                              <span className="text-[9px] font-bold text-primary/60 ml-auto">
-                                x{item.quantity}
-                              </span>
-                            )}
+                            <span className="text-[9px] font-bold text-primary/60 ml-auto">
+                              x{item.quantity}
+                            </span>
                           </label>
                         ))}
                       </div>
                     )}
-
-                    {/* T&C Confirmation Checkbox */}
-                    <label
-                      onClick={(e) => e.stopPropagation()}
-                      className={`flex items-start gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer ${
-                        itemsConfirmed
-                          ? "bg-status-green/5 border-status-green/30"
-                          : "bg-primary/5 border-primary/20"
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 rounded accent-primary cursor-pointer flex-shrink-0 mt-0.5"
-                        checked={itemsConfirmed}
-                        onChange={(e) => onItemsConfirmedChange(e.target.checked)}
-                      />
-                      <span className={`text-[11px] font-bold leading-tight ${
-                        itemsConfirmed ? "text-status-green" : "opacity-70"
-                      }`}>
-                        I confirm that all items for this collection have been checked and are present
-                      </span>
-                    </label>
                   </div>
 
                   {/* Contact Section */}
@@ -338,6 +317,31 @@ export default function StopTimelineItem({
                 )}
               </button>
             </div>
+            </div>
+
+            {/* T&C Confirmation Checkbox - full width below grid */}
+            {isPickup && (
+              <label
+                onClick={(e) => e.stopPropagation()}
+                className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                  itemsConfirmed
+                    ? "bg-primary/10 border-primary/30"
+                    : "bg-primary/5 border-primary/20"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 rounded accent-primary cursor-pointer flex-shrink-0"
+                  checked={itemsConfirmed}
+                  onChange={(e) => onItemsConfirmedChange(e.target.checked)}
+                />
+                <span className={`text-[11px] font-bold leading-tight ${
+                  itemsConfirmed ? "text-primary" : "opacity-70"
+                }`}>
+                  I confirm that all items for this collection have been checked and are present
+                </span>
+              </label>
+            )}
           </div>
         )}
       </div>
