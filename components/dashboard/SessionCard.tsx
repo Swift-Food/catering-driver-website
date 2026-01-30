@@ -70,9 +70,9 @@ export default function SessionCard({
     return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
   })();
 
-  const pickupCount = session.restaurants.length;
+  const pickupCount = session.restaurants?.length ?? 0;
 
-  const collectionTimes = session.restaurants.map((r) => r.collectionTime).filter(Boolean);
+  const collectionTimes = (session.restaurants ?? []).map((r) => r.collectionTime).filter(Boolean);
   const pickupTimeRange =
     collectionTimes.length > 1
       ? `${formatTime(collectionTimes[0])} – ${formatTime(collectionTimes[collectionTimes.length - 1])}`
@@ -80,7 +80,7 @@ export default function SessionCard({
         ? formatTime(collectionTimes[0])
         : "";
 
-  const dropoffAddress = session.delivery.address || "";
+  const dropoffAddress = session.delivery?.address || "";
   const deliveryStatus = session.deliveryStatus || "";
 
   const hasChanges =
@@ -156,7 +156,7 @@ export default function SessionCard({
 
           <div className="space-y-4">
             <h3 className="text-base font-black leading-tight group-hover:text-primary transition-colors">
-              {session.delivery.contactName || restaurantName}
+              {session.delivery?.contactName || restaurantName}
             </h3>
 
             <div className="space-y-2">

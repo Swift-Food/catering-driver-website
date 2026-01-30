@@ -423,6 +423,22 @@ export interface DriverRestaurantContact {
   email?: string;
 }
 
+export interface DriverAddonDto {
+  name: string;
+  quantity: number;
+  groupTitle?: string;
+}
+
+export interface DriverMenuItemDto {
+  menuItemId: string;
+  name: string;
+  quantity: number;
+  feedsPerUnit?: number;
+  totalPortions?: number;
+  groupTitle?: string;
+  selectedAddons?: DriverAddonDto[];
+}
+
 export interface DriverRestaurantPickup {
   restaurantId: string;
   restaurantName: string;
@@ -431,6 +447,7 @@ export interface DriverRestaurantPickup {
   collectionTime: string;
   itemCount: number;
   portionCount: number;
+  menuItems: DriverMenuItemDto[];
 }
 
 export interface DriverDeliveryInfo {
@@ -442,17 +459,15 @@ export interface DriverDeliveryInfo {
 
 // Per-restaurant pickup tracking for multi-driver
 export interface RestaurantPickupStatusEntry {
-  collectedAt: string;
-  pickupProofImageUrl: string;
-  collectedBy: string;
-  notes?: string;
+  collectedAt: string | null;
+  pickupProofImageUrl: string | null;
+  collectedBy: string | null;
 }
 
 // Per-driver delivery confirmation for multi-driver
 export interface DriverDeliveryConfirmation {
   confirmedAt: string;
   deliveryProofImageUrl: string;
-  notes?: string;
 }
 
 export interface DriverMealSessionDto {
@@ -477,13 +492,11 @@ export interface DriverMealSessionDto {
   // Optimistic locking version
   version: number;
 
-  restaurants: DriverRestaurantPickup[];
-  totalPortions: number;
-  totalItems: number;
+  restaurants?: DriverRestaurantPickup[];
+  totalPortions?: number;
+  totalItems?: number;
 
-  delivery: DriverDeliveryInfo;
-
-  orderItems?: PricingOrderItemDto[];
+  delivery?: DriverDeliveryInfo;
 
   specialRequirements?: string;
   estimatedDeliveryTime?: string;

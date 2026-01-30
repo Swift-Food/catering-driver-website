@@ -19,7 +19,7 @@ import SessionCalendarModal from "@/components/delivery/SessionCalendarModal";
 
 function getEarliestPickupTimestamp(session: DriverMealSessionDto): number {
   let earliest = Infinity;
-  for (const r of session.restaurants) {
+  for (const r of session.restaurants ?? []) {
     if (!r.collectionTime) continue;
     let d = new Date(r.collectionTime);
     if (isNaN(d.getTime()) && session.sessionDate) {
