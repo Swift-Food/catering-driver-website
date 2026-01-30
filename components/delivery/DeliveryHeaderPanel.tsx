@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Package, Clock, Calendar, Store, Play, Loader2, User } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Package, Clock, Calendar, Store, Play, Loader2, User, Timer } from "lucide-react";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import { formatTime, formatDate } from "@/lib/formatters";
 
@@ -34,6 +34,13 @@ export default function DeliveryHeaderPanel({
     session.deliveryStatus === "driver_assigned" &&
     onStartDelivery &&
     isWithinTwoHoursOfPickup(session);
+
+  const deliveryStarted =
+    session.deliveryStatus !== "pending" &&
+    session.deliveryStatus !== "finding_driver" &&
+    session.deliveryStatus !== "driver_assigned";
+
+  const countdown = useCountdown(session, deliveryStarted);
 
   return (
     <div className="bg-surface p-6 rounded-2xl border border-border-subtle flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
@@ -99,6 +106,25 @@ export default function DeliveryHeaderPanel({
           </div>
         </div>
 
+        {/* Countdown - shown after delivery started */}
+        {countdown && (
+          <>
+            <div className="w-px h-10 bg-border-subtle" />
+            <div className="text-left lg:text-right">
+              <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5 flex items-center gap-1.5">
+                <Timer size={10} />
+                {countdown.label}
+              </p>
+              <div className={`flex items-center gap-2 ${countdown.urgent ? "text-red-500" : "text-primary"}`}>
+                <Timer size={14} strokeWidth={3} className={countdown.urgent ? "animate-pulse" : ""} />
+                <span className="text-base font-bold tracking-tight tabular-nums">
+                  {countdown.display}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
+
         {showStartButton && (
           <>
             <div className="w-px h-10 bg-border-subtle" />
@@ -108,6 +134,102 @@ export default function DeliveryHeaderPanel({
       </div>
     </div>
   );
+}
+
+interface CountdownResult {
+  label: string;
+  display: string;
+  urgent: boolean;
+}
+
+function useCountdown(
+  session: DriverMealSessionDto,
+  deliveryStarted: boolean
+): CountdownResult | null {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    if (!deliveryStarted) return;
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, [deliveryStarted]);
+
+  if (!deliveryStarted) return null;
+
+  // Collect all restaurant pickup times with their collected status
+  const collectedIds = new Set(Object.keys(session.restaurantPickupStatus || {}));
+  const uncollectedTimes: Date[] = [];
+  const allPickupTimes: Date[] = [];
+
+  for (const restaurant of session.restaurants) {
+    if (restaurant.collectionTime) {
+      const d = parseCollectionTime(restaurant.collectionTime, session.sessionDate);
+      if (d) {
+        allPickupTimes.push(d);
+        if (!collectedIds.has(restaurant.restaurantId)) {
+          uncollectedTimes.push(d);
+        }
+      }
+    }
+  }
+
+  // Sort uncollected times ascending to find the next one
+  uncollectedTimes.sort((a, b) => a.getTime() - b.getTime());
+
+  const allPastPickup =
+    allPickupTimes.length === 0 ||
+    allPickupTimes.every((t) => now.getTime() >= t.getTime());
+
+  if (!allPastPickup && uncollectedTimes.length > 0) {
+    // Find the next future uncollected pickup time
+    const nextPickup = uncollectedTimes.find((t) => t.getTime() > now.getTime());
+    if (nextPickup) {
+      const diff = nextPickup.getTime() - now.getTime();
+      return {
+        label: "Next Pickup In",
+        display: formatCountdown(diff),
+        urgent: diff < 10 * 60 * 1000, // under 10 minutes
+      };
+    }
+  }
+
+  // All pickup times have passed — countdown to delivery (event time)
+  if (allPastPickup && session.eventTime) {
+    const eventDate = parseCollectionTime(session.eventTime, session.sessionDate);
+    if (eventDate) {
+      const diff = eventDate.getTime() - now.getTime();
+      if (diff > 0) {
+        return {
+          label: "Deliver In",
+          display: formatCountdown(diff),
+          urgent: diff < 15 * 60 * 1000, // under 15 minutes
+        };
+      }
+      // Past event time — show how late
+      return {
+        label: "Overdue By",
+        display: `+${formatCountdown(Math.abs(diff))}`,
+        urgent: true,
+      };
+    }
+  }
+
+  return null;
+}
+
+function formatCountdown(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  if (hours > 0) {
+    return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+  }
+  if (minutes > 0) {
+    return seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
+  }
+  return `${seconds}s`;
 }
 
 function StartDeliveryButton({ onStart }: { onStart: () => Promise<void> }) {
