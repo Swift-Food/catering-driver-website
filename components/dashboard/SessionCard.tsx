@@ -136,33 +136,42 @@ export default function SessionCard({
               <Package size={20} />
             </div>
             <div className="text-right">
-              <p className="text-sm font-black text-primary uppercase tracking-widest font-mono mb-1">
-                #{session.id.slice(0, 4).toUpperCase()}
-              </p>
               {date && (
                 <p className="text-[14px] font-black uppercase opacity-30 tracking-widest mb-1">
                   {date}
                 </p>
               )}
-              <p className="text-[11px] font-black text-primary uppercase tracking-widest leading-none">
-                {portionCount} PORTIONS
-              </p>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-base font-black leading-tight group-hover:text-primary transition-colors">
+            <div>
+              <p className="text-sm font-black text-primary uppercase tracking-widest font-mono mb-1">
+                #{session.id.slice(0, 4).toUpperCase()}
+              </p>
+              <h3 className="text-base font-black leading-tight group-hover:text-primary transition-colors">
               {session.delivery.contactName || restaurantName}
             </h3>
+            </div>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
-                <div className="w-7 h-7 shrink-0 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
-                  <Store size={14} />
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
+                  <div className="w-7 h-7 shrink-0 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
+                    <Package size={14} />
+                  </div>
+                  <span className="uppercase tracking-wider">
+                    {portionCount} Portions
+                  </span>
                 </div>
-                <span className="uppercase tracking-wider">
-                  {pickupCount} Pickup{/*pickupCount !== 1 ? "s" : ""*/}
-                </span>
+                <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
+                  <div className="w-7 h-7 shrink-0 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
+                    <Store size={14} />
+                  </div>
+                  <span className="uppercase tracking-wider">
+                    {pickupCount} Pickup{/*pickupCount !== 1 ? "s" : ""*/}
+                  </span>
+                </div>
               </div>
               {dropoffAddress && (
                 <div className="flex items-start gap-2.5 text-[10px] font-bold opacity-60">
