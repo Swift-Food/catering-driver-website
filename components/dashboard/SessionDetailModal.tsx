@@ -19,10 +19,10 @@ import { formatTime } from "@/lib/formatters";
 interface SessionDetailModalProps {
   session: DriverMealSessionDto | null;
   onClose: () => void;
-  onAccept: (session: DriverMealSessionDto, driverName: string) => Promise<void>;
+  onAccept: (session: DriverMealSessionDto, driverNames: string[]) => Promise<void>;
   onUpdateDriverName?: (
     session: DriverMealSessionDto,
-    driverName: string
+    driverNames: string[]
   ) => Promise<void>;
   onBack?: () => void;
 }
@@ -82,7 +82,6 @@ export default function SessionDetailModal({
 
   // MULTI-DRIVER: Use driverNames array directly
   const existingDrivers = session.driverNames || [];
-  const existingDriver = existingDrivers.join(", ");
   const deliveryStatus = session.deliveryStatus || "";
 
   const hasChanges =
@@ -129,16 +128,15 @@ export default function SessionDetailModal({
       ? [...drivers, driverInput.trim()]
       : drivers;
     if (finalDrivers.length === 0) return;
-    const joined = finalDrivers.join(", ");
     setAccepting(true);
     try {
       if (isPending) {
-        await onAccept(session, joined);
+        await onAccept(session, finalDrivers);
       } else if (
         onUpdateDriverName &&
-        joined !== existingDriver
+        JSON.stringify(finalDrivers) !== JSON.stringify(existingDrivers)
       ) {
-        await onUpdateDriverName(session, joined);
+        await onUpdateDriverName(session, finalDrivers);
       }
       setDrivers(finalDrivers);
       setDriverInput("");

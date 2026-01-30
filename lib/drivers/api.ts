@@ -151,6 +151,7 @@ export const cateringDriverApi = {
     mealSessionId: string,
     dto: UpdateDriverNameDto
   ): Promise<DriverMealSessionDto> => {
+    console.log("Update driver request:", { mealSessionId, dto });
     const response = await apiClient.post<DriverMealSessionDto>(
       `/catering-driver/${mealSessionId}/update-driver-name`,
       dto
@@ -163,6 +164,7 @@ export const cateringDriverApi = {
     const response = await apiClient.get<DriverMealSessionDto[]>(
       "/catering-driver/assigned-sessions"
     );
+    console.log("Upcoming response:", response.data);
     return response.data;
   },
 

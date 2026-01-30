@@ -18,7 +18,7 @@ import { formatDate, formatTime } from "@/lib/formatters";
 interface SessionCardProps {
   session: DriverMealSessionDto;
   onClick?: () => void;
-  onDriverSubmit?: (mealSessionId: string, driverName: string) => Promise<void>;
+  onDriverSubmit?: (mealSessionId: string, driverNames: string[]) => Promise<void>;
 }
 
 export default function SessionCard({
@@ -98,14 +98,14 @@ export default function SessionCard({
       ? [...drivers, inputValue.trim()]
       : drivers;
     if (finalDrivers.length === 0 || !onDriverSubmit) return;
-    const joined = finalDrivers.join(", ");
-    if (isAssigned && joined === existingDriver) {
+    const unchanged = isAssigned && JSON.stringify(finalDrivers) === JSON.stringify(existingDrivers);
+    if (unchanged) {
       setIsFocused(false);
       return;
     }
     setSaving(true);
     try {
-      await onDriverSubmit(session.id, joined);
+      await onDriverSubmit(session.id, finalDrivers);
       setDrivers(finalDrivers);
       setInputValue("");
       setIsFocused(false);

@@ -506,7 +506,7 @@ export interface DriverMealSessionDto {
 
 export interface AcceptMealSessionDto {
   driverId?: string;
-  driverName: string;
+  driverNames: string[];
 }
 
 // MULTI-DRIVER: Per-restaurant collection
@@ -524,7 +524,7 @@ export interface ConfirmDriverDeliveryDto {
 
 export interface UpdateDriverNameDto {
   driverId?: string;
-  driverName: string;
+  driverNames: string[];
 }
 
 export interface SetDestinationDto {

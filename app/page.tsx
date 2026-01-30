@@ -97,8 +97,8 @@ export default function HomePage() {
     fetchAssigned();
   }, [fetchAnalytics, fetchAvailable, fetchAssigned]);
 
-  const handleAccept = async (mealSessionId: string, driverName: string) => {
-    await cateringDriverApi.acceptMealSession(mealSessionId, { driverName });
+  const handleAccept = async (mealSessionId: string, driverNames: string[]) => {
+    await cateringDriverApi.acceptMealSession(mealSessionId, { driverNames });
     fetchAnalytics();
     fetchAvailable();
     fetchAssigned();
@@ -106,17 +106,17 @@ export default function HomePage() {
 
   const handleUpdateDriverName = async (
     mealSessionId: string,
-    driverName: string
+    driverNames: string[]
   ) => {
-    await cateringDriverApi.updateDriverName(mealSessionId, { driverName });
+    await cateringDriverApi.updateDriverName(mealSessionId, { driverNames });
     fetchAssigned();
   };
 
   const handleAcceptFromModal = async (
     session: DriverMealSessionDto,
-    driverName: string
+    driverNames: string[]
   ) => {
-    await cateringDriverApi.acceptMealSession(session.id, { driverName });
+    await cateringDriverApi.acceptMealSession(session.id, { driverNames });
     setSelectedSession(null);
     fetchAnalytics();
     fetchAvailable();
@@ -125,9 +125,9 @@ export default function HomePage() {
 
   const handleUpdateDriverNameFromModal = async (
     session: DriverMealSessionDto,
-    driverName: string
+    driverNames: string[]
   ) => {
-    await cateringDriverApi.updateDriverName(session.id, { driverName });
+    await cateringDriverApi.updateDriverName(session.id, { driverNames });
     setSelectedSession(null);
     fetchAssigned();
   };
