@@ -18,14 +18,69 @@ const getAuthApi = async () => {
   return authApiInstance;
 };
 
+const isTokenExpiringSoon = (token: string, bufferSeconds = 60): boolean => {
+  try {
+    const base64Url = token.split(".")[1];
+    if (!base64Url) return true;
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(
+      decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      )
+    );
+    if (!payload.exp) return true;
+    return Date.now() >= (payload.exp - bufferSeconds) * 1000;
+  } catch {
+    return true;
+  }
+};
+
+let refreshPromise: Promise<string> | null = null;
+
+const ensureFreshToken = async (): Promise<string | null> => {
+  const token = localStorage.getItem("auth_token");
+  if (!token) return null;
+
+  if (!isTokenExpiringSoon(token)) {
+    return token;
+  }
+
+  // Token is expiring soon — proactively refresh
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  const storedRefreshToken = localStorage.getItem("refresh_token");
+  if (!storedRefreshToken) return null;
+
+  refreshPromise = (async () => {
+    try {
+      const authApi = await getAuthApi();
+      const tokenData = await authApi.refreshToken(storedRefreshToken);
+      localStorage.setItem("auth_token", tokenData.access_token);
+      localStorage.setItem("refresh_token", tokenData.refresh_token);
+      return tokenData.access_token;
+    } catch {
+      return token;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+};
+
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
+  async (config: InternalAxiosRequestConfig) => {
     if (typeof window !== "undefined") {
       const url = config.url || "";
       if (!url.includes("/auth/refresh")) {
-        const token = localStorage.getItem("auth_token");
-        if (token && config.headers) {
-          config.headers.Authorization = `Bearer ${token}`;
+        const freshToken = await ensureFreshToken();
+        if (freshToken && config.headers) {
+          config.headers.Authorization = `Bearer ${freshToken}`;
         }
       }
     }
@@ -60,8 +115,12 @@ apiClient.interceptors.response.use(
       _retry?: boolean;
     };
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      const url = originalRequest?.url || "";
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
+      const url = originalRequest.url || "";
 
       if (url.includes("/auth/")) {
         return Promise.reject(error);
@@ -88,6 +147,7 @@ apiClient.interceptors.response.use(
 
       if (!refreshToken) {
         isRefreshing = false;
+        processQueue(new Error("No refresh token"), null);
         localStorage.removeItem("auth_token");
         localStorage.removeItem("user_data");
         if (typeof window !== "undefined") {
@@ -105,15 +165,12 @@ apiClient.interceptors.response.use(
         localStorage.setItem("auth_token", access_token);
         localStorage.setItem("refresh_token", newRefreshToken);
 
-        originalRequest.headers.Authorization = `Bearer ${access_token}`;
-
         processQueue(null, access_token);
 
-        isRefreshing = false;
+        originalRequest.headers.Authorization = `Bearer ${access_token}`;
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError as Error, null);
-        isRefreshing = false;
 
         localStorage.removeItem("auth_token");
         localStorage.removeItem("refresh_token");
@@ -124,6 +181,8 @@ apiClient.interceptors.response.use(
         }
 
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 
