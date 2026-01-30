@@ -26,9 +26,8 @@ export default function SessionCard({
   onClick,
   onDriverSubmit,
 }: SessionCardProps) {
-  const isAssigned =
-    (session.deliveryStatus as MealSessionDeliveryStatus) !== "finding_driver";
-  // MULTI-DRIVER: Use driverNames array directly
+  // Session is assigned if driverOrgId is set
+  const isAssigned = session.driverOrgId !== null;
   const existingDrivers = session.driverNames || [];
   const existingDriver = existingDrivers.join(", ");
 

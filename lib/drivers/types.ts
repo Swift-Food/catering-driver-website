@@ -469,15 +469,15 @@ export interface DriverMealSessionDto {
 
   deliveryStatus: MealSessionDeliveryStatus;
 
-  // MULTI-DRIVER: Arrays instead of single values
-  driverIds: string[];
+  // Single driver org account per session
+  driverOrgId: string | null;
   driverNames: string[];
-  driverAssignedAt?: string;
+  driverOrgAssignedAt?: string;
 
-  // MULTI-DRIVER: Per-restaurant pickup tracking
+  // Per-restaurant pickup tracking
   restaurantPickupStatus: Record<string, RestaurantPickupStatusEntry>;
 
-  // MULTI-DRIVER: Per-driver delivery confirmations
+  // Delivery confirmations (keyed by driverName)
   driverDeliveryConfirmations: Record<string, DriverDeliveryConfirmation>;
 
   // Optimistic locking version
@@ -497,7 +497,7 @@ export interface DriverMealSessionDto {
   arrivedAtDestinationAt?: string;
   deliveredAt?: string;
 
-  driverNotes?: string;
+  driverOrgNotes?: string;
 }
 
 // ============================================================
@@ -505,25 +505,27 @@ export interface DriverMealSessionDto {
 // ============================================================
 
 export interface AcceptMealSessionDto {
-  driverId?: string;
+  driverOrgId?: string;
   driverNames: string[];
 }
 
-// MULTI-DRIVER: Per-restaurant collection
+// Per-restaurant collection
 export interface CollectRestaurantDto {
   restaurantId: string;
   pickupProofImageUrl: string;
+  collectedBy: string;
   notes?: string;
 }
 
-// MULTI-DRIVER: Per-driver delivery confirmation
+// Delivery confirmation (one confirms = session delivered)
 export interface ConfirmDriverDeliveryDto {
   deliveryProofImageUrl: string;
+  driverName: string;
   notes?: string;
 }
 
 export interface UpdateDriverNameDto {
-  driverId?: string;
+  driverOrgId?: string;
   driverNames: string[];
 }
 

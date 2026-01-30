@@ -12,6 +12,7 @@ import StopTimelineItem from "./StopTimelineItem";
 import DeliverySidebar, { ContactSwiftCard } from "./DeliverySidebar";
 import GoogleMap from "@/components/dashboard/GoogleMap";
 import { formatTime } from "@/lib/formatters";
+import { useDriver } from "@/lib/drivers/driverContext";
 
 interface ActiveDeliveryViewProps {
   session: DriverMealSessionDto;
@@ -28,6 +29,7 @@ export default function ActiveDeliveryView({
   session,
   onSessionUpdate,
 }: ActiveDeliveryViewProps) {
+  const { selectedDriverName } = useDriver();
   const [viewMode, setViewMode] = useState<ViewMode>("TIMELINE");
   const [expandedStopId, setExpandedStopId] = useState<string | null>(null);
   const [locallyCompleted, setLocallyCompleted] = useState<Set<string>>(
@@ -89,11 +91,14 @@ export default function ActiveDeliveryView({
 
       setIsCompleting(true);
       try {
+        const driverName = selectedDriverName || session.driverNames?.[0] || "Driver";
+
         if (stop.type === "PICKUP") {
-          // MULTI-DRIVER: Collect individual restaurant
+          // Collect individual restaurant
           const updated = await cateringDriverApi.collectRestaurant(session.id, {
             restaurantId: stop.id,
             pickupProofImageUrl: photoUrl,
+            collectedBy: driverName,
           });
           onSessionUpdate(updated);
 
@@ -113,7 +118,7 @@ export default function ActiveDeliveryView({
             setExpandedStopId("dropoff");
           }
         } else {
-          // MULTI-DRIVER: Each driver confirms delivery individually
+          // One confirmation = session delivered
           try {
             await cateringDriverApi.arriveAtDestination(session.id);
           } catch {
@@ -121,6 +126,7 @@ export default function ActiveDeliveryView({
           }
           const updated = await cateringDriverApi.confirmDriverDelivery(session.id, {
             deliveryProofImageUrl: photoUrl,
+            driverName,
           });
           onSessionUpdate(updated);
         }
