@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import { cateringDriverApi } from "@/lib/drivers";
 import type { DeliveryStop } from "./types";
@@ -29,7 +29,7 @@ export default function ActiveDeliveryView({
   session,
   onSessionUpdate,
 }: ActiveDeliveryViewProps) {
-  const { selectedDriverName } = useDriver();
+  const { selectedDriverName, setHasPendingPhotos } = useDriver();
   const [viewMode, setViewMode] = useState<ViewMode>("TIMELINE");
   const [expandedStopId, setExpandedStopId] = useState<string | null>(null);
   const [locallyCompleted, setLocallyCompleted] = useState<Set<string>>(
@@ -38,6 +38,11 @@ export default function ActiveDeliveryView({
   const [stopPhotos, setStopPhotos] = useState<Record<string, string>>({});
   const [uploadingStopId, setUploadingStopId] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
+
+  // Update pending photos flag when stopPhotos changes
+  useEffect(() => {
+    setHasPendingPhotos(Object.keys(stopPhotos).length > 0);
+  }, [stopPhotos, setHasPendingPhotos]);
 
   const handleStartDelivery = useCallback(async () => {
     const updated = await cateringDriverApi.startDelivery(session.id);
@@ -102,6 +107,13 @@ export default function ActiveDeliveryView({
           });
           onSessionUpdate(updated);
 
+          // Clear the photo from pending state
+          setStopPhotos((prev) => {
+            const next = { ...prev };
+            delete next[stop.id];
+            return next;
+          });
+
           // Mark locally completed for optimistic UI
           const newCompleted = new Set(locallyCompleted);
           newCompleted.add(stop.id);
@@ -129,6 +141,13 @@ export default function ActiveDeliveryView({
             driverName,
           });
           onSessionUpdate(updated);
+
+          // Clear the photo from pending state
+          setStopPhotos((prev) => {
+            const next = { ...prev };
+            delete next[stop.id];
+            return next;
+          });
         }
       } catch (err) {
         console.error("Failed to complete stop:", err);

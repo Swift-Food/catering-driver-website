@@ -4,16 +4,29 @@ import {
   createContext,
   useContext,
   useState,
+  useCallback,
   ReactNode,
 } from "react";
 
 const STORAGE_KEY = "selectedDriverName";
+
+interface PendingAction {
+  action: () => void;
+  message: string;
+}
 
 interface DriverContextType {
   selectedDriverName: string | null;
   setSelectedDriverName: (name: string | null) => void;
   clearSelectedDriver: () => void;
   isLoading: boolean;
+  // Pending photos warning system
+  hasPendingPhotos: boolean;
+  setHasPendingPhotos: (value: boolean) => void;
+  // For confirmation dialog
+  pendingAction: PendingAction | null;
+  confirmPendingAction: () => void;
+  cancelPendingAction: () => void;
 }
 
 const DriverContext = createContext<DriverContextType | undefined>(undefined);
@@ -32,20 +45,59 @@ export function DriverProvider({ children }: { children: ReactNode }) {
     return null;
   });
   const [isLoading] = useState(false);
+  const [hasPendingPhotos, setHasPendingPhotos] = useState(false);
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
 
-  const setSelectedDriverName = (name: string | null) => {
-    setSelectedDriverNameState(name);
-    if (name) {
-      localStorage.setItem(STORAGE_KEY, name);
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
+  const confirmPendingAction = useCallback(() => {
+    if (pendingAction) {
+      setHasPendingPhotos(false);
+      pendingAction.action();
+      setPendingAction(null);
     }
-  };
+  }, [pendingAction]);
 
-  const clearSelectedDriver = () => {
-    setSelectedDriverNameState(null);
-    localStorage.removeItem(STORAGE_KEY);
-  };
+  const cancelPendingAction = useCallback(() => {
+    setPendingAction(null);
+  }, []);
+
+  const setSelectedDriverName = useCallback(
+    (name: string | null) => {
+      const doSwitch = () => {
+        setSelectedDriverNameState(name);
+        if (name) {
+          localStorage.setItem(STORAGE_KEY, name);
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      };
+
+      if (hasPendingPhotos) {
+        setPendingAction({
+          action: doSwitch,
+          message: "You have uploaded photos that haven't been confirmed. If you switch drivers, these photos will be lost.",
+        });
+      } else {
+        doSwitch();
+      }
+    },
+    [hasPendingPhotos]
+  );
+
+  const clearSelectedDriver = useCallback(() => {
+    const doClear = () => {
+      setSelectedDriverNameState(null);
+      localStorage.removeItem(STORAGE_KEY);
+    };
+
+    if (hasPendingPhotos) {
+      setPendingAction({
+        action: doClear,
+        message: "You have uploaded photos that haven't been confirmed. If you leave, these photos will be lost.",
+      });
+    } else {
+      doClear();
+    }
+  }, [hasPendingPhotos]);
 
   return (
     <DriverContext.Provider
@@ -54,6 +106,11 @@ export function DriverProvider({ children }: { children: ReactNode }) {
         setSelectedDriverName,
         clearSelectedDriver,
         isLoading,
+        hasPendingPhotos,
+        setHasPendingPhotos,
+        pendingAction,
+        confirmPendingAction,
+        cancelPendingAction,
       }}
     >
       {children}
