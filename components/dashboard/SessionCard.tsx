@@ -136,8 +136,11 @@ export default function SessionCard({
               <Package size={20} />
             </div>
             <div className="text-right">
+              <p className="text-sm font-black text-primary uppercase tracking-widest font-mono mb-1">
+                #{session.id.slice(0, 4).toUpperCase()}
+              </p>
               {date && (
-                <p className="text-[14px] font-black uppercase opacity-30 tracking-widest mb-1">
+                <p className="text-[14px] font-black uppercase opacity-30 tracking-widest">
                   {date}
                 </p>
               )}
@@ -145,14 +148,9 @@ export default function SessionCard({
           </div>
 
           <div className="space-y-4">
-            <div>
-              <p className="text-sm font-black text-primary uppercase tracking-widest font-mono mb-1">
-                #{session.id.slice(0, 4).toUpperCase()}
-              </p>
-              <h3 className="text-base font-black leading-tight group-hover:text-primary transition-colors">
+            <h3 className="text-base font-black leading-tight group-hover:text-primary transition-colors">
               {session.delivery.contactName || restaurantName}
             </h3>
-            </div>
 
             <div className="space-y-2">
               <div className="flex items-center gap-4">
