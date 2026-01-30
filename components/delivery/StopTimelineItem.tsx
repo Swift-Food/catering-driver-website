@@ -62,7 +62,7 @@ export default function StopTimelineItem({
   return (
     <div
       onClick={() => isSelectable && onSelect()}
-      className={`flex gap-6 p-5 rounded-xl border transition-all duration-300 ${
+      className={`flex gap-6 p-2 md:p-4 rounded-xl border transition-all duration-300 ${
         isExpanded
           ? "bg-primary/5 border-primary/20 shadow-sm"
           : "border-transparent hover:bg-surface-variant"

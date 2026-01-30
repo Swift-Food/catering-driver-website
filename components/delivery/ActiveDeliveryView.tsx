@@ -190,7 +190,7 @@ export default function ActiveDeliveryView({
           <TabSwitcher viewMode={viewMode} onChangeViewMode={setViewMode} />
 
           {viewMode === "TIMELINE" ? (
-            <div className="bg-surface rounded-2xl p-6 border border-border-subtle relative">
+            <div className="bg-surface rounded-2xl p-4 border border-border-subtle relative">
               {uploadError && (
                 <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm font-medium">
                   {uploadError}
