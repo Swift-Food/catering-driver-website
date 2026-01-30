@@ -178,6 +178,7 @@ export default function HomePage() {
               icon={<CheckCircle2 size={16} />}
               color="text-status-green"
               bg="bg-status-green/5 dark:bg-status-green/10"
+              href="/completed"
             />
           </div>
         </div>

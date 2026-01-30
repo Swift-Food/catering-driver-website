@@ -169,10 +169,11 @@ export const cateringDriverApi = {
     return response.data;
   },
   /** Get completed orders for a specific driver */
-  getCompletedSessions: async (driverId: string): Promise<DriverMealSessionDto[]> => {
+  getCompletedSessions: async (): Promise<DriverMealSessionDto[]> => {
     const response = await apiClient.get<DriverMealSessionDto[]>(
-      `/catering-driver/completed/${driverId}`
+      `/catering-driver/completed`
     );
+    console.log("Completed sessions:", response)
     return response.data;
   },
 
