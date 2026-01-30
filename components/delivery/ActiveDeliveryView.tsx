@@ -37,6 +37,7 @@ export default function ActiveDeliveryView({
   );
   const [stopPhotos, setStopPhotos] = useState<Record<string, string>>({});
   const [uploadingStopId, setUploadingStopId] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
 
   // Update pending photos flag when stopPhotos changes
@@ -77,11 +78,13 @@ export default function ActiveDeliveryView({
   const handlePhotoSelected = useCallback(
     async (stopId: string, file: File) => {
       setUploadingStopId(stopId);
+      setUploadError(null);
       try {
         const url = await cateringDriverApi.uploadImage(file);
         setStopPhotos((prev) => ({ ...prev, [stopId]: url }));
       } catch (err) {
         console.error("Upload failed:", err);
+        setUploadError("Photo upload failed. Please try again.");
       } finally {
         setUploadingStopId(null);
       }
@@ -187,6 +190,11 @@ export default function ActiveDeliveryView({
 
           {viewMode === "TIMELINE" ? (
             <div className="bg-surface rounded-2xl p-6 border border-border-subtle relative">
+              {uploadError && (
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm font-medium">
+                  {uploadError}
+                </div>
+              )}
               <div className="space-y-4">
                 {stops.map((stop, index) => {
                   const isSelectable =

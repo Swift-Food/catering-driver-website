@@ -14,6 +14,7 @@ import { useAuth } from "@/lib/auth";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import ActiveDeliveryView from "@/components/delivery/ActiveDeliveryView";
 import SessionCalendarModal from "@/components/delivery/SessionCalendarModal";
+import DeliveryCompleteModal from "@/components/ui/DeliveryCompleteModal";
 import {
   getSessionDateLabel,
   getSessionTimeRange,
@@ -37,6 +38,7 @@ export default function DeliveryPage() {
     null,
   );
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
 
   // Fetch assignments when driver is selected
   useEffect(() => {
@@ -108,9 +110,25 @@ export default function DeliveryPage() {
   };
 
   const handleSessionUpdate = useCallback((updated: DriverMealSessionDto) => {
-    setAssignments((prev) =>
-      prev.map((s) => (s.id === updated.id ? updated : s)),
-    );
+    setAssignments((prev) => {
+      const previousSession = prev.find((s) => s.id === updated.id);
+      // Check if the session just became delivered
+      if (
+        updated.deliveryStatus === "delivered" &&
+        previousSession?.deliveryStatus !== "delivered"
+      ) {
+        // Show the completion modal
+        setShowCompleteModal(true);
+        // Remove the delivered session from the list
+        const remaining = prev.filter((s) => s.id !== updated.id);
+        // If there are remaining sessions, select the first one
+        if (remaining.length > 0) {
+          setSelectedSessionId(remaining[0].id);
+        }
+        return remaining;
+      }
+      return prev.map((s) => (s.id === updated.id ? updated : s));
+    });
   }, []);
 
   const selectedSession = assignments.find((s) => s.id === selectedSessionId);
@@ -298,6 +316,10 @@ export default function DeliveryPage() {
           />
         )}
 
+        <DeliveryCompleteModal
+          isOpen={showCompleteModal}
+          onClose={() => setShowCompleteModal(false)}
+        />
       </div>
     );
   }
