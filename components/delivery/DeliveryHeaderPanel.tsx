@@ -52,7 +52,7 @@ export default function DeliveryHeaderPanel({
           <div className="flex items-center gap-3 mb-1 flex-wrap">
             <h2 className="text-lg font-black flex items-center gap-2">
               <User size={16} className="text-primary" />
-              {session.delivery?.contactName || "Delivery"}
+              {session.delivery.contactName || "Delivery"}
             </h2>
             <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-[8px] font-black uppercase tracking-widest border border-primary/20">
               #{session.id.slice(0, 4).toUpperCase()}
@@ -161,7 +161,7 @@ function useCountdown(
   const uncollectedTimes: Date[] = [];
   const allPickupTimes: Date[] = [];
 
-  for (const restaurant of session.restaurants ?? []) {
+  for (const restaurant of session.restaurants) {
     if (restaurant.collectionTime) {
       const d = parseCollectionTime(restaurant.collectionTime, session.sessionDate);
       if (d) {
@@ -263,7 +263,7 @@ function StartDeliveryButton({ onStart }: { onStart: () => Promise<void> }) {
 function isWithinTwoHoursOfPickup(session: DriverMealSessionDto): boolean {
   const times: Date[] = [];
 
-  for (const restaurant of session.restaurants ?? []) {
+  for (const restaurant of session.restaurants) {
     if (restaurant.collectionTime) {
       const d = parseCollectionTime(restaurant.collectionTime, session.sessionDate);
       if (d) times.push(d);
@@ -301,7 +301,7 @@ function getEarliestPickupTime(session: DriverMealSessionDto): string {
   const times: Date[] = [];
 
   // Check per-restaurant collection times
-  for (const restaurant of session.restaurants ?? []) {
+  for (const restaurant of session.restaurants) {
     if (restaurant.collectionTime) {
       const d = parseCollectionTime(restaurant.collectionTime, session.sessionDate);
       if (d) times.push(d);

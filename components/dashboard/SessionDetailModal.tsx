@@ -72,10 +72,10 @@ export default function SessionDetailModal({
   const date = session.sessionDate || "";
   const time = formatTime(session.eventTime || "") || "N/A";
 
-  const pickupCount = session.restaurants?.length ?? 0;
+  const pickupCount = session.restaurants.length;
 
-  const dropoffAddress = session.delivery?.address || "";
-  const dropoffLocation = session.delivery?.location;
+  const dropoffAddress = session.delivery.address || "";
+  const dropoffLocation = session.delivery.location;
 
   const isPending =
     (session.deliveryStatus as MealSessionDeliveryStatus) === "finding_driver";
@@ -89,7 +89,7 @@ export default function SessionDetailModal({
     drivers.some((d, i) => d !== existingDrivers[i]);
 
   const mapPins: GoogleMapPin[] = [
-    ...(session.restaurants ?? [])
+    ...session.restaurants
       .filter((r) => r.address.location)
       .map((r) => ({
         latitude: r.address.location!.latitude,
@@ -171,7 +171,7 @@ export default function SessionDetailModal({
                 <span className="text-sm font-black text-primary uppercase tracking-widest font-mono">
                   #{session.id.slice(0, 4).toUpperCase()}
                 </span>
-                <h2 className="text-2xl font-black">{session.delivery?.contactName || restaurantName}</h2>
+                <h2 className="text-2xl font-black">{session.delivery.contactName || restaurantName}</h2>
               </div>
               <button
                 onClick={onBack ?? onClose}
@@ -195,7 +195,7 @@ export default function SessionDetailModal({
             <CompactInfo
               icon={<Package size={18} />}
               label="Portions"
-              value={(portionCount ?? 0).toString()}
+              value={portionCount.toString()}
               color="text-primary"
             />
             <CompactInfo
@@ -337,13 +337,13 @@ export default function SessionDetailModal({
           </div>
 
           {/* Pickup Addresses */}
-          {(session.restaurants?.length ?? 0) > 0 && (
+          {session.restaurants.length > 0 && (
             <div>
               <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-3 px-1">
-                Pickup Locations ({session.restaurants!.length})
+                Pickup Locations ({session.restaurants.length})
               </p>
               <div className="space-y-2">
-                {session.restaurants!.map((restaurant) => (
+                {session.restaurants.map((restaurant) => (
                   <div
                     key={restaurant.restaurantId}
                     className="flex items-start gap-2.5 bg-surface-variant p-3 rounded-xl border border-border-subtle"

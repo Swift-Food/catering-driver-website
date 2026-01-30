@@ -25,7 +25,7 @@ export function getSessionTimeRange(session: DriverMealSessionDto): string {
   // Earliest pickup time from restaurants
   const times: Date[] = [];
 
-  for (const restaurant of session.restaurants ?? []) {
+  for (const restaurant of session.restaurants) {
     if (restaurant.collectionTime) {
       const d = parseCollectionTime(restaurant.collectionTime, session.sessionDate);
       if (d) times.push(d);

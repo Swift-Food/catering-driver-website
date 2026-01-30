@@ -9,7 +9,6 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { cateringDriverApi } from "@/lib/drivers";
-import { useAuth } from "@/lib/auth";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import SessionCard from "@/components/dashboard/SessionCard";
 import SessionDetailModal from "@/components/dashboard/SessionDetailModal";

@@ -492,11 +492,11 @@ export interface DriverMealSessionDto {
   // Optimistic locking version
   version: number;
 
-  restaurants?: DriverRestaurantPickup[];
-  totalPortions?: number;
-  totalItems?: number;
+  restaurants: DriverRestaurantPickup[];
+  totalPortions: number;
+  totalItems: number;
 
-  delivery?: DriverDeliveryInfo;
+  delivery: DriverDeliveryInfo;
 
   specialRequirements?: string;
   estimatedDeliveryTime?: string;

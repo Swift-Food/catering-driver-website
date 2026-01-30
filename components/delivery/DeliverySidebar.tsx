@@ -24,9 +24,9 @@ export default function DeliverySidebar({
   totalStops,
   remainingStops,
 }: DeliverySidebarProps) {
-  const customerName = session.delivery?.contactName || "Customer";
-  const customerPhone = session.delivery?.contactPhone || "";
-  const deliveryAddress = session.delivery?.address || "Delivery Destination";
+  const customerName = session.delivery.contactName || "Customer";
+  const customerPhone = session.delivery.contactPhone || "";
+  const deliveryAddress = session.delivery.address || "Delivery Destination";
   const eventTime = formatTime(session.eventTime, "N/A");
 
   return (

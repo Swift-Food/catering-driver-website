@@ -294,7 +294,7 @@ function deriveStops(
   const pickupsDone = PICKUP_DONE_STATUSES.includes(session.deliveryStatus);
   const deliveryDone = session.deliveryStatus === "delivered";
 
-  const pickupStops: DeliveryStop[] = (session.restaurants ?? [])
+  const pickupStops: DeliveryStop[] = session.restaurants
     .slice()
     .sort((a, b) => {
       const ta = a.collectionTime ? new Date(a.collectionTime).getTime() : 0;
@@ -317,8 +317,8 @@ function deriveStops(
         locationName: restaurant.restaurantName,
         address: `${addr.addressLine1}${addr.addressLine2 ? `, ${addr.addressLine2}` : ""}, ${addr.city} ${addr.postcode}`,
         time: formatTime(restaurant.collectionTime),
-        contactName: restaurant.contact.phone ? undefined : session.delivery?.contactName,
-        contactPhone: restaurant.contact.phone || session.delivery?.contactPhone,
+        contactName: restaurant.contact.phone ? undefined : session.delivery.contactName,
+        contactPhone: restaurant.contact.phone || session.delivery.contactPhone,
         completed: pickupsDone || locallyCompleted.has(restaurant.restaurantId),
         items: items && items.length > 0 ? items : undefined,
       };
@@ -327,11 +327,11 @@ function deriveStops(
   const dropoffStop: DeliveryStop = {
     id: "dropoff",
     type: "DROPOFF",
-    locationName: session.delivery?.address || "Delivery Destination",
-    address: session.delivery?.address || "",
+    locationName: session.delivery.address || "Delivery Destination",
+    address: session.delivery.address || "",
     time: formatTime(session.eventTime),
-    contactName: session.delivery?.contactName,
-    contactPhone: session.delivery?.contactPhone,
+    contactName: session.delivery.contactName,
+    contactPhone: session.delivery.contactPhone,
     completed: deliveryDone,
   };
 
@@ -341,7 +341,7 @@ function deriveStops(
 function deriveMapPins(session: DriverMealSessionDto): MapPin[] {
   const pins: MapPin[] = [];
 
-  for (const restaurant of session.restaurants ?? []) {
+  for (const restaurant of session.restaurants) {
     if (restaurant.address.location) {
       pins.push({
         latitude: restaurant.address.location.latitude,
@@ -353,13 +353,13 @@ function deriveMapPins(session: DriverMealSessionDto): MapPin[] {
     }
   }
 
-  const dropoffLocation = session.delivery?.location;
+  const dropoffLocation = session.delivery.location;
   if (dropoffLocation) {
     pins.push({
       latitude: dropoffLocation.latitude,
       longitude: dropoffLocation.longitude,
       label: "Delivery",
-      address: session.delivery?.address || "",
+      address: session.delivery.address || "",
       color: "green",
     });
   }
