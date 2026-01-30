@@ -63,6 +63,13 @@ export default function SessionCard({
   const date = formatDate(session.sessionDate);
   const time = formatTime(session.eventTime);
 
+  const isToday = (() => {
+    if (!session.sessionDate) return false;
+    const d = new Date(session.sessionDate);
+    const now = new Date();
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+  })();
+
   const pickupCount = session.restaurants.length;
 
   const collectionTimes = session.restaurants.map((r) => r.collectionTime).filter(Boolean);
@@ -122,7 +129,7 @@ export default function SessionCard({
   };
 
   return (
-    <div className="w-full text-left bg-surface p-4 rounded-2xl shadow-sm border border-border-subtle transition-all duration-300 relative flex flex-col h-full group hover:border-primary/40">
+    <div className={`w-full text-left bg-surface p-4 rounded-2xl shadow-sm border transition-all duration-300 relative flex flex-col h-full group hover:border-primary/40 ${isToday ? "border-primary ring-2 ring-primary/15" : "border-border-subtle"}`}>
       <div onClick={onClick} className={onClick ? "cursor-pointer" : ""}>
         <div className="flex-1">
           <div className="flex justify-between items-start mb-6">
@@ -140,8 +147,8 @@ export default function SessionCard({
                 #{session.id.slice(0, 4).toUpperCase()}
               </p>
               {date && (
-                <p className="text-[14px] font-black uppercase opacity-30 tracking-widest">
-                  {date}
+                <p className={`text-[14px] font-black uppercase tracking-widest ${isToday ? "text-primary" : "opacity-30"}`}>
+                  {isToday ? "TODAY" : date}
                 </p>
               )}
             </div>
