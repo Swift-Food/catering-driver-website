@@ -165,14 +165,12 @@ export default function SessionDetailModal({
           <div className="sticky top-0 z-10 bg-surface rounded-t-3xl px-4 md:px-8 pt-4 md:pt-8 pb-4">
             <div className="flex justify-between items-start">
               <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-primary">
-                    {isPending ? "Incoming Session Invitation" : "Session Details"}
-                  </p>
-                  <span className="text-sm font-black text-primary uppercase tracking-widest font-mono">
-                    #{session.id.slice(0, 4).toUpperCase()}
-                  </span>
-                </div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-3">
+                  {isPending ? "Incoming Session Invitation" : "Session Details"}
+                </p>
+                <span className="text-sm font-black text-primary uppercase tracking-widest font-mono">
+                  #{session.id.slice(0, 4).toUpperCase()}
+                </span>
                 <h2 className="text-2xl font-black">{session.delivery.contactName || restaurantName}</h2>
               </div>
               <button
