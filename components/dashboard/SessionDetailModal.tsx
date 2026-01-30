@@ -19,7 +19,7 @@ import { formatTime } from "@/lib/formatters";
 interface SessionDetailModalProps {
   session: DriverMealSessionDto | null;
   onClose: () => void;
-  onAccept: (session: DriverMealSessionDto, driverNames: string[]) => Promise<void>;
+  onAccept?: (session: DriverMealSessionDto, driverNames: string[]) => Promise<void>;
   onUpdateDriverName?: (
     session: DriverMealSessionDto,
     driverNames: string[]
@@ -79,6 +79,7 @@ export default function SessionDetailModal({
 
   const isPending =
     (session.deliveryStatus as MealSessionDeliveryStatus) === "finding_driver";
+  const readOnly = !onAccept && !onUpdateDriverName;
 
   // MULTI-DRIVER: Use driverNames array directly
   const existingDrivers = session.driverNames || [];
@@ -130,7 +131,7 @@ export default function SessionDetailModal({
     if (finalDrivers.length === 0) return;
     setAccepting(true);
     try {
-      if (isPending) {
+      if (isPending && onAccept) {
         await onAccept(session, finalDrivers);
       } else if (
         onUpdateDriverName &&
@@ -228,6 +229,26 @@ export default function SessionDetailModal({
               )}
             </div>
 
+            {readOnly ? (
+              <div className="bg-surface-variant border border-border-subtle rounded-xl p-2.5">
+                {existingDrivers.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {existingDrivers.map((name, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center bg-primary/10 text-primary px-2 py-0.5 rounded-md text-[10px] font-black"
+                      >
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-[10px] font-black opacity-40">
+                    No driver assigned
+                  </span>
+                )}
+              </div>
+            ) : (
             <div ref={driverRef} className="relative">
               <div className="flex items-stretch gap-2">
                 <button
@@ -334,6 +355,7 @@ export default function SessionDetailModal({
                 </div>
               )}
             </div>
+            )}
           </div>
 
           {/* Pickup Addresses */}
@@ -433,7 +455,7 @@ export default function SessionDetailModal({
           )}
 
           {/* Pending: Reject button */}
-          {isPending && (
+          {isPending && !readOnly && (
             <button
               onClick={onClose}
               className="w-full py-4 rounded-xl bg-surface-variant border border-border-subtle font-bold text-xs uppercase tracking-widest hover:bg-status-red/5 hover:text-status-red hover:border-status-red/20 transition-all"

@@ -178,7 +178,6 @@ export default function CompletedPage() {
           setOpenedFromCalendar(false);
           setCalendarSelectedDay(null);
         }}
-        onAccept={async () => {}}
         onBack={
           openedFromCalendar
             ? () => {

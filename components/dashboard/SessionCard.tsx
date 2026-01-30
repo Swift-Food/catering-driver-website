@@ -64,6 +64,7 @@ export default function SessionCard({
   const time = formatTime(session.eventTime);
 
   const isToday = (() => {
+    if (!onDriverSubmit) return false;
     if (!session.sessionDate) return false;
     const d = new Date(session.sessionDate);
     const now = new Date();
