@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, ReactNode } from "react";
-import Link from "next/link";
+import { useState, ReactNode, useCallback } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -29,7 +28,15 @@ export function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
-  const { selectedDriverName, clearSelectedDriver } = useDriver();
+  const { selectedDriverName, clearSelectedDriver, requestNavigation } = useDriver();
+
+  const handleNavClick = useCallback(
+    (href: string) => {
+      if (pathname === href) return;
+      requestNavigation(href, () => router.push(href));
+    },
+    [pathname, requestNavigation, router]
+  );
 
   return (
     <aside
@@ -69,9 +76,9 @@ export function Sidebar() {
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <Link
+              <button
                 key={item.href}
-                href={item.href}
+                onClick={() => handleNavClick(item.href)}
                 className={`flex items-center transition-all font-bold text-sm ${
                   isActive
                     ? "bg-primary text-white shadow-lg shadow-primary/10"
@@ -88,7 +95,7 @@ export function Sidebar() {
                 {isExpanded && (
                   <span className="whitespace-nowrap">{item.label}</span>
                 )}
-              </Link>
+              </button>
             );
           })}
         </nav>

@@ -27,6 +27,8 @@ interface DriverContextType {
   pendingAction: PendingAction | null;
   confirmPendingAction: () => void;
   cancelPendingAction: () => void;
+  // Guarded navigation
+  requestNavigation: (href: string, navigate: () => void) => void;
 }
 
 const DriverContext = createContext<DriverContextType | undefined>(undefined);
@@ -99,6 +101,20 @@ export function DriverProvider({ children }: { children: ReactNode }) {
     }
   }, [hasPendingPhotos]);
 
+  const requestNavigation = useCallback(
+    (href: string, navigate: () => void) => {
+      if (hasPendingPhotos) {
+        setPendingAction({
+          action: navigate,
+          message: "You have uploaded photos that haven't been confirmed. If you navigate away, these photos will be lost.",
+        });
+      } else {
+        navigate();
+      }
+    },
+    [hasPendingPhotos]
+  );
+
   return (
     <DriverContext.Provider
       value={{
@@ -111,6 +127,7 @@ export function DriverProvider({ children }: { children: ReactNode }) {
         pendingAction,
         confirmPendingAction,
         cancelPendingAction,
+        requestNavigation,
       }}
     >
       {children}
