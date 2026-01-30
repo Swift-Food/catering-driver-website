@@ -297,6 +297,31 @@ export default function StopTimelineItem({
                   </>
                 )}
               </button>
+
+              {/* T&C Confirmation Checkbox - mobile only */}
+              {isPickup && (
+                <label
+                  onClick={(e) => e.stopPropagation()}
+                  className={`md:hidden flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                    itemsConfirmed
+                      ? "bg-primary/10 border-primary/30"
+                      : "bg-primary/5 border-primary/20"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 rounded accent-primary cursor-pointer flex-shrink-0"
+                    checked={itemsConfirmed}
+                    onChange={(e) => onItemsConfirmedChange(e.target.checked)}
+                  />
+                  <span className={`text-[11px] font-bold leading-tight ${
+                    itemsConfirmed ? "text-primary" : "opacity-70"
+                  }`}>
+                    I confirm that all items for this collection have been checked and are present
+                  </span>
+                </label>
+              )}
+
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -319,11 +344,11 @@ export default function StopTimelineItem({
             </div>
             </div>
 
-            {/* T&C Confirmation Checkbox - full width below grid */}
+            {/* T&C Confirmation Checkbox - desktop only */}
             {isPickup && (
               <label
                 onClick={(e) => e.stopPropagation()}
-                className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                className={`hidden md:flex items-center gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer ${
                   itemsConfirmed
                     ? "bg-primary/10 border-primary/30"
                     : "bg-primary/5 border-primary/20"
