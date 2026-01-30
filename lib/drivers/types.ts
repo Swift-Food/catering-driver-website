@@ -483,6 +483,8 @@ export interface DriverMealSessionDto {
 
   delivery: DriverDeliveryInfo;
 
+  orderItems?: PricingOrderItemDto[];
+
   specialRequirements?: string;
   estimatedDeliveryTime?: string;
 

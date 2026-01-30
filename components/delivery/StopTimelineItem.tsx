@@ -1,15 +1,15 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   CheckCircle,
   Camera,
   ChevronRight,
   Timer,
   Phone,
-  MessageSquare,
   ImageIcon,
   Loader2,
+  ListChecks,
 } from "lucide-react";
 import type { DeliveryStop } from "./types";
 
@@ -25,6 +25,8 @@ interface StopTimelineItemProps {
   onPhotoSelected: (file: File) => void;
   onComplete: () => void;
   isCompleting: boolean;
+  itemsConfirmed: boolean;
+  onItemsConfirmedChange: (confirmed: boolean) => void;
 }
 
 export default function StopTimelineItem({
@@ -39,15 +41,23 @@ export default function StopTimelineItem({
   onPhotoSelected,
   onComplete,
   isCompleting,
+  itemsConfirmed,
+  onItemsConfirmedChange,
 }: StopTimelineItemProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isCompleted = stop.completed;
+  const [itemChecks, setItemChecks] = useState<Record<string, boolean>>({});
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) onPhotoSelected(file);
     e.target.value = "";
   };
+
+  const isPickup = stop.type === "PICKUP";
+  const canComplete = isPickup
+    ? photoUrl && itemsConfirmed
+    : photoUrl;
 
   return (
     <div
@@ -85,7 +95,7 @@ export default function StopTimelineItem({
                   isCompleted ? "line-through text-gray-400" : ""
                 }`}
               >
-                {stop.type === "PICKUP" ? "Collection" : "Final Delivery"}
+                {isPickup ? "Collection" : "Final Delivery"}
               </h3>
             </div>
             <a
@@ -124,18 +134,81 @@ export default function StopTimelineItem({
               onChange={handleFileChange}
             />
 
-            {/* Contact Panel */}
+            {/* Left Panel: Item Checklist + Contact */}
             <div className="bg-surface-variant p-5 rounded-xl border border-border-subtle shadow-sm">
-              {stop.type === "PICKUP" ? (
+              {isPickup ? (
                 <div className="space-y-4">
-                  <div className="text-center py-4">
-                    <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-1">
-                      Point of Contact
-                    </p>
-                    <p className="font-black text-sm">
-                      {stop.contactName || "Restaurant Lead"}
-                    </p>
+                  {/* Item Checklist */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <ListChecks size={14} className="text-primary" />
+                      <p className="text-[9px] font-black uppercase tracking-widest opacity-40">
+                        Item Checklist
+                      </p>
+                      {stop.items && stop.items.length > 0 && (
+                        <span className="text-[9px] font-bold text-primary ml-auto">
+                          {Object.values(itemChecks).filter(Boolean).length}/{stop.items.length}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Individual item checkboxes */}
+                    {stop.items && stop.items.length > 0 && (
+                      <div className="max-h-48 overflow-y-auto pr-1 space-y-1.5 mb-3">
+                        {stop.items.map((item) => (
+                          <label
+                            key={item.id}
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex items-center gap-3 p-2.5 rounded-lg bg-white/50 dark:bg-white/5 border border-transparent hover:border-primary/20 transition-all cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              className="w-3.5 h-3.5 rounded accent-primary cursor-pointer flex-shrink-0"
+                              checked={!!itemChecks[item.id]}
+                              onChange={(e) => {
+                                setItemChecks((prev) => ({
+                                  ...prev,
+                                  [item.id]: e.target.checked,
+                                }));
+                              }}
+                            />
+                            <span className="text-[11px] font-semibold text-gray-700 dark:text-gray-300">
+                              {item.label}
+                            </span>
+                            {item.quantity > 1 && (
+                              <span className="text-[9px] font-bold text-primary/60 ml-auto">
+                                x{item.quantity}
+                              </span>
+                            )}
+                          </label>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* T&C Confirmation Checkbox */}
+                    <label
+                      onClick={(e) => e.stopPropagation()}
+                      className={`flex items-start gap-3 p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                        itemsConfirmed
+                          ? "bg-status-green/5 border-status-green/30"
+                          : "bg-primary/5 border-primary/20"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 rounded accent-primary cursor-pointer flex-shrink-0 mt-0.5"
+                        checked={itemsConfirmed}
+                        onChange={(e) => onItemsConfirmedChange(e.target.checked)}
+                      />
+                      <span className={`text-[11px] font-bold leading-tight ${
+                        itemsConfirmed ? "text-status-green" : "opacity-70"
+                      }`}>
+                        I confirm that all items for this collection have been checked and are present
+                      </span>
+                    </label>
                   </div>
+
+                  {/* Contact Section */}
                   <div className="pt-3 border-t border-border-subtle">
                     <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-2 text-center">
                       Contact Restaurant
@@ -154,23 +227,6 @@ export default function StopTimelineItem({
                           <Phone size={14} /> Call
                         </button>
                       )}
-                      {/* TODO: Restaurant WhatsApp
-                      {stop.contactPhone ? (
-                        <a
-                          href={`https://wa.me/${stop.contactPhone.replace(/[^0-9]/g, "")}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="flex-1 py-3 bg-primary/5 text-primary rounded-lg text-[9px] font-black uppercase flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all"
-                        >
-                          <MessageSquare size={14} /> WhatsApp
-                        </a>
-                      ) : (
-                        <button disabled className="flex-1 py-3 bg-primary/5 text-primary/30 rounded-lg text-[9px] font-black uppercase flex items-center justify-center gap-2">
-                          <MessageSquare size={14} /> WhatsApp
-                        </button>
-                      )}
-                      */}
                     </div>
                   </div>
                 </div>
@@ -267,14 +323,14 @@ export default function StopTimelineItem({
                   e.stopPropagation();
                   onComplete();
                 }}
-                disabled={!photoUrl || isCompleting}
+                disabled={!canComplete || isCompleting}
                 className="w-full py-4 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-md shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100"
               >
                 {isCompleting ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    {stop.type === "PICKUP"
+                    {isPickup
                       ? "Complete Collection"
                       : "Confirm Dropoff"}
                     <ChevronRight size={14} />

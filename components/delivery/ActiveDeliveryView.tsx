@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import type { DriverMealSessionDto } from "@/lib/drivers/types";
 import { cateringDriverApi } from "@/lib/drivers";
-import type { DeliveryStop } from "./types";
+import type { DeliveryStop, ChecklistItem } from "./types";
 import type { ViewMode } from "./TabSwitcher";
 import type { MapPin } from "@/components/dashboard/GoogleMap";
 import DeliveryHeaderPanel from "./DeliveryHeaderPanel";
@@ -39,6 +39,7 @@ export default function ActiveDeliveryView({
   const [uploadingStopId, setUploadingStopId] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
+  const [itemsConfirmedStops, setItemsConfirmedStops] = useState<Set<string>>(new Set());
 
   // Update pending photos flag when stopPhotos changes
   useEffect(() => {
@@ -218,6 +219,15 @@ export default function ActiveDeliveryView({
                       }
                       onComplete={() => handleCompleteStop(stop)}
                       isCompleting={isCompleting}
+                      itemsConfirmed={itemsConfirmedStops.has(stop.id)}
+                      onItemsConfirmedChange={(confirmed) => {
+                        setItemsConfirmedStops((prev) => {
+                          const next = new Set(prev);
+                          if (confirmed) next.add(stop.id);
+                          else next.delete(stop.id);
+                          return next;
+                        });
+                      }}
                     />
                   );
                 })}
@@ -294,6 +304,16 @@ function deriveStops(
     .map((restaurant) => {
       const addr = restaurant.address;
 
+      // Derive checklist items from orderItems matching this restaurant
+      const orderItem = session.orderItems?.find(
+        (oi) => oi.restaurantId === restaurant.restaurantId
+      );
+      const items: ChecklistItem[] | undefined = orderItem?.menuItems?.map((mi) => ({
+        id: mi.menuItemId,
+        label: mi.menuItemName,
+        quantity: mi.quantity,
+      }));
+
       return {
         id: restaurant.restaurantId,
         type: "PICKUP",
@@ -303,6 +323,7 @@ function deriveStops(
         contactName: restaurant.contact.phone ? undefined : session.delivery.contactName,
         contactPhone: restaurant.contact.phone || session.delivery.contactPhone,
         completed: pickupsDone || locallyCompleted.has(restaurant.restaurantId),
+        items: items && items.length > 0 ? items : undefined,
       };
     });
 

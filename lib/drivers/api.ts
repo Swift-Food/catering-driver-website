@@ -49,6 +49,7 @@ export const cateringDriverApi = {
       "/catering-driver/my-assignments",
       { params }
     );
+    console.log(response)
     return response.data;
   },
 

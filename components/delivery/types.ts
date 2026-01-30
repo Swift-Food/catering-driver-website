@@ -1,3 +1,9 @@
+export interface ChecklistItem {
+  id: string;
+  label: string;
+  quantity: number;
+}
+
 export interface DeliveryStop {
   id: string;
   type: "PICKUP" | "DROPOFF";
@@ -9,4 +15,5 @@ export interface DeliveryStop {
   completed: boolean;
   prepStatus?: "READY" | "PREPARING";
   photoUrl?: string;
+  items?: ChecklistItem[];
 }
