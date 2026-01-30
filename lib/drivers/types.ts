@@ -293,10 +293,6 @@ export interface MealSession {
   sessionDate: string;
   eventTime: string;
 
-  // Session Specifics
-  guestCount?: number;
-  specialRequirements?: string;
-
   // Order Items
   orderItems: PricingOrderItemDto[];
   totalDeliveryPortions: number;
@@ -317,8 +313,6 @@ export interface MealSession {
   restaurantRejections?: string[];
 
   // Status Tracking
-  reminder24HourSent: boolean;
-  reminder1HourSent: boolean;
   deliveryTimeChangedAt: string | null;
   deliveryTimeChangedBy: string | null;
 
