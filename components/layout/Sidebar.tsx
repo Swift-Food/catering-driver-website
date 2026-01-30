@@ -104,10 +104,7 @@ export function Sidebar() {
                 {selectedDriverName}
               </p>
               <button
-                onClick={() => {
-                  clearSelectedDriver();
-                  router.push("/delivery");
-                }}
+                onClick={clearSelectedDriver}
                 className="text-[10px] text-primary font-bold mt-2 hover:underline"
               >
                 Switch Driver
