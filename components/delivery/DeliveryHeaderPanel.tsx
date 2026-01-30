@@ -78,12 +78,12 @@ export default function DeliveryHeaderPanel({
 
       <div className="flex items-center gap-4 lg:gap-6">
         {/* Earliest Pickup - always shown */}
-        <div className="text-left lg:text-right">
-          <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5 flex items-center gap-1.5">
+        <div className="text-center">
+          <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-1 flex items-center justify-center gap-1.5">
             <Store size={10} />
             Earliest Pickup
           </p>
-          <div className="flex items-center gap-2 text-primary">
+          <div className="flex items-center justify-center gap-2 text-primary">
             <Clock size={14} strokeWidth={3} />
             <span className="text-base font-bold tracking-tight">
               {earliestPickupTime}
@@ -94,11 +94,11 @@ export default function DeliveryHeaderPanel({
         <div className="w-px h-10 bg-border-subtle" />
 
         {/* Event Time */}
-        <div className="text-left lg:text-right">
-          <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5">
+        <div className="text-center">
+          <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-1">
             Event Time
           </p>
-          <div className="flex items-center gap-2 text-primary">
+          <div className="flex items-center justify-center gap-2 text-primary">
             <Clock size={14} strokeWidth={3} />
             <span className="text-base font-bold tracking-tight">
               {formatTime(session.eventTime, "N/A")}
@@ -248,7 +248,7 @@ function StartDeliveryButton({ onStart }: { onStart: () => Promise<void> }) {
     <button
       onClick={handleClick}
       disabled={loading}
-      className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50"
+      className="flex items-center gap-1.5 px-4 py-2 bg-primary text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow-md shadow-primary/20 hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50"
     >
       {loading ? (
         <Loader2 size={14} className="animate-spin" />
