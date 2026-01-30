@@ -88,10 +88,18 @@ export default function StopTimelineItem({
                 {stop.type === "PICKUP" ? "Collection" : "Final Delivery"}
               </h3>
             </div>
-            <p className="text-primary font-bold text-sm">
-              {stop.locationName}
-            </p>
-            <p className="text-[10px] opacity-40 font-medium">{stop.address}</p>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(stop.address || stop.locationName)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="block"
+            >
+              <p className="text-primary font-bold text-sm">
+                {stop.locationName}
+              </p>
+              <p className="text-[10px] opacity-40 font-medium">{stop.address}</p>
+            </a>
           </div>
           <div className="text-left md:text-right flex flex-col items-start md:items-end">
             <div className="flex items-center gap-1.5 text-primary">
