@@ -168,6 +168,13 @@ export const cateringDriverApi = {
     console.log("Upcoming response:", response.data);
     return response.data;
   },
+  /** Get completed orders for a specific driver */
+  getCompletedSessions: async (driverId: string): Promise<DriverMealSessionDto[]> => {
+    const response = await apiClient.get<DriverMealSessionDto[]>(
+      `/catering-driver/completed/${driverId}`
+    );
+    return response.data;
+  },
 
   /** Upload an image and return the URL */
   uploadImage: async (file: File): Promise<string> => {
