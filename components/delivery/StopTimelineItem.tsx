@@ -303,7 +303,7 @@ export default function StopTimelineItem({
                   onComplete();
                 }}
                 disabled={!canComplete || isCompleting}
-                className="w-full py-4 bg-primary text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-md shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100"
+                className="w-full py-4 bg-primary text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-md shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100"
               >
                 {isCompleting ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
