@@ -21,9 +21,12 @@ const getAuthApi = async () => {
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("auth_token");
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
+      const url = config.url || "";
+      if (!url.includes("/auth/refresh")) {
+        const token = localStorage.getItem("auth_token");
+        if (token && config.headers) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
       }
     }
     return config;
