@@ -365,13 +365,20 @@ export default function SessionDetailModal({
                           </div>
                         )}
                       </div>
-                      <p className="text-[9px] font-bold opacity-50 uppercase tracking-wider">
-                        {restaurant.address.addressLine1}
-                        {restaurant.address.addressLine2 ? `, ${restaurant.address.addressLine2}` : ""}
-                      </p>
-                      <p className="text-[9px] font-bold opacity-50 uppercase tracking-wider">
-                        {restaurant.address.city}, {restaurant.address.postcode}
-                      </p>
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${restaurant.address.addressLine1}${restaurant.address.addressLine2 ? `, ${restaurant.address.addressLine2}` : ""}, ${restaurant.address.city} ${restaurant.address.postcode}`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block hover:opacity-80 transition-opacity"
+                      >
+                        <p className="text-[9px] font-bold opacity-50 uppercase tracking-wider underline decoration-dotted underline-offset-2">
+                          {restaurant.address.addressLine1}
+                          {restaurant.address.addressLine2 ? `, ${restaurant.address.addressLine2}` : ""}
+                        </p>
+                        <p className="text-[9px] font-bold opacity-50 uppercase tracking-wider underline decoration-dotted underline-offset-2">
+                          {restaurant.address.city}, {restaurant.address.postcode}
+                        </p>
+                      </a>
                     </div>
                   </div>
                 ))}
@@ -385,14 +392,19 @@ export default function SessionDetailModal({
               <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-3 px-1">
                 Delivery Destination
               </p>
-              <div className="flex items-center gap-2.5 bg-surface-variant p-3 rounded-xl border border-border-subtle">
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dropoffAddress)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 bg-surface-variant p-3 rounded-xl border border-border-subtle hover:opacity-80 transition-opacity"
+              >
                 <div className="w-7 h-7 shrink-0 rounded-lg bg-surface flex items-center justify-center text-primary border border-border-subtle">
                   <MapPin size={14} />
                 </div>
-                <p className="text-[10px] font-black uppercase tracking-widest truncate min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-widest truncate min-w-0 underline decoration-dotted underline-offset-2">
                   {dropoffAddress}
                 </p>
-              </div>
+              </a>
             </div>
           )}
 
