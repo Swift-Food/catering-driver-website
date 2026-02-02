@@ -144,11 +144,11 @@ export default function SessionCard({
               <Package size={20} />
             </div>
             <div className="text-right">
-              <p className="text-sm font-black text-primary uppercase tracking-widest font-mono mb-1">
+              <p className="text-lg font-black text-primary uppercase tracking-widest font-mono mb-1">
                 #{session.id.slice(0, 4).toUpperCase()}
               </p>
               {date && (
-                <p className={`text-[14px] font-black uppercase tracking-widest ${isToday ? "text-primary" : "opacity-30"}`}>
+                <p className={`text-base font-black uppercase tracking-widest ${isToday ? "text-primary" : "opacity-30"}`}>
                   {isToday ? "TODAY" : date}
                 </p>
               )}
@@ -162,7 +162,7 @@ export default function SessionCard({
 
             <div className="space-y-2">
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
+                <div className="flex items-center gap-2.5 text-xs font-bold opacity-60">
                   <div className="w-7 h-7 shrink-0 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
                     <Package size={14} />
                   </div>
@@ -170,7 +170,7 @@ export default function SessionCard({
                     {portionCount} Portions
                   </span>
                 </div>
-                <div className="flex items-center gap-2.5 text-[10px] font-bold opacity-60">
+                <div className="flex items-center gap-2.5 text-xs font-bold opacity-60">
                   <div className="w-7 h-7 shrink-0 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
                     <Store size={14} />
                   </div>
@@ -180,12 +180,12 @@ export default function SessionCard({
                 </div>
               </div>
               {dropoffAddress && (
-                <div className="flex items-start gap-2.5 text-[10px] font-bold opacity-60">
+                <div className="flex items-start gap-2.5 text-xs font-bold opacity-60">
                   <div className="w-7 h-7 shrink-0 rounded-lg bg-surface-variant flex items-center justify-center text-primary border border-border-subtle">
                     <MapPin size={14} />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[8px] font-black uppercase tracking-widest opacity-60 mb-0.5">
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-0.5">
                       Drop
                     </p>
                     <p className="uppercase tracking-wider truncate">
@@ -203,12 +203,12 @@ export default function SessionCard({
         <div className="grid grid-cols-2 gap-3">
           {pickupTimeRange && (
             <div className="bg-surface-variant p-3 rounded-xl border border-border-subtle">
-              <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1.5">
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1.5">
                 Pickup<br />Window
               </p>
               <div className="flex items-center gap-2 text-status-green">
-                <Clock size={12} strokeWidth={2.5} />
-                <span className="text-[11px] font-black tracking-tight">
+                <Clock size={14} strokeWidth={2.5} />
+                <span className="text-sm font-black tracking-tight">
                   {pickupTimeRange}
                 </span>
               </div>
@@ -216,12 +216,12 @@ export default function SessionCard({
           )}
           {time && (
             <div className="bg-surface-variant p-3 rounded-xl border border-border-subtle">
-              <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1.5">
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1.5">
                 Event<br />Time
               </p>
               <div className="flex items-center gap-2 text-primary">
-                <Clock size={12} strokeWidth={2.5} />
-                <span className="text-[11px] font-black tracking-tight">
+                <Clock size={14} strokeWidth={2.5} />
+                <span className="text-sm font-black tracking-tight">
                   {time}
                 </span>
               </div>

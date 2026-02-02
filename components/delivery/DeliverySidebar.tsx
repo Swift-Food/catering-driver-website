@@ -172,7 +172,7 @@ function SidebarItem({
       </div>
       <div className="overflow-hidden">
         <p className="font-bold text-xs truncate">{name}</p>
-        <p className="text-[8px] font-bold uppercase opacity-30 tracking-widest truncate">
+        <p className="text-[10px] font-bold uppercase opacity-30 tracking-widest truncate">
           {role}
         </p>
       </div>

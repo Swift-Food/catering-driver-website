@@ -39,6 +39,9 @@ export default function DeliveryPage() {
   );
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [driverAssignmentCounts, setDriverAssignmentCounts] = useState<
+    Record<string, number>
+  >({});
 
   // Fetch assignments when driver is selected
   useEffect(() => {
@@ -75,21 +78,33 @@ export default function DeliveryPage() {
     return () => { stale = true; };
   }, [isAuthenticated, selectedDriverName]);
 
-  // Fetch driver names once authenticated
+  // Fetch driver names and assignment counts once authenticated
   useEffect(() => {
     if (!isAuthenticated) return;
 
     let stale = false;
 
-    const fetchDriverNames = async () => {
+    const fetchDriverData = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        const data = await cateringDriverApi.getActiveDriverNames();
+        const [names, sessions] = await Promise.all([
+          cateringDriverApi.getActiveDriverNames(),
+          cateringDriverApi.getAssignedSessions(),
+        ]);
         if (stale) return;
-        setDriverNames(data ?? []);
+        setDriverNames(names ?? []);
 
-        if (selectedDriverName && !(data ?? []).includes(selectedDriverName)) {
+        // Count assignments per driver name
+        const counts: Record<string, number> = {};
+        for (const session of sessions ?? []) {
+          for (const name of session.driverNames ?? []) {
+            counts[name] = (counts[name] || 0) + 1;
+          }
+        }
+        setDriverAssignmentCounts(counts);
+
+        if (selectedDriverName && !(names ?? []).includes(selectedDriverName)) {
           clearSelectedDriver();
         }
       } catch (err) {
@@ -101,7 +116,7 @@ export default function DeliveryPage() {
       }
     };
 
-    fetchDriverNames();
+    fetchDriverData();
     return () => { stale = true; };
   }, [isAuthenticated]);
 
@@ -282,10 +297,10 @@ export default function DeliveryPage() {
                     </span>
                     <div className="text-left">
                       <p className="leading-tight">
-                        {s.sessionName || `Session ${i + 1}`}
+                        {s.sessionName || `Session ${i + 1}`} r34r34t3t
                       </p>
                       {(dateLabel || timeRange) && (
-                        <p className="text-[9px] font-medium opacity-50 leading-tight mt-0.5">
+                        <p className="text-lg font-medium opacity-50 leading-tight mt-0.5">
                           {dateLabel && <span className="font-black opacity-100 text-text">{dateLabel}</span>}
                           {dateLabel && timeRange ? " · " : ""}
                           {timeRange}
@@ -396,9 +411,14 @@ export default function DeliveryPage() {
           <button
             key={name}
             onClick={() => handleDriverSelect(name)}
-            className="p-4 bg-surface border border-border-subtle rounded-xl font-bold text-sm hover:border-primary hover:text-primary transition-all truncate"
+            className="relative overflow-visible p-4 bg-surface border border-border-subtle rounded-xl font-bold text-sm hover:border-primary hover:text-primary transition-all"
           >
-            {name}
+            {driverAssignmentCounts[name] > 0 && (
+              <span className="absolute -top-2 -right-2 min-w-5 h-5 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-black">
+                {driverAssignmentCounts[name]}
+              </span>
+            )}
+            <span className="block truncate">{name}</span>
           </button>
         ))}
       </div>

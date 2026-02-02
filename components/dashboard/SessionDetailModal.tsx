@@ -361,7 +361,7 @@ export default function SessionDetailModal({
           {/* Pickup Addresses */}
           {session.restaurants.length > 0 && (
             <div>
-              <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-3 px-1">
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-3 px-1">
                 Pickup Locations ({session.restaurants.length})
               </p>
               <div className="space-y-2">
@@ -411,7 +411,7 @@ export default function SessionDetailModal({
           {/* Dropoff Address */}
           {dropoffAddress && (
             <div>
-              <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-3 px-1">
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-3 px-1">
                 Delivery Destination
               </p>
               <a
@@ -487,11 +487,11 @@ function CompactInfo({
     <div className="bg-surface-variant p-4 rounded-2xl border border-border-subtle">
       <div className={`flex items-center gap-2 mb-1 ${color}`}>
         {icon}
-        <span className="text-[9px] font-black uppercase tracking-widest opacity-50 text-text-muted">
+        <span className="text-[11px] font-black uppercase tracking-widest opacity-50 text-text-muted">
           {label}
         </span>
       </div>
-      <p className="text-sm font-semibold font-mont">{value}</p>
+      <p className="text-base font-semibold font-mont">{value}</p>
       {subtitle && (
         <p className="text-[10px] font-bold opacity-50 mt-1">{subtitle}</p>
       )}

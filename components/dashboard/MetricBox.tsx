@@ -18,7 +18,7 @@ export default function MetricBox({ label, value, icon, color, bg, href }: Metri
       </div>
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-[8px] md:text-[9px] uppercase tracking-widest opacity-40 font-black mb-0.5 md:mb-1">
+          <p className="text-[10px] md:text-[11px] uppercase tracking-widest opacity-40 font-black mb-0.5 md:mb-1">
             {label}
           </p>
           <p className="text-2xl md:text-3xl font-black font-mont leading-none tracking-tight">

@@ -1,9 +1,9 @@
 "use client";
 
-import { ReactNode } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { ReactNode, useCallback } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Home, Map as MapIcon, Settings } from "lucide-react";
+import { useDriver } from "@/lib/drivers";
 
 interface NavItem {
   href: string;
@@ -19,15 +19,26 @@ const navItems: NavItem[] = [
 
 export function MobileNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { requestNavigation } = useDriver();
+
+  const handleNavClick = useCallback(
+    (href: string) => {
+      if (pathname === href) return;
+      const leavingDelivery = pathname === "/delivery" && href !== "/delivery";
+      requestNavigation(href, () => router.push(href), leavingDelivery ? { clearDriver: true } : undefined);
+    },
+    [pathname, requestNavigation, router]
+  );
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-lg border-t border-border-subtle px-4 pt-1 pb-4 safe-bottom flex justify-evenly items-center z-50">
       {navItems.map((item) => {
         const isActive = pathname === item.href;
         return (
-          <Link
+          <button
             key={item.href}
-            href={item.href}
+            onClick={() => handleNavClick(item.href)}
             className={`flex flex-col items-center gap-1 transition-all flex-1 ${
               isActive ? "text-primary" : "text-text-muted opacity-60"
             }`}
@@ -42,7 +53,7 @@ export function MobileNav() {
             <span className="text-[9px] font-black uppercase tracking-widest">
               {item.label}
             </span>
-          </Link>
+          </button>
         );
       })}
     </nav>

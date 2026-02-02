@@ -28,7 +28,7 @@ interface DriverContextType {
   confirmPendingAction: () => void;
   cancelPendingAction: () => void;
   // Guarded navigation
-  requestNavigation: (href: string, navigate: () => void) => void;
+  requestNavigation: (href: string, navigate: () => void, opts?: { clearDriver?: boolean }) => void;
 }
 
 const DriverContext = createContext<DriverContextType | undefined>(undefined);
@@ -102,14 +102,22 @@ export function DriverProvider({ children }: { children: ReactNode }) {
   }, [hasPendingPhotos]);
 
   const requestNavigation = useCallback(
-    (href: string, navigate: () => void) => {
+    (href: string, navigate: () => void, opts?: { clearDriver?: boolean }) => {
+      const wrappedNavigate = () => {
+        if (opts?.clearDriver) {
+          setSelectedDriverNameState(null);
+          localStorage.removeItem(STORAGE_KEY);
+        }
+        navigate();
+      };
+
       if (hasPendingPhotos) {
         setPendingAction({
-          action: navigate,
+          action: wrappedNavigate,
           message: "You have uploaded photos that haven't been confirmed. If you navigate away, these photos will be lost.",
         });
       } else {
-        navigate();
+        wrappedNavigate();
       }
     },
     [hasPendingPhotos]

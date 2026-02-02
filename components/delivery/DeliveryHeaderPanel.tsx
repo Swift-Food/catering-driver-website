@@ -54,17 +54,17 @@ export default function DeliveryHeaderPanel({
               <User size={16} className="text-primary" />
               {session.delivery.contactName || "Delivery"}
             </h2>
-            <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-[8px] font-black uppercase tracking-widest border border-primary/20">
+            <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs font-black uppercase tracking-widest border border-primary/20">
               #{session.id.slice(0, 4).toUpperCase()}
             </span>
-            <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-[8px] font-black uppercase tracking-widest border border-primary/20">
+            <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs font-black uppercase tracking-widest border border-primary/20">
               {statusLabel}
             </span>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-1.5 text-text-muted">
               <Calendar size={11} />
-              <span className="font-bold uppercase tracking-widest text-[9px]">
+              <span className="font-bold uppercase tracking-widest text-[11px]">
                 {formatDate(session.sessionDate, "N/A")}
               </span>
             </div>
@@ -79,8 +79,8 @@ export default function DeliveryHeaderPanel({
       <div className="flex items-center gap-4 lg:gap-6">
         {/* Earliest Pickup - always shown */}
         <div className="text-center">
-          <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-1 flex items-center justify-center gap-1.5">
-            <Store size={10} />
+          <p className="text-[11px] font-black uppercase tracking-widest opacity-30 mb-1 flex items-center justify-center gap-1.5">
+            <Store size={12} />
             Earliest Pickup
           </p>
           <div className="flex items-center justify-center gap-2 text-primary">
@@ -95,7 +95,7 @@ export default function DeliveryHeaderPanel({
 
         {/* Event Time */}
         <div className="text-center">
-          <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-1">
+          <p className="text-[11px] font-black uppercase tracking-widest opacity-30 mb-1">
             Event Time
           </p>
           <div className="flex items-center justify-center gap-2 text-primary">
@@ -111,8 +111,8 @@ export default function DeliveryHeaderPanel({
           <>
             <div className="w-px h-10 bg-border-subtle" />
             <div className="text-left lg:text-right">
-              <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-0.5 flex items-center gap-1.5">
-                <Timer size={10} />
+              <p className="text-[11px] font-black uppercase tracking-widest opacity-30 mb-0.5 flex items-center gap-1.5">
+                <Timer size={12} />
                 {countdown.label}
               </p>
               <div className={`flex items-center gap-2 ${countdown.urgent ? "text-red-500" : "text-primary"}`}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ReactNode, useCallback } from "react";
+import { useState, useEffect, ReactNode, useCallback } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -10,7 +10,8 @@ import {
   X,
   Menu,
 } from "lucide-react";
-import { useDriver } from "@/lib/drivers";
+import { useDriver, cateringDriverApi } from "@/lib/drivers";
+import { useAuth } from "@/lib/auth";
 
 interface NavItem {
   href: string;
@@ -29,11 +30,23 @@ export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { selectedDriverName, clearSelectedDriver, requestNavigation } = useDriver();
+  const { isAuthenticated } = useAuth();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let stale = false;
+    cateringDriverApi.getAnalytics().then((data) => {
+      if (!stale) setPendingCount(data.pending);
+    }).catch(() => {});
+    return () => { stale = true; };
+  }, [isAuthenticated]);
 
   const handleNavClick = useCallback(
     (href: string) => {
       if (pathname === href) return;
-      requestNavigation(href, () => router.push(href));
+      const leavingDelivery = pathname === "/delivery" && href !== "/delivery";
+      requestNavigation(href, () => router.push(href), leavingDelivery ? { clearDriver: true } : undefined);
     },
     [pathname, requestNavigation, router]
   );
@@ -79,7 +92,7 @@ export function Sidebar() {
               <button
                 key={item.href}
                 onClick={() => handleNavClick(item.href)}
-                className={`flex items-center transition-all font-bold text-sm ${
+                className={`relative overflow-visible flex items-center transition-all font-bold text-sm ${
                   isActive
                     ? "bg-primary text-white shadow-lg shadow-primary/10"
                     : "text-text-muted hover:bg-surface-variant"
@@ -89,6 +102,11 @@ export function Sidebar() {
                     : "w-12 h-12 justify-center rounded-xl mx-auto"
                 }`}
               >
+                {item.href === "/" && pendingCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-black">
+                    {pendingCount}
+                  </span>
+                )}
                 <div className="flex-shrink-0 flex items-center justify-center w-5 h-5">
                   {item.icon}
                 </div>
