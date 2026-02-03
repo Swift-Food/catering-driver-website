@@ -9,6 +9,7 @@ import {
   AlertCircle,
   Loader2,
   Calendar,
+  ChevronDown,
 } from "lucide-react";
 import { cateringDriverApi } from "@/lib/drivers";
 import type { DriverMealSessionDto, DeliveryAnalyticsDto } from "@/lib/drivers/types";
@@ -50,6 +51,9 @@ export default function HomePage() {
   const [selectedSession, setSelectedSession] = useState<DriverMealSessionDto | null>(
     null
   );
+  const [completedSessions, setCompletedSessions] = useState<DriverMealSessionDto[]>([]);
+  const [loadingCompleted, setLoadingCompleted] = useState(true);
+  const [completedExpanded, setCompletedExpanded] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [openedFromCalendar, setOpenedFromCalendar] = useState(false);
   const [calendarSelectedDay, setCalendarSelectedDay] = useState<string | null>(null);
@@ -91,11 +95,30 @@ export default function HomePage() {
     }
   }, []);
 
+  const fetchCompleted = useCallback(async () => {
+    try {
+      setLoadingCompleted(true);
+      const data = await cateringDriverApi.getCompletedSessions();
+      const sorted = (Array.isArray(data) ? data : []).sort((a, b) => {
+        const dateA = new Date(a.sessionDate || "").getTime() || 0;
+        const dateB = new Date(b.sessionDate || "").getTime() || 0;
+        if (dateB !== dateA) return dateB - dateA;
+        return (b.eventTime || "").localeCompare(a.eventTime || "");
+      });
+      setCompletedSessions(sorted);
+    } catch (err) {
+      console.error("Failed to fetch completed sessions:", err);
+    } finally {
+      setLoadingCompleted(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchAnalytics();
     fetchAvailable();
     fetchAssigned();
-  }, [fetchAnalytics, fetchAvailable, fetchAssigned]);
+    fetchCompleted();
+  }, [fetchAnalytics, fetchAvailable, fetchAssigned, fetchCompleted]);
 
   const handleAccept = async (mealSessionId: string, driverNames: string[]) => {
     await cateringDriverApi.acceptMealSession(mealSessionId, { driverNames });
@@ -304,6 +327,67 @@ export default function HomePage() {
                 <p className="font-bold text-sm uppercase tracking-widest">
                   No scheduled departures
                 </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Completed Deliveries (Expandable) */}
+      <div className="space-y-6">
+        <button
+          onClick={() => setCompletedExpanded((prev) => !prev)}
+          className="w-full flex items-center justify-between cursor-pointer group/completed"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="bg-status-green/10 p-2 rounded-lg text-status-green border border-status-green/20">
+              <CheckCircle2 size={18} strokeWidth={2.5} />
+            </div>
+            <h2 className="text-xl font-black">Completed Deliveries</h2>
+          </div>
+          <div className="flex items-center gap-3">
+            {!loadingCompleted && (
+              <span className="text-xs font-bold opacity-40 uppercase tracking-widest">
+                {completedSessions.length} Completed
+              </span>
+            )}
+            <ChevronDown
+              size={20}
+              className={`opacity-40 transition-transform duration-300 ${
+                completedExpanded ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+        </button>
+
+        {completedExpanded && (
+          <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+            {loadingCompleted ? (
+              <div className="py-16 text-center bg-surface rounded-3xl border border-border-subtle">
+                <Loader2
+                  size={32}
+                  className="mx-auto mb-4 animate-spin text-primary"
+                />
+                <p className="font-bold text-sm uppercase tracking-widest opacity-40">
+                  Loading completed deliveries...
+                </p>
+              </div>
+            ) : completedSessions.length === 0 ? (
+              <div className="col-span-full py-12 text-center opacity-30 bg-surface rounded-3xl border border-border-subtle">
+                <CheckCircle2 size={48} className="mx-auto mb-4" />
+                <p className="font-bold text-sm uppercase tracking-widest">
+                  No completed deliveries yet
+                </p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {completedSessions.map((session) => (
+                  <SessionCard
+                    key={session.id}
+                    session={session}
+                    onClick={() => setSelectedSession(session)}
+                  />
+                ))}
               </div>
             )}
           </div>
