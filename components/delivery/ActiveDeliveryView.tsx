@@ -90,7 +90,6 @@ export default function ActiveDeliveryView({
   const [uploadingStopId, setUploadingStopId] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isCompleting, setIsCompleting] = useState(false);
-  const [itemsConfirmedStops, setItemsConfirmedStops] = useState<Set<string>>(new Set());
 
   // Update pending photos flag when stopPhotos changes
   useEffect(() => {
@@ -271,15 +270,6 @@ export default function ActiveDeliveryView({
                       }
                       onComplete={() => handleCompleteStop(stop)}
                       isCompleting={isCompleting}
-                      itemsConfirmed={itemsConfirmedStops.has(stop.id)}
-                      onItemsConfirmedChange={(confirmed) => {
-                        setItemsConfirmedStops((prev) => {
-                          const next = new Set(prev);
-                          if (confirmed) next.add(stop.id);
-                          else next.delete(stop.id);
-                          return next;
-                        });
-                      }}
                     />
                   );
                 })}
